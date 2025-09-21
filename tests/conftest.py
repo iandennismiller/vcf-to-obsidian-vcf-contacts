@@ -13,7 +13,7 @@ import sys
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from vcf_to_obsidian import parse_vcf_file, convert_vcf_to_markdown, generate_obsidian_markdown
+from vcf_to_obsidian import convert_vcf_to_markdown, generate_obsidian_markdown
 
 
 @pytest.fixture
