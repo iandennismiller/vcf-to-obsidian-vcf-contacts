@@ -58,7 +58,7 @@ clean_filename() {
 # Parse VCF file and extract fields
 parse_vcf_file() {
     local vcf_file="$1"
-    local -A fields
+    declare -A fields
     
     # Initialize all fields as empty
     fields[FN]=""
@@ -205,7 +205,7 @@ parse_vcf_file() {
 
 # Generate Obsidian markdown content
 generate_markdown() {
-    local -A fields
+    declare -A fields
     local -a tel_list
     local -a email_list
     local -a adr_list
@@ -339,7 +339,7 @@ generate_markdown() {
 
 # Determine output filename based on priority
 determine_filename() {
-    local -A fields
+    declare -A fields
     local vcf_filename="$1"
     
     # Read parsed VCF data to get field values
