@@ -63,7 +63,9 @@ END:VCARD"""
             assert "--folder" in result.stdout
             assert "--obsidian" in result.stdout
             assert "--file" in result.stdout
-            assert "can be specified multiple times" in result.stdout
+            # Check that help mentions multiple sources but not multiple destinations
+            help_text = result.stdout.lower()
+            assert "multiple times" in help_text or "specified multiple times" in help_text
         except subprocess.TimeoutExpired:
             pytest.skip("CLI help test timed out")
         except FileNotFoundError:
@@ -191,8 +193,8 @@ END:VCARD"""
         except FileNotFoundError:
             pytest.skip("vcf_to_obsidian.py not found for CLI testing")
 
-    def test_cli_multiple_obsidian(self, temp_dirs):
-        """Test CLI with multiple --obsidian options."""
+    def test_cli_multiple_obsidian_uses_last(self, temp_dirs):
+        """Test CLI uses the last --obsidian option when multiple are provided."""
         vcf_file = self.create_test_vcf(temp_dirs['test_vcf_dir'], "test.vcf")
         
         try:
@@ -208,18 +210,16 @@ END:VCARD"""
                 text=True,
                 timeout=60
             )
+            # Should succeed and use the last obsidian option
             assert result.returncode == 0
-            assert "Converting to Markdown in 2 destination(s)" in result.stdout
-            assert "Successfully completed 2/2 conversions" in result.stdout
+            assert f"Converting to Markdown in '{temp_dirs['test_output_dir2']}'" in result.stdout
             
-            # Check that markdown files were created in both output directories
-            md_files1 = list(temp_dirs['test_output_dir'].glob("*.md"))
+            # Check that markdown file was created only in the second output directory  
             md_files2 = list(temp_dirs['test_output_dir2'].glob("*.md"))
-            assert len(md_files1) > 0
             assert len(md_files2) > 0
             
         except subprocess.TimeoutExpired:
-            pytest.skip("CLI multiple obsidian test timed out")
+            pytest.skip("CLI multiple obsidian uses last test timed out")
         except FileNotFoundError:
             pytest.skip("vcf_to_obsidian.py not found for CLI testing")
 

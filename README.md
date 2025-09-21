@@ -69,9 +69,9 @@ Convert a specific VCF file:
 vcf-to-obsidian --file ./contact.vcf --obsidian ./obsidian-vault/contacts
 ```
 
-Process multiple sources and destinations:
+Process multiple sources to single destination:
 ```bash
-vcf-to-obsidian --folder ./contacts1 --folder ./contacts2 --file ./special.vcf --obsidian ./vault1 --obsidian ./vault2
+vcf-to-obsidian --folder ./contacts1 --folder ./contacts2 --file ./special.vcf --obsidian ./vault
 ```
 
 With verbose output:
@@ -82,12 +82,12 @@ vcf-to-obsidian --folder ./contacts --obsidian ./obsidian-vault/contacts --verbo
 ### Command Line Options
 
 - `--folder`: Source directory containing VCF files (can be specified multiple times)
-- `--obsidian`: Destination directory for generated Markdown files (can be specified multiple times)
+- `--obsidian`: Destination directory for generated Markdown files (required, single directory only)
 - `--file`: Specific VCF file to process (can be specified multiple times)
 - `--verbose` or `-v`: Enable verbose output
 - `--help` or `-h`: Show help message
 
-**Note**: You must specify at least one source (either `--folder` or `--file`) and at least one destination (`--obsidian`).
+**Note**: You must specify at least one source (either `--folder` or `--file`) and exactly one destination (`--obsidian`).
 
 ## Template Output
 

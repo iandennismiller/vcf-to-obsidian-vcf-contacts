@@ -9,8 +9,8 @@ Usage:
     python vcf_to_obsidian.py --folder <source_vcf_directory> --obsidian <destination_obsidian_folder>
     python vcf_to_obsidian.py --file <vcf_file> --obsidian <destination_obsidian_folder>
 
-Options can be specified multiple times to process multiple sources and destinations:
-    python vcf_to_obsidian.py --folder <dir1> --folder <dir2> --file <file> --obsidian <out1> --obsidian <out2>
+Multiple sources can be specified but only one destination:
+    python vcf_to_obsidian.py --folder <dir1> --folder <dir2> --file <file> --obsidian <output_dir>
 
 Author: Ian Dennis Miller
 License: MIT
@@ -281,8 +281,8 @@ def convert_vcf_to_markdown(vcf_path, output_dir):
               help="Source directory containing VCF files (can be specified multiple times)")
 @click.option('--obsidian',
               type=click.Path(path_type=Path),
-              multiple=True,
-              help="Destination directory for Markdown files (can be specified multiple times)")
+              required=True,
+              help="Destination directory for Markdown files")
 @click.option('--file',
               type=click.Path(exists=True, file_okay=True, dir_okay=False, path_type=Path),
               multiple=True,
@@ -294,20 +294,17 @@ def main(folder, obsidian, file, verbose):
     """Convert VCF files to Markdown format for obsidian-vcf-contacts plugin
     
     Use --folder to specify source directories containing VCF files
-    Use --obsidian to specify destination directories for Markdown files  
+    Use --obsidian to specify the destination directory for Markdown files  
     Use --file to specify individual VCF files to process
     
-    All options can be specified multiple times to process multiple sources/destinations.
+    --folder and --file options can be specified multiple times to process multiple sources.
     """
     # Validate that at least one source is specified
     if not folder and not file:
         click.echo("Error: Must specify at least one --folder or --file option.", err=True)
         sys.exit(1)
     
-    # Validate that at least one destination is specified
-    if not obsidian:
-        click.echo("Error: Must specify at least one --obsidian option.", err=True)
-        sys.exit(1)
+    # Note: --obsidian is required by click, so no need to validate it here
     
     # Collect all VCF files to process
     all_vcf_files = []
@@ -366,31 +363,25 @@ def main(folder, obsidian, file, verbose):
     
     click.echo(f"Found {len(all_vcf_files)} VCF file(s) to process")
     
-    # Create all destination directories
-    dest_paths = []
-    for dest_path in obsidian:
-        dest_path.mkdir(parents=True, exist_ok=True)
-        dest_paths.append(dest_path)
-        if verbose:
-            click.echo(f"Destination directory: '{dest_path}'")
+    # Create destination directory
+    dest_path = obsidian
+    dest_path.mkdir(parents=True, exist_ok=True)
+    if verbose:
+        click.echo(f"Destination directory: '{dest_path}'")
     
-    click.echo(f"Converting to Markdown in {len(dest_paths)} destination(s)")
+    click.echo(f"Converting to Markdown in '{dest_path}'")
     
-    # Convert each VCF file to each destination
-    total_conversions = 0
+    # Convert each VCF file to the destination
     successful_conversions = 0
     
     for vcf_file in all_vcf_files:
-        for dest_path in dest_paths:
-            total_conversions += 1
-            
-            if verbose:
-                click.echo(f"Processing: {vcf_file} -> {dest_path}")
-            
-            if convert_vcf_to_markdown(vcf_file, dest_path):
-                successful_conversions += 1
+        if verbose:
+            click.echo(f"Processing: {vcf_file} -> {dest_path}")
+        
+        if convert_vcf_to_markdown(vcf_file, dest_path):
+            successful_conversions += 1
     
-    click.echo(f"Successfully completed {successful_conversions}/{total_conversions} conversions.")
+    click.echo(f"Successfully completed {successful_conversions}/{len(all_vcf_files)} conversions.")
 
 
 if __name__ == "__main__":
