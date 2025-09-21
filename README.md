@@ -17,6 +17,33 @@ A Python script that batch-converts a folder containing VCF files into Markdown 
 
 ## Installation
 
+### Option 1: Install with pip (Recommended)
+
+```bash
+pip install vcf-to-obsidian-vcf-contacts
+```
+
+### Option 2: Install with pipx (For CLI tools)
+
+```bash
+pipx install vcf-to-obsidian-vcf-contacts
+```
+
+### Option 3: Development Installation
+
+1. Clone this repository:
+```bash
+git clone https://github.com/iandennismiller/vcf-to-obsidian-vcf-contacts.git
+cd vcf-to-obsidian-vcf-contacts
+```
+
+2. Install in development mode:
+```bash
+pip install -e .
+```
+
+### Option 4: Direct Script Usage
+
 1. Clone this repository:
 ```bash
 git clone https://github.com/iandennismiller/vcf-to-obsidian-vcf-contacts.git
@@ -32,18 +59,34 @@ chmod +x vcf_to_obsidian.py
 
 ### Basic Usage
 
+After installing with pip or pipx:
+```bash
+vcf-to-obsidian <source_vcf_directory> <destination_obsidian_folder>
+```
+
+Or using the Python script directly:
 ```bash
 python vcf_to_obsidian.py <source_vcf_directory> <destination_obsidian_folder>
 ```
 
 ### Examples
 
-Convert all VCF files from a directory:
+Convert all VCF files from a directory (using installed CLI):
+```bash
+vcf-to-obsidian ./contacts ./obsidian-vault/contacts
+```
+
+Convert all VCF files from a directory (using Python script):
 ```bash
 python vcf_to_obsidian.py ./contacts ./obsidian-vault/contacts
 ```
 
-With verbose output:
+With verbose output (using installed CLI):
+```bash
+vcf-to-obsidian ./contacts ./obsidian-vault/contacts --verbose
+```
+
+With verbose output (using Python script):
 ```bash
 python vcf_to_obsidian.py ./contacts ./obsidian-vault/contacts --verbose
 ```
