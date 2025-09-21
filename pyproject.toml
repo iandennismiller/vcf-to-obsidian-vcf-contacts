@@ -24,7 +24,9 @@ classifiers = [
 ]
 keywords = ["vcf", "vcard", "obsidian", "markdown", "contacts", "converter"]
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "jinja2>=3.0.0"
+]
 
 [project.urls]
 Homepage = "https://github.com/iandennismiller/vcf-to-obsidian-vcf-contacts"

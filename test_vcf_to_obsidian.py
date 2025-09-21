@@ -339,6 +339,136 @@ END:VCARD"""
         self.assertTrue(constructed_file.exists())
         self.assertFalse(uid_file_2.exists())
 
+    def test_custom_template(self):
+        """Test that custom templates work correctly."""
+        # Create a simple custom template
+        custom_template_content = """---
+vcf-contact: true
+custom-template: true
+{%- if title %}
+name: "{{ title }}"
+{%- endif %}
+---
+
+# Custom Template: {{ title or "Unknown" }}
+
+{%- if organization %}
+Company: {{ organization }}
+{%- endif %}
+
+{%- if phone_numbers %}
+Phone: {{ phone_numbers[0] }}
+{%- endif %}
+"""
+        
+        template_path = Path(self.test_dir) / "custom.md.j2"
+        with open(template_path, 'w', encoding='utf-8') as f:
+            f.write(custom_template_content)
+        
+        # Create test VCF
+        vcf_content = """BEGIN:VCARD
+VERSION:3.0
+FN:Custom Test
+N:Test;Custom;;;
+ORG:Custom Organization
+TEL:+1-555-999-8888
+END:VCARD"""
+        
+        vcf_path = self.create_test_vcf("custom_test.vcf", vcf_content)
+        result = convert_vcf_to_markdown(vcf_path, self.test_output_dir, str(template_path))
+        
+        self.assertTrue(result)
+        
+        # Check that markdown file was created
+        md_file = self.test_output_dir / "Custom Test.md"
+        self.assertTrue(md_file.exists())
+        
+        # Read and verify content
+        with open(md_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        # Check custom template elements
+        self.assertIn('custom-template: true', content)
+        self.assertIn('# Custom Template: Custom Test', content)
+        self.assertIn('Company: Custom Organization', content)
+        self.assertIn('Phone: +1-555-999-8888', content)
+        
+        # Should NOT contain the default template structure
+        self.assertNotIn('**Organization:**', content)
+
+    def test_template_with_all_fields(self):
+        """Test template rendering with all possible fields."""
+        vcf_content = """BEGIN:VCARD
+VERSION:3.0
+UID:all-fields-test
+FN:Full Test User
+N:User;Full;Middle;Dr.;Jr.
+ORG:Complete Organization
+TEL;TYPE=HOME:+1-555-111-1111
+TEL;TYPE=WORK:+1-555-222-2222
+EMAIL;TYPE=HOME:home@example.com
+EMAIL;TYPE=WORK:work@example.com
+ADR;TYPE=HOME:;;123 Main St;City;State;12345;Country
+ADR;TYPE=WORK:;;456 Work Ave;Work City;Work State;67890;Work Country
+NOTE:Complete test note with multiple lines
+URL:https://complete.example.com
+BDAY:1985-05-15
+END:VCARD"""
+        
+        vcf_path = self.create_test_vcf("complete_test.vcf", vcf_content)
+        contact_data = parse_vcf_file(vcf_path)
+        markdown_content = generate_obsidian_markdown(contact_data)
+        
+        # Check all fields are present
+        self.assertIn('name: "Full Test User"', markdown_content)
+        self.assertIn('given-name: "Full"', markdown_content)
+        self.assertIn('family-name: "User"', markdown_content)
+        self.assertIn('organization: "Complete Organization"', markdown_content)
+        self.assertIn('"+1-555-111-1111"', markdown_content)
+        self.assertIn('"+1-555-222-2222"', markdown_content)
+        self.assertIn('home@example.com', markdown_content)
+        self.assertIn('work@example.com', markdown_content)
+        self.assertIn('url: "https://complete.example.com"', markdown_content)
+        self.assertIn('birthday: "1985-05-15"', markdown_content)
+        self.assertIn('Complete test note', markdown_content)
+        
+        # Check markdown body structure
+        self.assertIn('# Full Test User', markdown_content)
+        self.assertIn('**Organization:** Complete Organization', markdown_content)
+        self.assertIn('**Phone Numbers:**', markdown_content)
+        self.assertIn('**Email Addresses:**', markdown_content)
+        self.assertIn('**Addresses:**', markdown_content)
+        self.assertIn('**Website:** https://complete.example.com', markdown_content)
+        self.assertIn('**Birthday:** 1985-05-15', markdown_content)
+        self.assertIn('**Notes:**', markdown_content)
+
+    def test_template_fallback_when_file_missing(self):
+        """Test that default template is used when custom template file doesn't exist."""
+        vcf_content = """BEGIN:VCARD
+VERSION:3.0
+FN:Fallback Test
+N:Test;Fallback;;;
+END:VCARD"""
+        
+        vcf_path = self.create_test_vcf("fallback_test.vcf", vcf_content)
+        # Use a non-existent template path
+        result = convert_vcf_to_markdown(vcf_path, self.test_output_dir, "/path/does/not/exist.j2")
+        
+        self.assertTrue(result)
+        
+        # Should still create the file using the default template
+        md_file = self.test_output_dir / "Fallback Test.md"
+        self.assertTrue(md_file.exists())
+        
+        # Read and verify it uses default template format
+        with open(md_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        self.assertIn('vcf-contact: true', content)
+        self.assertIn('# Fallback Test', content)
+        # Should NOT contain custom template markers
+        self.assertNotIn('custom-template: true', content)
+
 
 def run_tests():
     """Run all tests and return results."""

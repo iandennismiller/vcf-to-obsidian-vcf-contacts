@@ -1,0 +1,86 @@
+---
+vcf-contact: true
+{%- if title %}
+name: "{{ title }}"
+{%- endif %}
+{%- if given_name %}
+given-name: "{{ given_name }}"
+{%- endif %}
+{%- if family_name %}
+family-name: "{{ family_name }}"
+{%- endif %}
+{%- if organization %}
+organization: "{{ organization }}"
+{%- endif %}
+{%- if phone_numbers %}
+phone-numbers:
+{%- for phone in phone_numbers %}
+  - "{{ phone }}"
+{%- endfor %}
+{%- endif %}
+{%- if email_addresses %}
+email-addresses:
+{%- for email in email_addresses %}
+  - "{{ email }}"
+{%- endfor %}
+{%- endif %}
+{%- if addresses %}
+addresses:
+{%- for address in addresses %}
+  - "{{ address }}"
+{%- endfor %}
+{%- endif %}
+{%- if url %}
+url: "{{ url }}"
+{%- endif %}
+{%- if birthday %}
+birthday: "{{ birthday }}"
+{%- endif %}
+---
+
+# {{ title or "Contact" }}
+
+{%- if organization %}
+
+**Organization:** {{ organization }}
+{%- endif %}
+
+{%- if phone_numbers %}
+
+**Phone Numbers:**
+{%- for phone in phone_numbers %}
+- {{ phone }}
+{%- endfor %}
+{%- endif %}
+
+{%- if email_addresses %}
+
+**Email Addresses:**
+{%- for email in email_addresses %}
+- {{ email }}
+{%- endfor %}
+{%- endif %}
+
+{%- if addresses %}
+
+**Addresses:**
+{%- for address in addresses %}
+- {{ address }}
+{%- endfor %}
+{%- endif %}
+
+{%- if url %}
+
+**Website:** {{ url }}
+{%- endif %}
+
+{%- if birthday %}
+
+**Birthday:** {{ birthday }}
+{%- endif %}
+
+{%- if notes %}
+
+**Notes:**
+{{ notes }}
+{%- endif %}
