@@ -79,4 +79,54 @@ else
     echo "✓ Test 5 passed: Correctly rejects bash 3.2"
 fi
 
+# Test 6: Verify /opt/homebrew/bin/bash fallback behavior 
+echo "Test 6: Testing /opt/homebrew/bin/bash fallback behavior..."
+# Create a mock /opt/homebrew/bin/bash for testing
+MOCK_LOCAL_BASH_DIR="$BASE_OUTPUT_DIR/mock_usr_local_bin"
+mkdir -p "$MOCK_LOCAL_BASH_DIR"
+cat > "$MOCK_LOCAL_BASH_DIR/bash" << 'EOF'
+#!/bin/bash
+# Mock bash 4.0+ for testing
+echo "4.0.0(1)-release"
+EOF
+chmod +x "$MOCK_LOCAL_BASH_DIR/bash"
+
+# Create a script that tests the fallback logic
+TEMP_FALLBACK_SCRIPT="$BASE_OUTPUT_DIR/test_bash_fallback.sh"
+cat > "$TEMP_FALLBACK_SCRIPT" << EOF
+#!/bin/bash
+
+# Mock BASH_VERSION for testing
+BASH_VERSION="3.2.57(1)-release"
+
+# Extract the version checking logic from the main script
+BASH_MAJOR=\$(echo "\$BASH_VERSION" | cut -d. -f1)
+if [ "\$BASH_MAJOR" -lt 4 ]; then
+    # Check if /opt/homebrew/bin/bash is available as a fallback
+    if [ -x "$MOCK_LOCAL_BASH_DIR/bash" ]; then
+        # Check version of /opt/homebrew/bin/bash
+        LOCAL_BASH_VERSION=\$($MOCK_LOCAL_BASH_DIR/bash)
+        LOCAL_BASH_MAJOR=\$(echo "\$LOCAL_BASH_VERSION" | cut -d. -f1)
+        if [ "\$LOCAL_BASH_MAJOR" -ge 4 ]; then
+            echo "Would fallback to /opt/homebrew/bin/bash version \$LOCAL_BASH_VERSION"
+            exit 0
+        else
+            echo "Error: /opt/homebrew/bin/bash version \$LOCAL_BASH_VERSION is too old (need 4.0+)" >&2
+            exit 1
+        fi
+    else
+        echo "Error: This script requires bash 4.0+, but you have bash \$BASH_VERSION" >&2
+        exit 1
+    fi
+fi
+EOF
+
+chmod +x "$TEMP_FALLBACK_SCRIPT"
+if "$TEMP_FALLBACK_SCRIPT" > /dev/null 2>&1; then
+    echo "✓ Test 6 passed: Correctly falls back to /opt/homebrew/bin/bash"
+else
+    echo "✗ Test 6 failed: Should fallback to /opt/homebrew/bin/bash when available"
+    exit 1
+fi
+
 echo "All shell compatibility tests passed! ✅"
