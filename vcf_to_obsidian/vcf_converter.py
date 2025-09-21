@@ -199,3 +199,113 @@ class VCFConverter:
                 successful_count += 1
         
         return successful_count, total_count
+    
+    def convert_vcf_files_from_sources(self, folder_sources, file_sources, output_dir, ignore_files=None, verbose=False):
+        """
+        Convert VCF files from multiple sources (folders and individual files) to Markdown format.
+        
+        This method collects VCF files from the specified sources, applies ignore filters,
+        and processes them using the task queue system.
+        
+        Args:
+            folder_sources (list): List of Path objects for directories containing VCF files
+            file_sources (list): List of Path objects for individual VCF files
+            output_dir (Path): Output directory for Markdown files
+            ignore_files (list, optional): List of Path objects for files to ignore
+            verbose (bool): Whether to enable verbose output
+            
+        Returns:
+            tuple: (successful_count, total_count, all_vcf_files)
+        """
+        import click
+        import sys
+        
+        # Collect all VCF files to process
+        all_vcf_files = []
+        processed_paths = set()  # Track processed file paths to avoid duplicates
+        
+        # Process folder sources
+        for source_path in folder_sources:
+            if not source_path.is_dir():
+                if verbose:
+                    click.echo(f"Error: Source path '{source_path}' is not a directory.", err=True)
+                continue
+            
+            # Find all VCF files in this directory
+            vcf_files = list(source_path.glob("*.vcf")) + list(source_path.glob("*.VCF"))
+            new_files_count = 0
+            for vcf_file in vcf_files:
+                absolute_path = vcf_file.resolve()
+                if absolute_path not in processed_paths:
+                    all_vcf_files.append(vcf_file)
+                    processed_paths.add(absolute_path)
+                    new_files_count += 1
+            
+            if verbose:
+                if new_files_count < len(vcf_files):
+                    click.echo(f"Found {len(vcf_files)} VCF file(s) in '{source_path}' ({new_files_count} new, {len(vcf_files) - new_files_count} duplicates)")
+                else:
+                    click.echo(f"Found {len(vcf_files)} VCF file(s) in '{source_path}'")
+        
+        # Process individual file sources
+        for file_path in file_sources:
+            if not file_path.exists():
+                if verbose:
+                    click.echo(f"Error: File '{file_path}' does not exist.", err=True)
+                continue
+            
+            if not file_path.is_file():
+                if verbose:
+                    click.echo(f"Error: Path '{file_path}' is not a file.", err=True)
+                continue
+            
+            # Check if it's a VCF file by extension
+            if file_path.suffix.lower() not in ['.vcf']:
+                if verbose:
+                    click.echo(f"Warning: File '{file_path}' does not have a .vcf extension.", err=True)
+            
+            absolute_path = file_path.resolve()
+            if absolute_path not in processed_paths:
+                all_vcf_files.append(file_path)
+                processed_paths.add(absolute_path)
+                
+                if verbose:
+                    click.echo(f"Added individual file: '{file_path}'")
+            else:
+                if verbose:
+                    click.echo(f"Skipping duplicate file: '{file_path}'")
+        
+        # Process ignore list - remove specified files from the task queue
+        if ignore_files:
+            ignore_paths = set()
+            for ignore_path in ignore_files:
+                absolute_ignore_path = ignore_path.resolve()
+                ignore_paths.add(absolute_ignore_path)
+                if verbose:
+                    click.echo(f"Will ignore file: '{ignore_path}'")
+            
+            # Filter out ignored files
+            initial_count = len(all_vcf_files)
+            all_vcf_files = [vcf_file for vcf_file in all_vcf_files 
+                           if vcf_file.resolve() not in ignore_paths]
+            ignored_count = initial_count - len(all_vcf_files)
+            
+            if ignored_count > 0 and verbose:
+                click.echo(f"Ignored {ignored_count} file(s)")
+        
+        # Create destination directory
+        output_dir.mkdir(parents=True, exist_ok=True)
+        if verbose:
+            click.echo(f"Destination directory: '{output_dir}'")
+        
+        if verbose:
+            click.echo(f"Converting to Markdown in '{output_dir}'")
+        
+        # Convert each VCF file to the destination using task queue
+        if all_vcf_files:
+            task_queue = self.create_conversion_task_queue(all_vcf_files, output_dir)
+            successful_conversions, total_conversions = self.process_task_queue(task_queue, validate_uuids=True)
+        else:
+            successful_conversions, total_conversions = 0, 0
+        
+        return successful_conversions, total_conversions, all_vcf_files

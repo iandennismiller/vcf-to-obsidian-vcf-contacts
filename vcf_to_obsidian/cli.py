@@ -43,99 +43,44 @@ class CLI:
             click.echo("Error: Must specify at least one --folder or --file option.", err=True)
             sys.exit(1)
         
-        # Note: --obsidian is required by click, so no need to validate it here
-        
-        # Collect all VCF files to process
-        all_vcf_files = []
-        processed_paths = set()  # Track processed file paths to avoid duplicates
-        
-        # Process folder sources
-        for source_path in folder:
-            if not source_path.is_dir():
-                click.echo(f"Error: Source path '{source_path}' is not a directory.", err=True)
+        # Validate file and folder sources exist before processing
+        for folder_path in folder:
+            if not folder_path.is_dir():
+                click.echo(f"Error: Source path '{folder_path}' is not a directory.", err=True)
                 sys.exit(1)
-            
-            # Find all VCF files in this directory
-            vcf_files = list(source_path.glob("*.vcf")) + list(source_path.glob("*.VCF"))
-            new_files_count = 0
-            for vcf_file in vcf_files:
-                absolute_path = vcf_file.resolve()
-                if absolute_path not in processed_paths:
-                    all_vcf_files.append(vcf_file)
-                    processed_paths.add(absolute_path)
-                    new_files_count += 1
-            
-            if verbose:
-                if new_files_count < len(vcf_files):
-                    click.echo(f"Found {len(vcf_files)} VCF file(s) in '{source_path}' ({new_files_count} new, {len(vcf_files) - new_files_count} duplicates)")
-                else:
-                    click.echo(f"Found {len(vcf_files)} VCF file(s) in '{source_path}'")
         
-        # Process individual file sources
         for file_path in file:
             if not file_path.exists():
                 click.echo(f"Error: File '{file_path}' does not exist.", err=True)
                 sys.exit(1)
-            
             if not file_path.is_file():
                 click.echo(f"Error: Path '{file_path}' is not a file.", err=True)
                 sys.exit(1)
-            
-            # Check if it's a VCF file by extension
-            if file_path.suffix.lower() not in ['.vcf']:
-                click.echo(f"Warning: File '{file_path}' does not have a .vcf extension.", err=True)
-            
-            absolute_path = file_path.resolve()
-            if absolute_path not in processed_paths:
-                all_vcf_files.append(file_path)
-                processed_paths.add(absolute_path)
-                
-                if verbose:
-                    click.echo(f"Added individual file: '{file_path}'")
+        
+        # Convert tuples to lists for easier handling
+        folder_sources = list(folder) if folder else []
+        file_sources = list(file) if file else []
+        ignore_files = list(ignore) if ignore else []
+        
+        # Use VCFConverter to handle the conversion
+        successful_conversions, total_conversions, all_vcf_files = self.converter.convert_vcf_files_from_sources(
+            folder_sources=folder_sources,
+            file_sources=file_sources,
+            output_dir=obsidian,
+            ignore_files=ignore_files,
+            verbose=verbose
+        )
+        
+        # Handle edge cases for messaging
+        if not all_vcf_files:
+            if not folder_sources and not file_sources:
+                click.echo("No VCF files found to process.", err=True)
             else:
-                if verbose:
-                    click.echo(f"Skipping duplicate file: '{file_path}'")
-        
-        if not all_vcf_files:
-            click.echo("No VCF files found to process.", err=True)
+                click.echo("No VCF files remaining to process after applying ignore list.", err=True)
             sys.exit(1)
         
-        # Process ignore list - remove specified files from the task queue
-        if ignore:
-            ignore_paths = set()
-            for ignore_path in ignore:
-                absolute_ignore_path = ignore_path.resolve()
-                ignore_paths.add(absolute_ignore_path)
-                if verbose:
-                    click.echo(f"Will ignore file: '{ignore_path}'")
-            
-            # Filter out ignored files
-            initial_count = len(all_vcf_files)
-            all_vcf_files = [vcf_file for vcf_file in all_vcf_files 
-                           if vcf_file.resolve() not in ignore_paths]
-            ignored_count = initial_count - len(all_vcf_files)
-            
-            if ignored_count > 0:
-                click.echo(f"Ignored {ignored_count} file(s)")
-        
-        if not all_vcf_files:
-            click.echo("No VCF files remaining to process after applying ignore list.", err=True)
-            sys.exit(1)
-        
+        # Report final results
         click.echo(f"Found {len(all_vcf_files)} VCF file(s) to process")
-        
-        # Create destination directory
-        dest_path = obsidian
-        dest_path.mkdir(parents=True, exist_ok=True)
-        if verbose:
-            click.echo(f"Destination directory: '{dest_path}'")
-        
-        click.echo(f"Converting to Markdown in '{dest_path}'")
-        
-        # Convert each VCF file to the destination using task queue
-        task_queue = self.converter.create_conversion_task_queue(all_vcf_files, dest_path)
-        successful_conversions, total_conversions = self.converter.process_task_queue(task_queue, validate_uuids=True)
-        
         click.echo(f"Successfully completed {successful_conversions}/{len(all_vcf_files)} conversions.")
 
 
