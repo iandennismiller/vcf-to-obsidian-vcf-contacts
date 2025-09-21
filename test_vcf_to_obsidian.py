@@ -206,26 +206,21 @@ class TestVCFToObsidian(unittest.TestCase):
         with open(md_file, 'r', encoding='utf-8') as f:
             content = f.read()
         
-        # Check frontmatter
-        self.assertIn('vcf-contact: true', content)
-        self.assertIn('name: "Test User"', content)
-        self.assertIn('given-name: "Test"', content)
-        self.assertIn('family-name: "User"', content)
-        self.assertIn('organization: "Test Organization"', content)
-        self.assertIn('"+1-555-123-4567"', content)
-        self.assertIn('test@example.com', content)
-        self.assertIn('url: "https://example.com"', content)
-        self.assertIn('birthday: "1990-01-01"', content)
+        # Check frontmatter - new format
+        self.assertIn('N.FN: User', content)
+        self.assertIn('N.GN: Test', content)
+        self.assertIn('FN: Test User', content)
+        self.assertIn('ORG: Test Organization', content)
+        self.assertIn('"TEL[WORK]": "+1-555-123-4567"', content)
+        self.assertIn('"EMAIL[WORK]": test@example.com', content)
+        self.assertIn('"URL[DEFAULT]": https://example.com', content)
+        self.assertIn('BDAY: 1990-01-01', content)
+        self.assertIn('UID: content-test-123', content)
+        self.assertIn('VERSION: "3.0"', content)
         
-        # Check markdown content
-        self.assertIn('# Test User', content)
-        self.assertIn('**Organization:** Test Organization', content)
-        self.assertIn('**Phone Numbers:**', content)
-        self.assertIn('**Email Addresses:**', content)
-        self.assertIn('**Website:** https://example.com', content)
-        self.assertIn('**Birthday:** 1990-01-01', content)
-        self.assertIn('**Notes:**', content)
-        self.assertIn('Test note content', content)
+        # Check notes section
+        self.assertIn('#### Notes', content)
+        self.assertIn('#Contact', content)
 
     def test_priority_order(self):
         """Test the complete priority order: FN > constructed name > UID > filename."""
@@ -329,28 +324,35 @@ END:VCARD"""
         contact_data = parse_vcf_file(vcf_path)
         markdown_content = generate_obsidian_markdown(contact_data)
         
-        # Check all fields are present
-        self.assertIn('name: "Full Test User"', markdown_content)
-        self.assertIn('given-name: "Full"', markdown_content)
-        self.assertIn('family-name: "User"', markdown_content)
-        self.assertIn('organization: "Complete Organization"', markdown_content)
-        self.assertIn('"+1-555-111-1111"', markdown_content)
-        self.assertIn('"+1-555-222-2222"', markdown_content)
-        self.assertIn('home@example.com', markdown_content)
-        self.assertIn('work@example.com', markdown_content)
-        self.assertIn('url: "https://complete.example.com"', markdown_content)
-        self.assertIn('birthday: "1985-05-15"', markdown_content)
-        self.assertIn('Complete test note', markdown_content)
+        # Check all fields are present in new format
+        self.assertIn('N.FN: User', markdown_content)
+        self.assertIn('N.GN: Full', markdown_content)
+        self.assertIn('FN: Full Test User', markdown_content)
+        self.assertIn('ORG: Complete Organization', markdown_content)
+        self.assertIn('"TEL[HOME]": "+1-555-111-1111"', markdown_content)
+        self.assertIn('"TEL[WORK]": "+1-555-222-2222"', markdown_content)
+        self.assertIn('"EMAIL[HOME]": home@example.com', markdown_content)
+        self.assertIn('"EMAIL[WORK]": work@example.com', markdown_content)
+        self.assertIn('"URL[DEFAULT]": https://complete.example.com', markdown_content)
+        self.assertIn('BDAY: 1985-05-15', markdown_content)
+        self.assertIn('UID: all-fields-test', markdown_content)
+        self.assertIn('VERSION: "3.0"', markdown_content)
         
-        # Check markdown body structure
-        self.assertIn('# Full Test User', markdown_content)
-        self.assertIn('**Organization:** Complete Organization', markdown_content)
-        self.assertIn('**Phone Numbers:**', markdown_content)
-        self.assertIn('**Email Addresses:**', markdown_content)
-        self.assertIn('**Addresses:**', markdown_content)
-        self.assertIn('**Website:** https://complete.example.com', markdown_content)
-        self.assertIn('**Birthday:** 1985-05-15', markdown_content)
-        self.assertIn('**Notes:**', markdown_content)
+        # Check address components
+        self.assertIn('"ADR[HOME].STREET": 123 Main St', markdown_content)
+        self.assertIn('"ADR[HOME].LOCALITY": City', markdown_content)
+        self.assertIn('"ADR[HOME].REGION": State', markdown_content)
+        self.assertIn('"ADR[HOME].POSTAL": "12345"', markdown_content)
+        self.assertIn('"ADR[HOME].COUNTRY": Country', markdown_content)
+        self.assertIn('"ADR[WORK].STREET": 456 Work Ave', markdown_content)
+        self.assertIn('"ADR[WORK].LOCALITY": Work City', markdown_content)
+        self.assertIn('"ADR[WORK].REGION": Work State', markdown_content)
+        self.assertIn('"ADR[WORK].POSTAL": "67890"', markdown_content)
+        self.assertIn('"ADR[WORK].COUNTRY": Work Country', markdown_content)
+        
+        # Check notes section structure
+        self.assertIn('#### Notes', markdown_content)
+        self.assertIn('#Contact', markdown_content)
 
     def test_template_fallback_when_file_missing(self):
         """Test that default template is used when custom template file doesn't exist."""
@@ -370,12 +372,14 @@ END:VCARD"""
         md_file = self.test_output_dir / "Fallback Test.md"
         self.assertTrue(md_file.exists())
         
-        # Read and verify it uses default template format
+        # Read and verify it uses default template format (new format)
         with open(md_file, 'r', encoding='utf-8') as f:
             content = f.read()
         
-        self.assertIn('vcf-contact: true', content)
-        self.assertIn('# Fallback Test', content)
+        self.assertIn('N.FN: Test', content)
+        self.assertIn('N.GN: Fallback', content)
+        self.assertIn('FN: Fallback Test', content)
+        self.assertIn('VERSION: "3.0"', content)
         # Should NOT contain custom template markers
         self.assertNotIn('custom-template: true', content)
 

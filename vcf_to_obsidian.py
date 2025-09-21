@@ -41,7 +41,15 @@ def parse_vcf_file(vcf_path):
         'addresses': [],
         'notes': '',
         'url': '',
-        'birthday': ''
+        'birthday': '',
+        'photo': '',
+        'categories': '',
+        'version': '',
+        # Store raw field data with type information
+        'raw_emails': {},  # Will store email addresses with their types
+        'raw_phones': {},  # Will store phone numbers with their types  
+        'raw_urls': {},    # Will store URLs with their types
+        'raw_addresses': {}  # Will store addresses with their types and components
     }
     
     try:
@@ -72,33 +80,147 @@ def parse_vcf_file(vcf_path):
                 contact_data['organization'] = line[4:].strip()
             elif line.startswith('TEL'):
                 # Phone numbers
-                phone_match = re.search(r'TEL[^:]*:(.+)', line)
+                phone_match = re.search(r'TEL([^:]*):(.+)', line)
                 if phone_match:
-                    contact_data['phone_numbers'].append(phone_match.group(1).strip())
+                    type_info = phone_match.group(1).strip()
+                    phone_number = phone_match.group(2).strip()
+                    contact_data['phone_numbers'].append(phone_number)
+                    
+                    # Extract type information (e.g., ;TYPE=CELL -> [CELL])
+                    type_label = 'DEFAULT'
+                    if ';TYPE=' in type_info:
+                        type_match = re.search(r';TYPE=([^;]+)', type_info)
+                        if type_match:
+                            type_label = type_match.group(1).upper()
+                    elif type_info and type_info.startswith(';'):
+                        # Handle other type formats
+                        type_parts = type_info.split(';')
+                        for part in type_parts:
+                            if part and part.upper() in ['CELL', 'HOME', 'WORK', 'FAX', 'VOICE', 'SECURE', 'CANADA']:
+                                type_label = part.upper()
+                                break
+                    
+                    field_key = f"TEL[{type_label}]"
+                    contact_data['raw_phones'][field_key] = phone_number
+                    
             elif line.startswith('EMAIL'):
                 # Email addresses
-                email_match = re.search(r'EMAIL[^:]*:(.+)', line)
+                email_match = re.search(r'EMAIL([^:]*):(.+)', line)
                 if email_match:
-                    contact_data['email_addresses'].append(email_match.group(1).strip())
+                    type_info = email_match.group(1).strip()
+                    email_address = email_match.group(2).strip()
+                    contact_data['email_addresses'].append(email_address)
+                    
+                    # Extract type information (e.g., ;TYPE=HOME -> [HOME])
+                    type_label = 'DEFAULT'
+                    if ';TYPE=' in type_info:
+                        type_match = re.search(r';TYPE=([^;]+)', type_info)
+                        if type_match:
+                            type_label = type_match.group(1).upper()
+                    elif type_info and type_info.startswith(';'):
+                        # Handle other type formats
+                        type_parts = type_info.split(';')
+                        for part in type_parts:
+                            if part and part.upper() in ['HOME', 'WORK', 'INTERNET']:
+                                type_label = part.upper()
+                                break
+                    
+                    field_key = f"EMAIL[{type_label}]"
+                    contact_data['raw_emails'][field_key] = email_address
+                    
             elif line.startswith('ADR'):
                 # Addresses
-                addr_match = re.search(r'ADR[^:]*:(.+)', line)
+                addr_match = re.search(r'ADR([^:]*):(.+)', line)
                 if addr_match:
+                    type_info = addr_match.group(1).strip()
+                    addr_value = addr_match.group(2).strip()
+                    
                     # ADR format: PO Box;Extended;Street;City;State;Postal Code;Country
-                    addr_parts = addr_match.group(1).split(';')
+                    addr_parts = addr_value.split(';')
                     # Combine non-empty parts into a readable address
                     address = ', '.join([part.strip() for part in addr_parts if part.strip()])
                     if address:
                         contact_data['addresses'].append(address)
+                    
+                    # Extract type information
+                    type_label = 'DEFAULT'
+                    if ';TYPE=' in type_info:
+                        type_match = re.search(r';TYPE=([^;]+)', type_info)
+                        if type_match:
+                            type_label = type_match.group(1).upper()
+                    elif type_info and type_info.startswith(';'):
+                        # Handle other type formats
+                        type_parts = type_info.split(';')
+                        for part in type_parts:
+                            if part and part.upper() in ['HOME', 'WORK']:
+                                type_label = part.upper()
+                                break
+                    
+                    # Store address components
+                    if len(addr_parts) >= 7:
+                        po_box = addr_parts[0].strip()
+                        extended = addr_parts[1].strip()
+                        street = addr_parts[2].strip()
+                        locality = addr_parts[3].strip()
+                        region = addr_parts[4].strip()
+                        postal = addr_parts[5].strip()
+                        country = addr_parts[6].strip()
+                        
+                        base_key = f"ADR[{type_label}]"
+                        if po_box:
+                            contact_data['raw_addresses'][f"{base_key}.POBOX"] = po_box
+                        if extended:
+                            contact_data['raw_addresses'][f"{base_key}.EXTENDED"] = extended
+                        if street:
+                            contact_data['raw_addresses'][f"{base_key}.STREET"] = street
+                        if locality:
+                            contact_data['raw_addresses'][f"{base_key}.LOCALITY"] = locality
+                        if region:
+                            contact_data['raw_addresses'][f"{base_key}.REGION"] = region
+                        if postal:
+                            contact_data['raw_addresses'][f"{base_key}.POSTAL"] = postal
+                        if country:
+                            contact_data['raw_addresses'][f"{base_key}.COUNTRY"] = country
             elif line.startswith('NOTE:'):
                 # Notes
                 contact_data['notes'] = line[5:].strip()
-            elif line.startswith('URL:'):
+            elif line.startswith('URL'):
                 # URL
-                contact_data['url'] = line[4:].strip()
+                url_match = re.search(r'URL([^:]*):(.+)', line)
+                if url_match:
+                    type_info = url_match.group(1).strip()
+                    url_value = url_match.group(2).strip()
+                    contact_data['url'] = url_value
+                    
+                    # Extract type information
+                    type_label = 'DEFAULT'
+                    if ';TYPE=' in type_info:
+                        type_match = re.search(r';TYPE=([^;]+)', type_info)
+                        if type_match:
+                            type_label = type_match.group(1).upper()
+                    elif type_info and type_info.startswith(';'):
+                        # Handle other type formats
+                        type_parts = type_info.split(';')
+                        for part in type_parts:
+                            if part and part.upper() in ['HOME', 'WORK']:
+                                type_label = part.upper()
+                                break
+                    
+                    field_key = f"URL[{type_label}]"
+                    contact_data['raw_urls'][field_key] = url_value
+                    
             elif line.startswith('BDAY:'):
                 # Birthday
                 contact_data['birthday'] = line[5:].strip()
+            elif line.startswith('PHOTO:'):
+                # Photo
+                contact_data['photo'] = line[6:].strip()
+            elif line.startswith('CATEGORIES:'):
+                # Categories
+                contact_data['categories'] = line[11:].strip()
+            elif line.startswith('VERSION:'):
+                # Version
+                contact_data['version'] = line[8:].strip()
                 
     except Exception as e:
         print(f"Error parsing VCF file {vcf_path}: {e}")
@@ -136,7 +258,14 @@ def generate_obsidian_markdown(contact_data, template_path=None):
         'addresses': contact_data['addresses'],
         'notes': contact_data['notes'],
         'url': contact_data['url'],
-        'birthday': contact_data['birthday']
+        'birthday': contact_data['birthday'],
+        'photo': contact_data['photo'],
+        'categories': contact_data['categories'],
+        'version': contact_data['version'],
+        'raw_emails': contact_data['raw_emails'],
+        'raw_phones': contact_data['raw_phones'],
+        'raw_urls': contact_data['raw_urls'],
+        'raw_addresses': contact_data['raw_addresses']
     }
     
     if template_path and Path(template_path).exists():
@@ -155,90 +284,56 @@ def generate_obsidian_markdown(contact_data, template_path=None):
         else:
             # Fallback to inline template if templates directory doesn't exist
             template_str = """---
-vcf-contact: true
-{%- if title %}
-name: "{{ title }}"
+{%- if family_name %}
+N.FN: {{ family_name }}
 {%- endif %}
 {%- if given_name %}
-given-name: "{{ given_name }}"
+N.GN: {{ given_name }}
 {%- endif %}
-{%- if family_name %}
-family-name: "{{ family_name }}"
+{%- if full_name %}
+FN: {{ full_name }}
 {%- endif %}
-{%- if organization %}
-organization: "{{ organization }}"
+{%- if photo %}
+PHOTO: {{ photo }}
 {%- endif %}
-{%- if phone_numbers %}
-phone-numbers:
-{%- for phone in phone_numbers %}
-  - "{{ phone }}"
+{%- for email_key, email_value in raw_emails.items() %}
+"{{ email_key }}": {{ email_value }}
 {%- endfor %}
-{%- endif %}
-{%- if email_addresses %}
-email-addresses:
-{%- for email in email_addresses %}
-  - "{{ email }}"
+{%- for phone_key, phone_value in raw_phones.items() %}
+"{{ phone_key }}": "{{ phone_value }}"
 {%- endfor %}
-{%- endif %}
-{%- if addresses %}
-addresses:
-{%- for address in addresses %}
-  - "{{ address }}"
-{%- endfor %}
-{%- endif %}
-{%- if url %}
-url: "{{ url }}"
-{%- endif %}
 {%- if birthday %}
-birthday: "{{ birthday }}"
+BDAY: {{ birthday }}
 {%- endif %}
+{%- for url_key, url_value in raw_urls.items() %}
+"{{ url_key }}": {{ url_value }}
+{%- endfor %}
+{%- if organization %}
+ORG: {{ organization }}
+{%- endif %}
+{%- for addr_key, addr_value in raw_addresses.items() %}
+"{{ addr_key }}": {% if addr_key.endswith('.POSTAL') %}"{{ addr_value }}"{% else %}{{ addr_value }}{% endif %}
+{%- endfor %}
+{%- if categories %}
+CATEGORIES: {{ categories }}
+{%- endif %}
+{%- if uid %}
+UID: {{ uid }}
+{%- endif %}
+{%- if version %}
+VERSION: "{{ version }}"
+{%- endif %}
+
 ---
+{%- if notes or categories %}
+#### Notes
 
-# {{ title or "Contact" }}
-
-{%- if organization %}
-
-**Organization:** {{ organization }}
+{%- if categories %}
+{%- set category_list = categories.split(',') %}
+#Contact{% for category in category_list %} #{{ category.strip() }}{% endfor %}
+{%- else %}
+#Contact
 {%- endif %}
-
-{%- if phone_numbers %}
-
-**Phone Numbers:**
-{%- for phone in phone_numbers %}
-- {{ phone }}
-{%- endfor %}
-{%- endif %}
-
-{%- if email_addresses %}
-
-**Email Addresses:**
-{%- for email in email_addresses %}
-- {{ email }}
-{%- endfor %}
-{%- endif %}
-
-{%- if addresses %}
-
-**Addresses:**
-{%- for address in addresses %}
-- {{ address }}
-{%- endfor %}
-{%- endif %}
-
-{%- if url %}
-
-**Website:** {{ url }}
-{%- endif %}
-
-{%- if birthday %}
-
-**Birthday:** {{ birthday }}
-{%- endif %}
-
-{%- if notes %}
-
-**Notes:**
-{{ notes }}
 {%- endif %}"""
             template = Template(template_str)
     

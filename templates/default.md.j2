@@ -1,86 +1,52 @@
 ---
-vcf-contact: true
-{%- if title %}
-name: "{{ title }}"
+{%- if family_name %}
+N.FN: {{ family_name }}
 {%- endif %}
 {%- if given_name %}
-given-name: "{{ given_name }}"
+N.GN: {{ given_name }}
 {%- endif %}
-{%- if family_name %}
-family-name: "{{ family_name }}"
+{%- if full_name %}
+FN: {{ full_name }}
 {%- endif %}
-{%- if organization %}
-organization: "{{ organization }}"
+{%- if photo %}
+PHOTO: {{ photo }}
 {%- endif %}
-{%- if phone_numbers %}
-phone-numbers:
-{%- for phone in phone_numbers %}
-  - "{{ phone }}"
+{%- for email_key, email_value in raw_emails.items() %}
+"{{ email_key }}": {{ email_value }}
 {%- endfor %}
-{%- endif %}
-{%- if email_addresses %}
-email-addresses:
-{%- for email in email_addresses %}
-  - "{{ email }}"
+{%- for phone_key, phone_value in raw_phones.items() %}
+"{{ phone_key }}": "{{ phone_value }}"
 {%- endfor %}
-{%- endif %}
-{%- if addresses %}
-addresses:
-{%- for address in addresses %}
-  - "{{ address }}"
-{%- endfor %}
-{%- endif %}
-{%- if url %}
-url: "{{ url }}"
-{%- endif %}
 {%- if birthday %}
-birthday: "{{ birthday }}"
+BDAY: {{ birthday }}
 {%- endif %}
+{%- for url_key, url_value in raw_urls.items() %}
+"{{ url_key }}": {{ url_value }}
+{%- endfor %}
+{%- if organization %}
+ORG: {{ organization }}
+{%- endif %}
+{%- for addr_key, addr_value in raw_addresses.items() %}
+"{{ addr_key }}": {% if addr_key.endswith('.POSTAL') %}"{{ addr_value }}"{% else %}{{ addr_value }}{% endif %}
+{%- endfor %}
+{%- if categories %}
+CATEGORIES: {{ categories }}
+{%- endif %}
+{%- if uid %}
+UID: {{ uid }}
+{%- endif %}
+{%- if version %}
+VERSION: "{{ version }}"
+{%- endif %}
+
 ---
+{%- if notes or categories %}
+#### Notes
 
-# {{ title or "Contact" }}
-
-{%- if organization %}
-
-**Organization:** {{ organization }}
+{%- if categories %}
+{%- set category_list = categories.split(',') %}
+#Contact{% for category in category_list %} #{{ category.strip() }}{% endfor %}
+{%- else %}
+#Contact
 {%- endif %}
-
-{%- if phone_numbers %}
-
-**Phone Numbers:**
-{%- for phone in phone_numbers %}
-- {{ phone }}
-{%- endfor %}
-{%- endif %}
-
-{%- if email_addresses %}
-
-**Email Addresses:**
-{%- for email in email_addresses %}
-- {{ email }}
-{%- endfor %}
-{%- endif %}
-
-{%- if addresses %}
-
-**Addresses:**
-{%- for address in addresses %}
-- {{ address }}
-{%- endfor %}
-{%- endif %}
-
-{%- if url %}
-
-**Website:** {{ url }}
-{%- endif %}
-
-{%- if birthday %}
-
-**Birthday:** {{ birthday }}
-{%- endif %}
-
-{%- if notes %}
-
-**Notes:**
-{{ notes }}
 {%- endif %}
