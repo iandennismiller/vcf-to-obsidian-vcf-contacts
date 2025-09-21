@@ -1,0 +1,36 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "vcf-to-obsidian-vcf-contacts"
+version = "1.0.0"
+description = "A Python script that batch-converts a folder containing VCF files into Markdown files that are compatible with the obsidian-vcf-contacts plugin for ObsidianMD."
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Ian Dennis Miller"}
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Office/Business :: Groupware",
+    "Topic :: Text Processing :: Markup :: Markdown",
+    "Topic :: Utilities",
+]
+keywords = ["vcf", "vcard", "obsidian", "markdown", "contacts", "converter"]
+requires-python = ">=3.12"
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/iandennismiller/vcf-to-obsidian-vcf-contacts"
+Repository = "https://github.com/iandennismiller/vcf-to-obsidian-vcf-contacts"
+Issues = "https://github.com/iandennismiller/vcf-to-obsidian-vcf-contacts/issues"
+
+[project.scripts]
+vcf-to-obsidian = "vcf_to_obsidian:main"
+
