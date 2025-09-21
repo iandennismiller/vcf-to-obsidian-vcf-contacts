@@ -12,8 +12,6 @@ from .vcf_reader import VCFReader
 from .markdown_writer import MarkdownWriter
 from .filename_generator import FilenameGenerator
 from .vcf_converter import VCFConverter
-from .cli import CLI
-
 
 
 # CLI entry point
@@ -22,7 +20,8 @@ def main():
     from .cli import main_cli
     main_cli()
 
+
 __all__ = [
-    'VCFReader', 'MarkdownWriter', 'FilenameGenerator', 'VCFConverter', 'CLI',
+    'VCFReader', 'MarkdownWriter', 'FilenameGenerator', 'VCFConverter',
     'main'
 ]
