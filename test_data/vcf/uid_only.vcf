@@ -1,0 +1,6 @@
+BEGIN:VCARD
+VERSION:3.0
+UID:uid-only-12345
+N:Smith;Jane;;;
+ORG:Tech Corp
+END:VCARD

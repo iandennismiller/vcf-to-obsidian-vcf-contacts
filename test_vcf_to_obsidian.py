@@ -29,6 +29,9 @@ class TestVCFToObsidian(unittest.TestCase):
         self.test_output_dir = Path(self.test_dir) / "output"
         self.test_vcf_dir.mkdir()
         self.test_output_dir.mkdir()
+        
+        # Path to the test data directory
+        self.test_data_dir = Path(__file__).parent / "test_data" / "vcf"
 
     def tearDown(self):
         """Clean up after each test method."""
@@ -40,20 +43,22 @@ class TestVCFToObsidian(unittest.TestCase):
         with open(vcf_path, 'w', encoding='utf-8') as f:
             f.write(content)
         return vcf_path
+    
+    def load_test_vcf(self, test_vcf_filename, target_filename=None):
+        """Helper method to load a VCF file from test data and copy it to test directory."""
+        if target_filename is None:
+            target_filename = test_vcf_filename
+        
+        source_path = self.test_data_dir / test_vcf_filename
+        target_path = self.test_vcf_dir / target_filename
+        
+        # Copy the test VCF file to the test directory
+        shutil.copy2(source_path, target_path)
+        return target_path
 
     def test_parse_vcf_with_full_name_and_uid(self):
         """Test parsing VCF with both full name and UID."""
-        vcf_content = """BEGIN:VCARD
-VERSION:3.0
-UID:12345-abcde-67890
-FN:John Doe
-N:Doe;John;;;
-ORG:Acme Corporation
-TEL;TYPE=WORK:+1-555-123-4567
-EMAIL;TYPE=WORK:john.doe@acme.com
-END:VCARD"""
-        
-        vcf_path = self.create_test_vcf("test.vcf", vcf_content)
+        vcf_path = self.load_test_vcf("full_name_and_uid.vcf", "test.vcf")
         contact_data = parse_vcf_file(vcf_path)
         
         self.assertEqual(contact_data['uid'], '12345-abcde-67890')
@@ -66,14 +71,7 @@ END:VCARD"""
 
     def test_parse_vcf_with_uid_only(self):
         """Test parsing VCF with UID but no full name."""
-        vcf_content = """BEGIN:VCARD
-VERSION:3.0
-UID:uid-only-12345
-N:Smith;Jane;;;
-ORG:Tech Corp
-END:VCARD"""
-        
-        vcf_path = self.create_test_vcf("test.vcf", vcf_content)
+        vcf_path = self.load_test_vcf("uid_only.vcf", "test.vcf")
         contact_data = parse_vcf_file(vcf_path)
         
         self.assertEqual(contact_data['uid'], 'uid-only-12345')
@@ -83,14 +81,7 @@ END:VCARD"""
 
     def test_parse_vcf_with_full_name_only(self):
         """Test parsing VCF with full name but no UID."""
-        vcf_content = """BEGIN:VCARD
-VERSION:3.0
-FN:Bob Wilson
-N:Wilson;Bob;;;
-ORG:Local Business
-END:VCARD"""
-        
-        vcf_path = self.create_test_vcf("test.vcf", vcf_content)
+        vcf_path = self.load_test_vcf("full_name_only.vcf", "test.vcf")
         contact_data = parse_vcf_file(vcf_path)
         
         self.assertEqual(contact_data['uid'], '')
@@ -100,14 +91,7 @@ END:VCARD"""
 
     def test_parse_vcf_with_empty_uid(self):
         """Test parsing VCF with empty UID field."""
-        vcf_content = """BEGIN:VCARD
-VERSION:3.0
-UID:
-FN:Empty UID Test
-N:Test;Empty;;;
-END:VCARD"""
-        
-        vcf_path = self.create_test_vcf("test.vcf", vcf_content)
+        vcf_path = self.load_test_vcf("empty_uid.vcf", "test.vcf")
         contact_data = parse_vcf_file(vcf_path)
         
         self.assertEqual(contact_data['uid'], '')
@@ -115,14 +99,7 @@ END:VCARD"""
 
     def test_filename_generation_fn_preferred(self):
         """Test that FN (full name) is preferred over UID for filename generation."""
-        vcf_content = """BEGIN:VCARD
-VERSION:3.0
-UID:12345-abcde-67890
-FN:John Doe
-N:Doe;John;;;
-END:VCARD"""
-        
-        vcf_path = self.create_test_vcf("test.vcf", vcf_content)
+        vcf_path = self.load_test_vcf("fn_preferred.vcf", "test.vcf")
         result = convert_vcf_to_markdown(vcf_path, self.test_output_dir)
         
         self.assertTrue(result)
@@ -136,13 +113,7 @@ END:VCARD"""
 
     def test_filename_generation_uid_fallback(self):
         """Test that UID is used as fallback when no full name is available."""
-        vcf_content = """BEGIN:VCARD
-VERSION:3.0
-UID:fallback-uid-12345
-N:Smith;Jane;;;
-END:VCARD"""
-        
-        vcf_path = self.create_test_vcf("test.vcf", vcf_content)
+        vcf_path = self.load_test_vcf("uid_fallback.vcf", "test.vcf")
         result = convert_vcf_to_markdown(vcf_path, self.test_output_dir)
         
         self.assertTrue(result)
@@ -157,13 +128,7 @@ END:VCARD"""
 
     def test_filename_generation_constructed_name_fallback(self):
         """Test that constructed name (given+family) is used when no FN or UID."""
-        vcf_content = """BEGIN:VCARD
-VERSION:3.0
-N:Brown;Alice;;;
-ORG:Test Company
-END:VCARD"""
-        
-        vcf_path = self.create_test_vcf("test.vcf", vcf_content)
+        vcf_path = self.load_test_vcf("constructed_name_fallback.vcf", "test.vcf")
         result = convert_vcf_to_markdown(vcf_path, self.test_output_dir)
         
         self.assertTrue(result)
@@ -173,12 +138,7 @@ END:VCARD"""
 
     def test_filename_generation_vcf_filename_fallback(self):
         """Test that VCF filename is used as final fallback."""
-        vcf_content = """BEGIN:VCARD
-VERSION:3.0
-ORG:Minimal Contact
-END:VCARD"""
-        
-        vcf_path = self.create_test_vcf("minimal_contact.vcf", vcf_content)
+        vcf_path = self.load_test_vcf("minimal_contact.vcf", "minimal_contact.vcf")
         result = convert_vcf_to_markdown(vcf_path, self.test_output_dir)
         
         self.assertTrue(result)
@@ -188,13 +148,7 @@ END:VCARD"""
 
     def test_special_characters_in_filename(self):
         """Test that special characters in names are properly sanitized."""
-        vcf_content = """BEGIN:VCARD
-VERSION:3.0
-FN:John "Doe" <test@email.com>
-N:Doe;John;;;
-END:VCARD"""
-        
-        vcf_path = self.create_test_vcf("test.vcf", vcf_content)
+        vcf_path = self.load_test_vcf("special_characters_filename.vcf", "test.vcf")
         result = convert_vcf_to_markdown(vcf_path, self.test_output_dir)
         
         self.assertTrue(result)
@@ -204,13 +158,7 @@ END:VCARD"""
 
     def test_special_characters_in_uid(self):
         """Test that special characters in UID are properly sanitized."""
-        vcf_content = """BEGIN:VCARD
-VERSION:3.0
-UID:special/chars:in<uid>file*name?
-N:Test;User;;;
-END:VCARD"""
-        
-        vcf_path = self.create_test_vcf("test.vcf", vcf_content)
+        vcf_path = self.load_test_vcf("special_characters_uid.vcf", "test.vcf")
         result = convert_vcf_to_markdown(vcf_path, self.test_output_dir)
         
         self.assertTrue(result)
@@ -225,13 +173,7 @@ END:VCARD"""
 
     def test_uid_fallback_when_no_names(self):
         """Test that UID is used as fallback when no name information is available."""
-        vcf_content = """BEGIN:VCARD
-VERSION:3.0
-UID:only-uid-available-12345
-ORG:Anonymous Organization
-END:VCARD"""
-        
-        vcf_path = self.create_test_vcf("test.vcf", vcf_content)
+        vcf_path = self.load_test_vcf("uid_only_no_names.vcf", "test.vcf")
         result = convert_vcf_to_markdown(vcf_path, self.test_output_dir)
         
         self.assertTrue(result)
@@ -241,13 +183,7 @@ END:VCARD"""
 
     def test_uid_special_chars_fallback(self):
         """Test UID with special characters when used as fallback."""
-        vcf_content = """BEGIN:VCARD
-VERSION:3.0
-UID:special/chars:in<uid>file*name?
-ORG:No Name Company
-END:VCARD"""
-        
-        vcf_path = self.create_test_vcf("test.vcf", vcf_content)
+        vcf_path = self.load_test_vcf("uid_special_chars_fallback.vcf", "test.vcf")
         result = convert_vcf_to_markdown(vcf_path, self.test_output_dir)
         
         self.assertTrue(result)
@@ -257,20 +193,7 @@ END:VCARD"""
 
     def test_markdown_content_generation(self):
         """Test that markdown content is generated correctly."""
-        vcf_content = """BEGIN:VCARD
-VERSION:3.0
-UID:content-test-123
-FN:Test User
-N:User;Test;;;
-ORG:Test Organization
-TEL;TYPE=WORK:+1-555-123-4567
-EMAIL;TYPE=WORK:test@example.com
-NOTE:Test note content
-URL:https://example.com
-BDAY:1990-01-01
-END:VCARD"""
-        
-        vcf_path = self.create_test_vcf("test.vcf", vcf_content)
+        vcf_path = self.load_test_vcf("content_generation_test.vcf", "test.vcf")
         result = convert_vcf_to_markdown(vcf_path, self.test_output_dir)
         
         self.assertTrue(result)
@@ -307,14 +230,7 @@ END:VCARD"""
     def test_priority_order(self):
         """Test the complete priority order: FN > constructed name > UID > filename."""
         # Test case 1: FN takes priority over UID
-        vcf_content_1 = """BEGIN:VCARD
-VERSION:3.0
-UID:should-not-be-used
-FN:Priority Test 1
-N:Test;Priority;;;
-END:VCARD"""
-        
-        vcf_path_1 = self.create_test_vcf("priority1.vcf", vcf_content_1)
+        vcf_path_1 = self.load_test_vcf("priority_test_fn_over_uid.vcf", "priority1.vcf")
         result_1 = convert_vcf_to_markdown(vcf_path_1, self.test_output_dir)
         
         self.assertTrue(result_1)
@@ -324,13 +240,7 @@ END:VCARD"""
         self.assertFalse(uid_file.exists())
 
         # Test case 2: Constructed name takes priority over UID when no FN
-        vcf_content_2 = """BEGIN:VCARD
-VERSION:3.0
-UID:should-not-be-used-2
-N:ConstructedTest;Priority;;;
-END:VCARD"""
-        
-        vcf_path_2 = self.create_test_vcf("priority2.vcf", vcf_content_2)
+        vcf_path_2 = self.load_test_vcf("priority_test_constructed_over_uid.vcf", "priority2.vcf")
         result_2 = convert_vcf_to_markdown(vcf_path_2, self.test_output_dir)
         
         self.assertTrue(result_2)

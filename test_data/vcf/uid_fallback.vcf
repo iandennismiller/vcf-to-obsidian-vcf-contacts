@@ -1,0 +1,5 @@
+BEGIN:VCARD
+VERSION:3.0
+UID:fallback-uid-12345
+N:Smith;Jane;;;
+END:VCARD

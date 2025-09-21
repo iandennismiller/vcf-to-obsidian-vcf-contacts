@@ -1,0 +1,12 @@
+BEGIN:VCARD
+VERSION:3.0
+UID:content-test-123
+FN:Test User
+N:User;Test;;;
+ORG:Test Organization
+TEL;TYPE=WORK:+1-555-123-4567
+EMAIL;TYPE=WORK:test@example.com
+NOTE:Test note content
+URL:https://example.com
+BDAY:1990-01-01
+END:VCARD
