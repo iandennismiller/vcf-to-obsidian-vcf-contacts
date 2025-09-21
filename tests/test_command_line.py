@@ -25,7 +25,7 @@ class TestCommandLine:
         # Test the help option
         try:
             result = subprocess.run(
-                [sys.executable, "vcf_to_obsidian.py", "--help"],
+                [sys.executable, "scripts/vcf_to_obsidian.py", "--help"],
                 cwd=Path(__file__).parent.parent,
                 capture_output=True,
                 text=True,
@@ -37,13 +37,13 @@ class TestCommandLine:
         except subprocess.TimeoutExpired:
             pytest.skip("CLI help test timed out")
         except FileNotFoundError:
-            pytest.skip("vcf_to_obsidian.py not found for CLI testing")
+            pytest.skip("scripts/vcf_to_obsidian.py not found for CLI testing")
 
     def test_cli_missing_arguments(self):
         """Test CLI behavior when required arguments are missing."""
         try:
             result = subprocess.run(
-                [sys.executable, "vcf_to_obsidian.py"],
+                [sys.executable, "scripts/vcf_to_obsidian.py"],
                 cwd=Path(__file__).parent.parent,
                 capture_output=True,
                 text=True,
@@ -54,13 +54,13 @@ class TestCommandLine:
         except subprocess.TimeoutExpired:
             pytest.skip("CLI missing arguments test timed out")
         except FileNotFoundError:
-            pytest.skip("vcf_to_obsidian.py not found for CLI testing")
+            pytest.skip("scripts/vcf_to_obsidian.py not found for CLI testing")
 
     def test_cli_invalid_source_directory(self):
         """Test CLI behavior with invalid source directory."""
         try:
             result = subprocess.run(
-                [sys.executable, "vcf_to_obsidian.py", "/nonexistent/directory", "/tmp/output"],
+                [sys.executable, "scripts/vcf_to_obsidian.py", "/nonexistent/directory", "/tmp/output"],
                 cwd=Path(__file__).parent.parent,
                 capture_output=True,
                 text=True,
@@ -74,7 +74,7 @@ class TestCommandLine:
         except subprocess.TimeoutExpired:
             pytest.skip("CLI invalid directory test timed out")
         except FileNotFoundError:
-            pytest.skip("vcf_to_obsidian.py not found for CLI testing")
+            pytest.skip("scripts/vcf_to_obsidian.py not found for CLI testing")
 
     def test_cli_basic_conversion(self, temp_dirs):
         """Test basic CLI conversion functionality."""
@@ -92,7 +92,7 @@ END:VCARD"""
         try:
             result = subprocess.run(
                 [
-                    sys.executable, "vcf_to_obsidian.py",
+                    sys.executable, "scripts/vcf_to_obsidian.py",
                     str(temp_dirs['test_vcf_dir']),
                     str(temp_dirs['test_output_dir'])
                 ],
@@ -118,7 +118,7 @@ END:VCARD"""
         except subprocess.TimeoutExpired:
             pytest.skip("CLI basic conversion test timed out")
         except FileNotFoundError:
-            pytest.skip("vcf_to_obsidian.py not found for CLI testing")
+            pytest.skip("scripts/vcf_to_obsidian.py not found for CLI testing")
 
     def test_cli_verbose_output(self, temp_dirs):
         """Test CLI verbose output option."""
@@ -135,7 +135,7 @@ END:VCARD"""
         try:
             result = subprocess.run(
                 [
-                    sys.executable, "vcf_to_obsidian.py",
+                    sys.executable, "scripts/vcf_to_obsidian.py",
                     str(temp_dirs['test_vcf_dir']),
                     str(temp_dirs['test_output_dir']),
                     "--verbose"
@@ -153,7 +153,7 @@ END:VCARD"""
         except subprocess.TimeoutExpired:
             pytest.skip("CLI verbose test timed out")
         except FileNotFoundError:
-            pytest.skip("vcf_to_obsidian.py not found for CLI testing")
+            pytest.skip("scripts/vcf_to_obsidian.py not found for CLI testing")
 
     def test_cli_no_longer_supports_template_option(self, temp_dirs):
         """Test that CLI no longer accepts template option."""
@@ -171,7 +171,7 @@ END:VCARD"""
             # Try using the old --template option - should fail
             result = subprocess.run(
                 [
-                    sys.executable, "vcf_to_obsidian.py",
+                    sys.executable, "scripts/vcf_to_obsidian.py",
                     str(temp_dirs['test_vcf_dir']),
                     str(temp_dirs['test_output_dir']),
                     "--template", "/some/path"
@@ -189,6 +189,6 @@ END:VCARD"""
         except subprocess.TimeoutExpired:
             pytest.skip("CLI no-template test timed out")
         except FileNotFoundError:
-            pytest.skip("vcf_to_obsidian.py not found for CLI testing")
+            pytest.skip("scripts/vcf_to_obsidian.py not found for CLI testing")
         except FileNotFoundError:
-            pytest.skip("vcf_to_obsidian.py not found for CLI testing")
+            pytest.skip("scripts/vcf_to_obsidian.py not found for CLI testing")

@@ -16,7 +16,13 @@ Author: Ian Dennis Miller
 License: MIT
 """
 
-# Import the modular components
+# Import the modular components from parent directory
+import sys
+from pathlib import Path
+
+# Add parent directory to sys.path to import the vcf_to_obsidian module
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from vcf_to_obsidian import main
 
 # For backward compatibility, import individual functions

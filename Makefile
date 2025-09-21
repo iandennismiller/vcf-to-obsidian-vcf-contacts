@@ -21,7 +21,7 @@ PIP := pip3
 PYTEST := pytest
 BASH_TEST_DIR := bash_tests
 TEST_DIR := tests
-PYTHON_FILES := vcf_to_obsidian.py $(TEST_DIR)/*.py
+PYTHON_FILES := scripts/vcf_to_obsidian.py $(TEST_DIR)/*.py
 
 # Installation targets
 install: ## Install package dependencies
@@ -81,25 +81,25 @@ lint-python: ## Run Python linting tools
 	@echo "Running Python linting..."
 	@if which flake8 >/dev/null 2>&1; then \
 		echo "Running flake8..."; \
-		flake8 --max-line-length=88 --extend-ignore=E203,W503 vcf_to_obsidian.py $(TEST_DIR)/ || true; \
+		flake8 --max-line-length=88 --extend-ignore=E203,W503 scripts/vcf_to_obsidian.py $(TEST_DIR)/ || true; \
 	else \
 		echo "flake8 not available. Install with: make install-lint"; \
 	fi
 	@if which black >/dev/null 2>&1; then \
 		echo "Running black (check mode)..."; \
-		black --check --diff vcf_to_obsidian.py $(TEST_DIR)/ || true; \
+		black --check --diff scripts/vcf_to_obsidian.py $(TEST_DIR)/ || true; \
 	else \
 		echo "black not available. Install with: make install-lint"; \
 	fi
 	@if which isort >/dev/null 2>&1; then \
 		echo "Running isort (check mode)..."; \
-		isort --check-only --diff vcf_to_obsidian.py $(TEST_DIR)/ || true; \
+		isort --check-only --diff scripts/vcf_to_obsidian.py $(TEST_DIR)/ || true; \
 	else \
 		echo "isort not available. Install with: make install-lint"; \
 	fi
 	@if which mypy >/dev/null 2>&1; then \
 		echo "Running mypy..."; \
-		mypy --ignore-missing-imports vcf_to_obsidian.py || true; \
+		mypy --ignore-missing-imports scripts/vcf_to_obsidian.py || true; \
 	else \
 		echo "mypy not available. Install with: make install-lint"; \
 	fi
@@ -108,12 +108,12 @@ lint-bash: ## Run bash script linting
 	@echo "Running bash linting..."
 	@if which shellcheck >/dev/null 2>&1; then \
 		echo "Running shellcheck..."; \
-		shellcheck vcf-to-obsidian.sh $(BASH_TEST_DIR)/*.sh || true; \
+		shellcheck scripts/vcf-to-obsidian.sh $(BASH_TEST_DIR)/*.sh || true; \
 	else \
 		echo "shellcheck not available. Install with: apt-get install shellcheck"; \
 	fi
 	@echo "Checking bash script permissions..."
-	@test -x vcf-to-obsidian.sh && echo "✓ vcf-to-obsidian.sh is executable" || echo "✗ vcf-to-obsidian.sh not executable"
+	@test -x scripts/vcf-to-obsidian.sh && echo "✓ scripts/vcf-to-obsidian.sh is executable" || echo "✗ scripts/vcf-to-obsidian.sh not executable"
 	@for script in $(BASH_TEST_DIR)/*.sh; do \
 		test -x "$$script" && echo "✓ $$script is executable" || echo "✗ $$script not executable"; \
 	done
@@ -124,13 +124,13 @@ lint: lint-python lint-bash ## Run all linting tools
 format: ## Format code using black and isort
 	@echo "Formatting Python code..."
 	@if which black >/dev/null 2>&1; then \
-		black vcf_to_obsidian.py $(TEST_DIR)/; \
+		black scripts/vcf_to_obsidian.py $(TEST_DIR)/; \
 		echo "✓ Formatted with black"; \
 	else \
 		echo "black not available. Install with: make install-lint"; \
 	fi
 	@if which isort >/dev/null 2>&1; then \
-		isort vcf_to_obsidian.py $(TEST_DIR)/; \
+		isort scripts/vcf_to_obsidian.py $(TEST_DIR)/; \
 		echo "✓ Sorted imports with isort"; \
 	else \
 		echo "isort not available. Install with: make install-lint"; \
@@ -139,10 +139,10 @@ format: ## Format code using black and isort
 # Build and package targets
 build: ## Build package (check syntax and dependencies)
 	@echo "Checking Python syntax..."
-	@$(PYTHON) -m py_compile vcf_to_obsidian.py
+	@$(PYTHON) -m py_compile scripts/vcf_to_obsidian.py
 	@echo "✓ Python syntax check passed"
 	@echo "Making scripts executable..."
-	@chmod +x vcf-to-obsidian.sh vcf_to_obsidian.py
+	@chmod +x scripts/vcf-to-obsidian.sh scripts/vcf_to_obsidian.py
 	@echo "✓ Scripts are executable"
 
 package: build ## Create distributable package
@@ -169,16 +169,16 @@ docs: ## Show usage documentation
 	@echo "=== VCF to Obsidian VCF Contacts ==="
 	@echo ""
 	@echo "Python Implementation:"
-	@$(PYTHON) vcf_to_obsidian.py --help 2>/dev/null || echo "Dependencies missing. Run: make install"
+	@$(PYTHON) scripts/vcf_to_obsidian.py --help 2>/dev/null || echo "Dependencies missing. Run: make install"
 	@echo ""
 	@echo "Bash Implementation:"
-	@./vcf-to-obsidian.sh --help
+	@./scripts/vcf-to-obsidian.sh --help
 
 shell: ## Start interactive shell with project environment
 	@echo "Starting shell with project environment..."
 	@echo "Available commands:"
-	@echo "  python vcf_to_obsidian.py --help"
-	@echo "  ./vcf-to-obsidian.sh --help"
+	@echo "  python scripts/vcf_to_obsidian.py --help"
+	@echo "  ./scripts/vcf-to-obsidian.sh --help"
 	@echo "  make test-all"
 	@$(SHELL)
 
@@ -212,16 +212,16 @@ quick-start: ## Show quick start guide
 	@echo ""
 	@echo "4. Use the tools:"
 	@echo "   # Bash implementation (no dependencies)"
-	@echo "   ./vcf-to-obsidian.sh --folder ./test_data/vcf --obsidian ./output"
+	@echo "   ./scripts/vcf-to-obsidian.sh --folder ./test_data/vcf --obsidian ./output"
 	@echo ""
 	@echo "   # Python implementation (requires dependencies)"
-	@echo "   python vcf_to_obsidian.py --folder ./test_data/vcf --obsidian ./output"
+	@echo "   python scripts/vcf_to_obsidian.py --folder ./test_data/vcf --obsidian ./output"
 
 demo: ## Run a quick demo with test data
 	@echo "Running demo with test data..."
 	@mkdir -p /tmp/demo_output
 	@echo "Testing bash implementation..."
-	@./vcf-to-obsidian.sh --folder ./test_data/vcf --obsidian /tmp/demo_output --verbose
+	@./scripts/vcf-to-obsidian.sh --folder ./test_data/vcf --obsidian /tmp/demo_output --verbose
 	@echo ""
 	@echo "Demo output created in /tmp/demo_output"
 	@echo "Generated files:"

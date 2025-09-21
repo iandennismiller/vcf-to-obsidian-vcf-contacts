@@ -104,17 +104,17 @@ trap cleanup EXIT
 # Main execution
 echo "Starting bash implementation test suite..."
 echo "Script directory: $SCRIPT_DIR"
-echo "Testing script: $SCRIPT_DIR/../vcf-to-obsidian.sh"
+echo "Testing script: $SCRIPT_DIR/../scripts/vcf-to-obsidian.sh"
 
 # Verify the main script exists
-if [[ ! -f "$SCRIPT_DIR/../vcf-to-obsidian.sh" ]]; then
-    echo -e "${RED}❌ Main script not found: $SCRIPT_DIR/../vcf-to-obsidian.sh${NC}"
+if [[ ! -f "$SCRIPT_DIR/../scripts/vcf-to-obsidian.sh" ]]; then
+    echo -e "${RED}❌ Main script not found: $SCRIPT_DIR/../scripts/vcf-to-obsidian.sh${NC}"
     exit 1
 fi
 
-if [[ ! -x "$SCRIPT_DIR/../vcf-to-obsidian.sh" ]]; then
+if [[ ! -x "$SCRIPT_DIR/../scripts/vcf-to-obsidian.sh" ]]; then
     echo "Making main script executable..."
-    chmod +x "$SCRIPT_DIR/../vcf-to-obsidian.sh"
+    chmod +x "$SCRIPT_DIR/../scripts/vcf-to-obsidian.sh"
 fi
 
 # Verify test data exists
