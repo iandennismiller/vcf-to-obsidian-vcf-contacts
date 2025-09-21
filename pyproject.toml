@@ -30,6 +30,11 @@ dependencies = [
     "click>=8.0.0"
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0"
+]
+
 [project.urls]
 Homepage = "https://github.com/iandennismiller/vcf-to-obsidian-vcf-contacts"
 Repository = "https://github.com/iandennismiller/vcf-to-obsidian-vcf-contacts"

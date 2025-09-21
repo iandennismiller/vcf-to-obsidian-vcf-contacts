@@ -38,10 +38,12 @@ git clone https://github.com/iandennismiller/vcf-to-obsidian-vcf-contacts.git
 cd vcf-to-obsidian-vcf-contacts
 ```
 
-2. Install in development mode:
+2. Install in development mode with testing dependencies:
 ```bash
-pip install -e .
+pip install -e .[dev]
 ```
+
+This installs the package in editable mode along with pytest for running tests.
 
 ## Usage
 
@@ -148,21 +150,41 @@ This approach prioritizes human-readable filenames while providing UID-based fal
 
 ## Testing
 
-The project includes a comprehensive test suite to ensure reliability and correctness.
+The project includes a comprehensive test suite to ensure reliability and correctness, organized using pytest.
 
 ### Running Tests
 
-Run the test suite using Python's built-in unittest module:
+Run the test suite using pytest:
 
 ```bash
-python test_vcf_to_obsidian.py
+pytest
 ```
 
 Or run with verbose output:
 
 ```bash
-python test_vcf_to_obsidian.py -v
+pytest -v
 ```
+
+Run tests for a specific functionality:
+
+```bash
+pytest tests/test_vcf_reading.py      # VCF parsing tests
+pytest tests/test_markdown_writing.py # Markdown generation tests
+pytest tests/test_command_line.py     # CLI functionality tests
+pytest tests/test_filename_generation.py # Filename logic tests
+pytest tests/test_integration.py      # End-to-end integration tests
+```
+
+### Test Organization
+
+Tests are organized into separate files by functionality:
+
+- **`tests/test_vcf_reading.py`** - VCF file parsing and data extraction
+- **`tests/test_markdown_writing.py`** - Markdown content generation and templating
+- **`tests/test_command_line.py`** - Command line interface functionality
+- **`tests/test_filename_generation.py`** - Filename generation logic and special character handling
+- **`tests/test_integration.py`** - End-to-end integration tests
 
 ### Test Coverage
 
@@ -172,6 +194,8 @@ The test suite covers:
 - Filename generation priority logic (FN > constructed name > UID > filename)
 - Special character handling in filenames and UIDs
 - Markdown content generation and frontmatter
+- Template system functionality
+- Command line interface behavior
 - Edge cases (empty fields, missing data)
 - Error handling scenarios
 
