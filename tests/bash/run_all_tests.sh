@@ -9,7 +9,7 @@ MAIN_SCRIPT="$SCRIPT_DIR/../../scripts/vcf-to-obsidian.sh"
 
 # Common test configuration (merged from test_common.sh)
 VCF_TO_OBSIDIAN="$SCRIPT_DIR/../../scripts/vcf-to-obsidian.sh"
-TEST_DATA_DIR="$SCRIPT_DIR/../data/vcf"
+TEST_DATA_DIR="$SCRIPT_DIR/../data"
 BASE_OUTPUT_DIR="/tmp/vcf_to_obsidian_test"
 
 # Create a unique test output directory

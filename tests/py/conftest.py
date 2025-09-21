@@ -39,7 +39,7 @@ def temp_dirs():
 @pytest.fixture
 def test_data_dir():
     """Path to the test data directory."""
-    return Path(__file__).parent.parent / "data" / "vcf"
+    return Path(__file__).parent.parent / "data"
 
 
 def create_test_vcf(test_vcf_dir, filename, content):

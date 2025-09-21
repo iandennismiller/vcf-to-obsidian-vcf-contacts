@@ -235,16 +235,16 @@ quick-start: ## Show quick start guide
 	@echo ""
 	@echo "4. Use the tools:"
 	@echo "   # Bash implementation (no dependencies)"
-	@echo "   ./scripts/vcf-to-obsidian.sh --folder ./test_data/vcf --obsidian ./output"
+	@echo "   ./scripts/vcf-to-obsidian.sh --folder ./tests/data --obsidian ./output"
 	@echo ""
 	@echo "   # Python implementation (requires dependencies)"
-	@echo "   python scripts/vcf_to_obsidian.py --folder ./test_data/vcf --obsidian ./output"
+	@echo "   python scripts/vcf_to_obsidian.py --folder ./tests/data --obsidian ./output"
 
 demo: ## Run a quick demo with test data
 	@echo "Running demo with test data..."
 	@mkdir -p /tmp/demo_output
 	@echo "Testing bash implementation..."
-	@./scripts/vcf-to-obsidian.sh --folder ./test_data/vcf --obsidian /tmp/demo_output --verbose
+	@./scripts/vcf-to-obsidian.sh --folder ./tests/data --obsidian /tmp/demo_output --verbose
 	@echo ""
 	@echo "Demo output created in /tmp/demo_output"
 	@echo "Generated files:"
