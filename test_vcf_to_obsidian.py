@@ -1,9 +1,21 @@
 #!/usr/bin/env python3
 """
-Test suite for vcf_to_obsidian.py
+DEPRECATED: Legacy test suite for vcf_to_obsidian.py
 
-This module contains comprehensive tests for the VCF to Obsidian converter,
-testing various scenarios including filename generation logic and VCF parsing.
+This test file has been replaced by pytest-based tests in the tests/ directory.
+Please use pytest to run the test suite:
+
+    pytest
+
+Or run specific test categories:
+    pytest tests/test_vcf_reading.py      # VCF parsing tests
+    pytest tests/test_markdown_writing.py # Markdown generation tests
+    pytest tests/test_command_line.py     # CLI functionality tests
+    pytest tests/test_filename_generation.py # Filename logic tests
+    pytest tests/test_integration.py      # Integration tests
+
+This legacy file is maintained for compatibility but new tests should be added
+to the appropriate files in the tests/ directory.
 """
 
 import unittest
