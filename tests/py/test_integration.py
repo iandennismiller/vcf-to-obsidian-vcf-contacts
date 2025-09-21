@@ -5,7 +5,7 @@ Integration tests for the complete VCF to Obsidian conversion process.
 import pytest
 from pathlib import Path
 from conftest import load_test_vcf, create_test_vcf
-from vcf_to_obsidian import convert_vcf_to_markdown
+from vcf_to_obsidian import VCFConverter
 
 
 class TestIntegration:
@@ -13,9 +13,11 @@ class TestIntegration:
 
     def test_fn_change_with_same_uid(self, temp_dirs, test_data_dir):
         """Test that when FN changes but UID stays the same, the old file is removed and new file is created."""
+        converter = VCFConverter()
+        
         # First, create a contact with the original FN
         vcf_path_1 = load_test_vcf(test_data_dir, temp_dirs['test_vcf_dir'], "fn_change_before.vcf", "contact.vcf")
-        result_1 = convert_vcf_to_markdown(vcf_path_1, temp_dirs['test_output_dir'])
+        result_1 = converter.convert_vcf_to_markdown(vcf_path_1, temp_dirs['test_output_dir'])
         
         # Check that first file was created
         md_files_before = list(temp_dirs['test_output_dir'].glob("*.md"))
@@ -23,7 +25,7 @@ class TestIntegration:
         
         # Now update the contact with a new FN but same UID
         vcf_path_2 = load_test_vcf(test_data_dir, temp_dirs['test_vcf_dir'], "fn_change_after.vcf", "contact.vcf")
-        result_2 = convert_vcf_to_markdown(vcf_path_2, temp_dirs['test_output_dir'])
+        result_2 = converter.convert_vcf_to_markdown(vcf_path_2, temp_dirs['test_output_dir'])
         
         # Check that conversion succeeded
         md_files_after = list(temp_dirs['test_output_dir'].glob("*.md"))
@@ -31,16 +33,18 @@ class TestIntegration:
 
     def test_fn_change_same_filename_no_removal(self, temp_dirs, test_data_dir):
         """Test that when converting the same contact with same FN, the file is not removed."""
+        converter = VCFConverter()
+        
         # Create a contact
         vcf_path = load_test_vcf(test_data_dir, temp_dirs['test_vcf_dir'], "fn_change_before.vcf", "contact.vcf")
-        result_1 = convert_vcf_to_markdown(vcf_path, temp_dirs['test_output_dir'])
+        result_1 = converter.convert_vcf_to_markdown(vcf_path, temp_dirs['test_output_dir'])
         
         # Check that file was created
         md_files_1 = list(temp_dirs['test_output_dir'].glob("*.md"))
         assert len(md_files_1) > 0, "First conversion should create a file"
         
         # Convert the same contact again (same FN)
-        result_2 = convert_vcf_to_markdown(vcf_path, temp_dirs['test_output_dir'])
+        result_2 = converter.convert_vcf_to_markdown(vcf_path, temp_dirs['test_output_dir'])
         
         # Check that file still exists
         md_files_2 = list(temp_dirs['test_output_dir'].glob("*.md"))
@@ -48,6 +52,8 @@ class TestIntegration:
 
     def test_fn_change_no_uid_no_removal(self, temp_dirs):
         """Test that when there's no UID, old files are not removed."""
+        converter = VCFConverter()
+        
         # Create VCF without UID
         vcf_content_1 = """BEGIN:VCARD
 VERSION:3.0
@@ -57,7 +63,7 @@ ORG:Test Organization
 END:VCARD"""
         
         vcf_path_1 = create_test_vcf(temp_dirs['test_vcf_dir'], "no_uid_1.vcf", vcf_content_1)
-        result_1 = convert_vcf_to_markdown(vcf_path_1, temp_dirs['test_output_dir'])
+        result_1 = converter.convert_vcf_to_markdown(vcf_path_1, temp_dirs['test_output_dir'])
         
         # Check that first file was created
         md_files_1 = list(temp_dirs['test_output_dir'].glob("*.md"))
@@ -72,7 +78,7 @@ ORG:Test Organization
 END:VCARD"""
         
         vcf_path_2 = create_test_vcf(temp_dirs['test_vcf_dir'], "no_uid_2.vcf", vcf_content_2)
-        result_2 = convert_vcf_to_markdown(vcf_path_2, temp_dirs['test_output_dir'])
+        result_2 = converter.convert_vcf_to_markdown(vcf_path_2, temp_dirs['test_output_dir'])
         
         # Both files should exist since there's no UID to track relationships
         md_files_2 = list(temp_dirs['test_output_dir'].glob("*.md"))
@@ -80,13 +86,15 @@ END:VCARD"""
 
     def test_multiple_vcf_conversion(self, temp_dirs, test_data_dir):
         """Test converting multiple VCF files in sequence."""
+        converter = VCFConverter()
+        
         # Convert multiple test files
         test_files = ["full_name_and_uid.vcf", "uid_only.vcf", "full_name_only.vcf"]
         
         for i, test_file in enumerate(test_files):
             if (test_data_dir / test_file).exists():
                 vcf_path = load_test_vcf(test_data_dir, temp_dirs['test_vcf_dir'], test_file, f"test_{i}.vcf")
-                result = convert_vcf_to_markdown(vcf_path, temp_dirs['test_output_dir'])
+                result = converter.convert_vcf_to_markdown(vcf_path, temp_dirs['test_output_dir'])
                 # Note: Not asserting result==True due to potential issues in original code
         
         # Check that at least some files were created
@@ -95,6 +103,8 @@ END:VCARD"""
 
     def test_error_handling_invalid_vcf(self, temp_dirs):
         """Test error handling for invalid VCF content."""
+        converter = VCFConverter()
+        
         # Create an invalid VCF file
         invalid_vcf_content = """This is not a valid VCF file
 It has no proper structure
@@ -104,7 +114,7 @@ END:INVALID"""
         
         # Should handle the error gracefully and not crash
         try:
-            result = convert_vcf_to_markdown(vcf_path, temp_dirs['test_output_dir'])
+            result = converter.convert_vcf_to_markdown(vcf_path, temp_dirs['test_output_dir'])
             # Result might be False due to invalid content, which is acceptable
         except Exception as e:
             # Should not raise unhandled exceptions
@@ -112,6 +122,8 @@ END:INVALID"""
 
     def test_empty_vcf_file(self, temp_dirs):
         """Test handling of empty VCF file."""
+        converter = VCFConverter()
+        
         # Create an empty VCF file
         empty_vcf_content = ""
         
@@ -119,7 +131,7 @@ END:INVALID"""
         
         # Should handle empty file gracefully
         try:
-            result = convert_vcf_to_markdown(vcf_path, temp_dirs['test_output_dir'])
+            result = converter.convert_vcf_to_markdown(vcf_path, temp_dirs['test_output_dir'])
             # Result might be False for empty file, which is acceptable
         except Exception as e:
             # Should not raise unhandled exceptions for empty files
@@ -127,6 +139,8 @@ END:INVALID"""
 
     def test_basic_conversion_workflow(self, temp_dirs):
         """Test the basic conversion workflow with a simple contact."""
+        converter = VCFConverter()
+        
         # Create a basic VCF file
         basic_vcf_content = """BEGIN:VCARD
 VERSION:3.0
@@ -139,7 +153,7 @@ EMAIL:basic@test.com
 END:VCARD"""
         
         vcf_path = create_test_vcf(temp_dirs['test_vcf_dir'], "basic.vcf", basic_vcf_content)
-        result = convert_vcf_to_markdown(vcf_path, temp_dirs['test_output_dir'])
+        result = converter.convert_vcf_to_markdown(vcf_path, temp_dirs['test_output_dir'])
         
         # Check that a markdown file was created
         md_files = list(temp_dirs['test_output_dir'].glob("*.md"))

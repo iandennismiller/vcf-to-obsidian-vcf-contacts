@@ -151,37 +151,6 @@ END:VCARD"""
             # If there's an error, it might be due to vobject not being available
             pytest.skip(f"Conversion failed due to missing dependencies: {e}")
 
-    def test_backward_compatibility_with_module_function(self, temp_dirs):
-        """Test that the module-level function still works and uses VCFConverter."""
-        from vcf_to_obsidian import convert_vcf_to_markdown
-        
-        # Create a simple test VCF file
-        test_vcf_content = """BEGIN:VCARD
-VERSION:3.0
-FN:Test User
-N:User;Test;;;
-EMAIL:test@example.com
-UID:test-uid-123
-END:VCARD"""
-        
-        vcf_path = temp_dirs['test_vcf_dir'] / "test.vcf"
-        with open(vcf_path, 'w', encoding='utf-8') as f:
-            f.write(test_vcf_content)
-        
-        try:
-            # Test conversion using module function
-            result = convert_vcf_to_markdown(vcf_path, temp_dirs['test_output_dir'])
-            
-            # Check that conversion was successful
-            assert result is True
-            
-            # Check that a markdown file was created
-            md_files = list(temp_dirs['test_output_dir'].glob("*.md"))
-            assert len(md_files) > 0, "No markdown file was created"
-            
-        except Exception as e:
-            # If there's an error, it might be due to vobject not being available
-            pytest.skip(f"Conversion failed due to missing dependencies: {e}")
     
     def test_convert_vcf_files_from_sources(self, temp_dirs):
         """Test the new convert_vcf_files_from_sources method."""
