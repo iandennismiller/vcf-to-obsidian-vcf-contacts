@@ -13,7 +13,7 @@
 set -euo pipefail
 
 # Check shell compatibility - this script requires bash 4.0+ for associative arrays
-if [ -z "${BASH_VERSION:-}" ] && [ -z "${ZSH_VERSION:-}" ]; then
+if [ -z "${BASH_VERSION:-}" ]; then
     echo "Error: This script requires bash 4.0+ to run." >&2
     echo "Current shell: ${SHELL##*/}" >&2
     echo "" >&2
@@ -57,38 +57,19 @@ if [ -n "${BASH_VERSION:-}" ]; then
     fi
 fi
 
-# If running in zsh, we assume it's compatible (zsh supports typeset -A)
-
 # Shell compatibility functions for regex matching
-# In bash: uses BASH_REMATCH, in zsh: uses match array
 parse_field_line() {
     local line="$1"
     local field params value
     
-    if [ -n "${BASH_VERSION:-}" ]; then
-        # Bash version using BASH_REMATCH
-        local pattern='^([^:;]+)(;[^:]*)?:(.*)$'
-        if [[ "$line" =~ $pattern ]]; then
-            field="${BASH_REMATCH[1]}"
-            params="${BASH_REMATCH[2]}"
-            value="${BASH_REMATCH[3]}"
-            echo "MATCH:$field:$params:$value"
-            return 0
-        fi
-    elif [ -n "${ZSH_VERSION:-}" ]; then
-        # zsh version - use two-step parsing due to regex complexity
-        if [[ "$line" =~ '^([^:]+):(.*)$' ]]; then
-            local field_with_params="${match[1]}"
-            value="${match[2]}"
-            
-            # Parse field and params separately
-            if [[ "$field_with_params" =~ '^([^;]+)(;.*)?$' ]]; then
-                field="${match[1]}"
-                params="${match[2]}"
-                echo "MATCH:$field:$params:$value"
-                return 0
-            fi
-        fi
+    # Bash version using BASH_REMATCH
+    local pattern='^([^:;]+)(;[^:]*)?:(.*)$'
+    if [[ "$line" =~ $pattern ]]; then
+        field="${BASH_REMATCH[1]}"
+        params="${BASH_REMATCH[2]}"
+        value="${BASH_REMATCH[3]}"
+        echo "MATCH:$field:$params:$value"
+        return 0
     fi
     
     return 1
@@ -98,15 +79,9 @@ parse_type_param() {
     local params="$1"
     local type="DEFAULT"
     
-    if [ -n "${BASH_VERSION:-}" ]; then
-        local pattern='TYPE=([^;]*)'
-        if [[ "$params" =~ $pattern ]]; then
-            type=$(echo "${BASH_REMATCH[1]}" | tr '[:lower:]' '[:upper:]')
-        fi
-    elif [ -n "${ZSH_VERSION:-}" ]; then
-        if [[ "$params" =~ 'TYPE=([^;]*)' ]]; then
-            type=$(echo "${match[1]}" | tr '[:lower:]' '[:upper:]')
-        fi
+    local pattern='TYPE=([^;]*)'
+    if [[ "$params" =~ $pattern ]]; then
+        type=$(echo "${BASH_REMATCH[1]}" | tr '[:lower:]' '[:upper:]')
     fi
     
     echo "$type"
@@ -117,37 +92,20 @@ parse_simple_field() {
     local line="$1"
     local pattern="$2"  # "FIELD", "TEL", "EMAIL", "ADR"
     
-    if [ -n "${BASH_VERSION:-}" ]; then
-        case "$pattern" in
-            "FIELD")
-                if [[ "$line" =~ ^FIELD:([^:]+):(.*)$ ]]; then
-                    echo "${BASH_REMATCH[1]}:${BASH_REMATCH[2]}"
-                    return 0
-                fi
-                ;;
-            *)
-                if [[ "$line" =~ ^${pattern}:(.*)$ ]]; then
-                    echo "${BASH_REMATCH[1]}"
-                    return 0
-                fi
-                ;;
-        esac
-    elif [ -n "${ZSH_VERSION:-}" ]; then
-        case "$pattern" in
-            "FIELD")
-                if [[ "$line" =~ "^FIELD:([^:]+):(.*)$" ]]; then
-                    echo "${match[1]}:${match[2]}"
-                    return 0
-                fi
-                ;;
-            *)
-                if [[ "$line" =~ "^${pattern}:(.*)$" ]]; then
-                    echo "${match[1]}"
-                    return 0
-                fi
-                ;;
-        esac
-    fi
+    case "$pattern" in
+        "FIELD")
+            if [[ "$line" =~ ^FIELD:([^:]+):(.*)$ ]]; then
+                echo "${BASH_REMATCH[1]}:${BASH_REMATCH[2]}"
+                return 0
+            fi
+            ;;
+        *)
+            if [[ "$line" =~ ^${pattern}:(.*)$ ]]; then
+                echo "${BASH_REMATCH[1]}"
+                return 0
+            fi
+            ;;
+    esac
     
     return 1
 }
@@ -201,7 +159,7 @@ clean_filename() {
 # Parse VCF file and extract fields
 parse_vcf_file() {
     local vcf_file="$1"
-    typeset -A fields
+    declare -A fields
     
     # Initialize all fields as empty
     fields[FN]=""
@@ -298,31 +256,17 @@ parse_vcf_file() {
                     # ADR format: POBOX;EXTENDED;STREET;LOCALITY;REGION;POSTAL;COUNTRY
                     IFS=';' read -ra adr_parts <<< "$value"
                     local adr_data="$type"
-                    if [ -n "${BASH_VERSION:-}" ]; then
-                        for i in "${!adr_parts[@]}"; do
-                            case $i in
-                                0) adr_data="$adr_data:POBOX:${adr_parts[i]}" ;;
-                                1) adr_data="$adr_data:EXTENDED:${adr_parts[i]}" ;;
-                                2) adr_data="$adr_data:STREET:${adr_parts[i]}" ;;
-                                3) adr_data="$adr_data:LOCALITY:${adr_parts[i]}" ;;
-                                4) adr_data="$adr_data:REGION:${adr_parts[i]}" ;;
-                                5) adr_data="$adr_data:POSTAL:${adr_parts[i]}" ;;
-                                6) adr_data="$adr_data:COUNTRY:${adr_parts[i]}" ;;
-                            esac
-                        done
-                    elif [ -n "${ZSH_VERSION:-}" ]; then
-                        for i in "${(@k)adr_parts}"; do
-                            case $i in
-                                1) adr_data="$adr_data:POBOX:${adr_parts[i]}" ;;
-                                2) adr_data="$adr_data:EXTENDED:${adr_parts[i]}" ;;
-                                3) adr_data="$adr_data:STREET:${adr_parts[i]}" ;;
-                                4) adr_data="$adr_data:LOCALITY:${adr_parts[i]}" ;;
-                                5) adr_data="$adr_data:REGION:${adr_parts[i]}" ;;
-                                6) adr_data="$adr_data:POSTAL:${adr_parts[i]}" ;;
-                                7) adr_data="$adr_data:COUNTRY:${adr_parts[i]}" ;;
-                            esac
-                        done
-                    fi
+                    for i in "${!adr_parts[@]}"; do
+                        case $i in
+                            0) adr_data="$adr_data:POBOX:${adr_parts[i]}" ;;
+                            1) adr_data="$adr_data:EXTENDED:${adr_parts[i]}" ;;
+                            2) adr_data="$adr_data:STREET:${adr_parts[i]}" ;;
+                            3) adr_data="$adr_data:LOCALITY:${adr_parts[i]}" ;;
+                            4) adr_data="$adr_data:REGION:${adr_parts[i]}" ;;
+                            5) adr_data="$adr_data:POSTAL:${adr_parts[i]}" ;;
+                            6) adr_data="$adr_data:COUNTRY:${adr_parts[i]}" ;;
+                        esac
+                    done
                     adr_fields+=("$adr_data")
                     ;;
             esac
@@ -330,15 +274,9 @@ parse_vcf_file() {
     done < "$vcf_file"
     
     # Output all fields in a format that can be read by the calling function
-    if [ -n "${BASH_VERSION:-}" ]; then
-        for field in "${!fields[@]}"; do
-            echo "FIELD:$field:${fields[$field]}"
-        done
-    elif [ -n "${ZSH_VERSION:-}" ]; then
-        for field in "${(@k)fields}"; do
-            echo "FIELD:$field:${fields[$field]}"
-        done
-    fi
+    for field in "${!fields[@]}"; do
+        echo "FIELD:$field:${fields[$field]}"
+    done
     
     # Output arrays
     for tel in "${tel_fields[@]}"; do
@@ -356,7 +294,7 @@ parse_vcf_file() {
 
 # Generate Obsidian markdown content
 generate_markdown() {
-    typeset -A fields
+    declare -A fields
     local -a tel_list
     local -a email_list
     local -a adr_list
@@ -501,7 +439,7 @@ generate_markdown() {
 
 # Determine output filename based on priority
 determine_filename() {
-    typeset -A fields
+    declare -A fields
     local vcf_filename="$1"
     
     # Read parsed VCF data to get field values
@@ -706,11 +644,6 @@ main() {
 }
 
 # Run main function if script is executed directly
-if [ -n "${BASH_VERSION:-}" ]; then
-    if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-        main "$@"
-    fi
-elif [ -n "${ZSH_VERSION:-}" ]; then
-    # In zsh, we can use $0 directly since we're not sourcing this script
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     main "$@"
 fi

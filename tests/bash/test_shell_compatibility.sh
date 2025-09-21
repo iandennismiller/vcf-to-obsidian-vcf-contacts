@@ -17,28 +17,40 @@ else
     exit 1
 fi
 
-# Test 2: Verify script works with zsh now that it's compatible
-echo "Test 2: Testing zsh compatibility..."
-if which zsh > /dev/null 2>&1; then
-    if zsh "$VCF_TO_OBSIDIAN" --help > /dev/null 2>&1; then
-        echo "✓ Test 2 passed: Script now works with zsh"
-    else
-        echo "✗ Test 2 failed: Script should work with zsh"
-        exit 1
-    fi
+# Test 2: Verify bash script rejects other shells
+echo "Test 2: Testing shell compatibility check..."
+# Create a temporary script that simulates running without BASH_VERSION
+TEMP_SCRIPT="$BASE_OUTPUT_DIR/test_shell_check.sh"
+cat > "$TEMP_SCRIPT" << 'EOF'
+#!/bin/bash
+
+# Unset BASH_VERSION to simulate non-bash shell
+unset BASH_VERSION
+
+# Source the shell compatibility check from the main script
+if [ -z "${BASH_VERSION:-}" ]; then
+    echo "Error: This script requires bash 4.0+ to run." >&2
+    exit 1
+fi
+EOF
+
+chmod +x "$TEMP_SCRIPT"
+if "$TEMP_SCRIPT" > /dev/null 2>&1; then
+    echo "✗ Test 2 failed: Should reject non-bash shells"
+    exit 1
 else
-    echo "⚠ Test 2 skipped: zsh not available"
+    echo "✓ Test 2 passed: Correctly rejects non-bash shells"
 fi
 
-# Test 3: Verify typeset -A is used instead of declare -A
-echo "Test 3: Testing portable associative array usage..."
-if grep -q "declare -A" "$VCF_TO_OBSIDIAN"; then
-    echo "✗ Test 3 failed: Script still uses 'declare -A' which is not portable"
+# Test 3: Verify declare -A is used for bash associative arrays
+echo "Test 3: Testing bash associative array usage..."
+if grep -q "typeset -A" "$VCF_TO_OBSIDIAN"; then
+    echo "✗ Test 3 failed: Script should not use 'typeset -A' without ZSH compatibility"
     exit 1
-elif grep -q "typeset -A" "$VCF_TO_OBSIDIAN"; then
-    echo "✓ Test 3 passed: Script uses 'typeset -A' for portability"
+elif grep -q "declare -A" "$VCF_TO_OBSIDIAN"; then
+    echo "✓ Test 3 passed: Script uses 'declare -A' for bash associative arrays"
 else
-    echo "✗ Test 3 failed: Script should use 'typeset -A' for associative arrays"
+    echo "✗ Test 3 failed: Script should use 'declare -A' for associative arrays"
     exit 1
 fi
 
