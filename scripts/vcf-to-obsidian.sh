@@ -12,32 +12,139 @@
 
 set -euo pipefail
 
-# Check bash version - this script requires bash 4.0+ for associative arrays
-if [ -z "${BASH_VERSION:-}" ]; then
-    echo "Error: This script requires bash to run." >&2
+# Check shell compatibility - this script requires bash 4.0+ or zsh for associative arrays
+if [ -z "${BASH_VERSION:-}" ] && [ -z "${ZSH_VERSION:-}" ]; then
+    echo "Error: This script requires bash 4.0+ or zsh to run." >&2
     echo "Current shell: ${SHELL##*/}" >&2
     echo "" >&2
     echo "Please run one of the following instead:" >&2
     echo "  bash scripts/vcf-to-obsidian.sh [options]" >&2
+    echo "  zsh scripts/vcf-to-obsidian.sh [options]" >&2
     echo "  ./scripts/vcf-to-obsidian.sh [options]" >&2
     exit 1
 fi
 
-# Extract major version from BASH_VERSION (e.g., "4.2.46(2)-release" -> "4")
-BASH_MAJOR=$(echo "$BASH_VERSION" | cut -d. -f1)
-if [ "$BASH_MAJOR" -lt 4 ]; then
-    echo "Error: This script requires bash 4.0+ but you have bash $BASH_VERSION" >&2
-    echo "" >&2
-    echo "macOS ships with bash 3.2 due to licensing restrictions." >&2
-    echo "Associative arrays were added in bash 4.0 (2009)." >&2
-    echo "" >&2
-    echo "Solutions:" >&2
-    echo "  1. Install bash 4.0+ via Homebrew: brew install bash" >&2
-    echo "  2. Use the Python implementation: pip install vcf-to-obsidian-vcf-contacts" >&2
-    echo "" >&2
-    echo "Note: The /usr/local/bin/bash from Homebrew should be used instead of /bin/bash" >&2
-    exit 1
+# If running in bash, check version for compatibility  
+if [ -n "${BASH_VERSION:-}" ]; then
+    # Extract major version from BASH_VERSION (e.g., "4.2.46(2)-release" -> "4")
+    BASH_MAJOR=$(echo "$BASH_VERSION" | cut -d. -f1)
+    if [ "$BASH_MAJOR" -lt 4 ]; then
+        # Check if zsh is available as a fallback
+        if command -v zsh >/dev/null 2>&1; then
+            # Re-exec the script with zsh
+            exec zsh "$0" "$@"
+        else
+            # No compatible shell found
+            echo "Error: This script requires bash 4.0+ or zsh, but you have bash $BASH_VERSION" >&2
+            echo "" >&2
+            echo "macOS ships with bash 3.2 due to licensing restrictions." >&2
+            echo "Associative arrays were added in bash 4.0 (2009)." >&2
+            echo "" >&2
+            echo "Solutions:" >&2
+            echo "  1. Install bash 4.0+ via Homebrew: brew install bash" >&2
+            echo "  2. Install zsh: brew install zsh (or use system zsh)" >&2
+            echo "  3. Use the Python implementation: pip install vcf-to-obsidian-vcf-contacts" >&2
+            echo "" >&2
+            echo "Note: The /usr/local/bin/bash from Homebrew should be used instead of /bin/bash" >&2
+            exit 1
+        fi
+    fi
 fi
+
+# If running in zsh, we assume it's compatible (zsh supports typeset -A)
+
+# Shell compatibility functions for regex matching
+# In bash: uses BASH_REMATCH, in zsh: uses match array
+parse_field_line() {
+    local line="$1"
+    local field params value
+    
+    if [ -n "${BASH_VERSION:-}" ]; then
+        # Bash version using BASH_REMATCH
+        local pattern='^([^:;]+)(;[^:]*)?:(.*)$'
+        if [[ "$line" =~ $pattern ]]; then
+            field="${BASH_REMATCH[1]}"
+            params="${BASH_REMATCH[2]}"
+            value="${BASH_REMATCH[3]}"
+            echo "MATCH:$field:$params:$value"
+            return 0
+        fi
+    elif [ -n "${ZSH_VERSION:-}" ]; then
+        # zsh version - use two-step parsing due to regex complexity
+        if [[ "$line" =~ '^([^:]+):(.*)$' ]]; then
+            local field_with_params="${match[1]}"
+            value="${match[2]}"
+            
+            # Parse field and params separately
+            if [[ "$field_with_params" =~ '^([^;]+)(;.*)?$' ]]; then
+                field="${match[1]}"
+                params="${match[2]}"
+                echo "MATCH:$field:$params:$value"
+                return 0
+            fi
+        fi
+    fi
+    
+    return 1
+}
+
+parse_type_param() {
+    local params="$1"
+    local type="DEFAULT"
+    
+    if [ -n "${BASH_VERSION:-}" ]; then
+        local pattern='TYPE=([^;]*)'
+        if [[ "$params" =~ $pattern ]]; then
+            type=$(echo "${BASH_REMATCH[1]}" | tr '[:lower:]' '[:upper:]')
+        fi
+    elif [ -n "${ZSH_VERSION:-}" ]; then
+        if [[ "$params" =~ 'TYPE=([^;]*)' ]]; then
+            type=$(echo "${match[1]}" | tr '[:lower:]' '[:upper:]')
+        fi
+    fi
+    
+    echo "$type"
+}
+
+# Parse simple patterns like "FIELD:key:value", "TEL:value", etc.
+parse_simple_field() {
+    local line="$1"
+    local pattern="$2"  # "FIELD", "TEL", "EMAIL", "ADR"
+    
+    if [ -n "${BASH_VERSION:-}" ]; then
+        case "$pattern" in
+            "FIELD")
+                if [[ "$line" =~ ^FIELD:([^:]+):(.*)$ ]]; then
+                    echo "${BASH_REMATCH[1]}:${BASH_REMATCH[2]}"
+                    return 0
+                fi
+                ;;
+            *)
+                if [[ "$line" =~ ^${pattern}:(.*)$ ]]; then
+                    echo "${BASH_REMATCH[1]}"
+                    return 0
+                fi
+                ;;
+        esac
+    elif [ -n "${ZSH_VERSION:-}" ]; then
+        case "$pattern" in
+            "FIELD")
+                if [[ "$line" =~ "^FIELD:([^:]+):(.*)$" ]]; then
+                    echo "${match[1]}:${match[2]}"
+                    return 0
+                fi
+                ;;
+            *)
+                if [[ "$line" =~ "^${pattern}:(.*)$" ]]; then
+                    echo "${match[1]}"
+                    return 0
+                fi
+                ;;
+        esac
+    fi
+    
+    return 1
+}
 
 # Global variables
 VERBOSE=false
@@ -130,10 +237,10 @@ parse_vcf_file() {
         fi
         
         # Parse field:value pairs
-        if [[ "$line" =~ ^([^:;]+)(;[^:]*)?:(.*)$ ]]; then
-            local field="${BASH_REMATCH[1]}"
-            local params="${BASH_REMATCH[2]}"
-            local value="${BASH_REMATCH[3]}"
+        parse_result=$(parse_field_line "$line")
+        if [ $? -eq 0 ]; then
+            # Extract field, params, and value from the result
+            IFS=':' read -r _ field params value <<< "$parse_result"
             
             case "$field" in
                 "FN")
@@ -162,10 +269,7 @@ parse_vcf_file() {
                     ;;
                 "URL")
                     # Extract type from parameters if present
-                    local type="DEFAULT"
-                    if [[ "$params" =~ TYPE=([^;]*) ]]; then
-                        type=$(echo "${BASH_REMATCH[1]}" | tr '[:lower:]' '[:upper:]')
-                    fi
+                    local type=$(parse_type_param "$params")
                     fields[URL]="$value"
                     fields[URL_TYPE]="$type"
                     ;;
@@ -174,40 +278,45 @@ parse_vcf_file() {
                     ;;
                 "TEL")
                     # Extract type from parameters if present
-                    local type="DEFAULT"
-                    if [[ "$params" =~ TYPE=([^;]*) ]]; then
-                        type=$(echo "${BASH_REMATCH[1]}" | tr '[:lower:]' '[:upper:]')
-                    fi
+                    local type=$(parse_type_param "$params")
                     tel_fields+=("$type:$value")
                     ;;
                 "EMAIL")
                     # Extract type from parameters if present
-                    local type="DEFAULT"
-                    if [[ "$params" =~ TYPE=([^;]*) ]]; then
-                        type=$(echo "${BASH_REMATCH[1]}" | tr '[:lower:]' '[:upper:]')
-                    fi
+                    local type=$(parse_type_param "$params")
                     email_fields+=("$type:$value")
                     ;;
                 "ADR")
                     # Extract type from parameters if present
-                    local type="DEFAULT"
-                    if [[ "$params" =~ TYPE=([^;]*) ]]; then
-                        type=$(echo "${BASH_REMATCH[1]}" | tr '[:lower:]' '[:upper:]')
-                    fi
+                    local type=$(parse_type_param "$params")
                     # ADR format: POBOX;EXTENDED;STREET;LOCALITY;REGION;POSTAL;COUNTRY
                     IFS=';' read -ra adr_parts <<< "$value"
                     local adr_data="$type"
-                    for i in "${!adr_parts[@]}"; do
-                        case $i in
-                            0) adr_data="$adr_data:POBOX:${adr_parts[i]}" ;;
-                            1) adr_data="$adr_data:EXTENDED:${adr_parts[i]}" ;;
-                            2) adr_data="$adr_data:STREET:${adr_parts[i]}" ;;
-                            3) adr_data="$adr_data:LOCALITY:${adr_parts[i]}" ;;
-                            4) adr_data="$adr_data:REGION:${adr_parts[i]}" ;;
-                            5) adr_data="$adr_data:POSTAL:${adr_parts[i]}" ;;
-                            6) adr_data="$adr_data:COUNTRY:${adr_parts[i]}" ;;
-                        esac
-                    done
+                    if [ -n "${BASH_VERSION:-}" ]; then
+                        for i in "${!adr_parts[@]}"; do
+                            case $i in
+                                0) adr_data="$adr_data:POBOX:${adr_parts[i]}" ;;
+                                1) adr_data="$adr_data:EXTENDED:${adr_parts[i]}" ;;
+                                2) adr_data="$adr_data:STREET:${adr_parts[i]}" ;;
+                                3) adr_data="$adr_data:LOCALITY:${adr_parts[i]}" ;;
+                                4) adr_data="$adr_data:REGION:${adr_parts[i]}" ;;
+                                5) adr_data="$adr_data:POSTAL:${adr_parts[i]}" ;;
+                                6) adr_data="$adr_data:COUNTRY:${adr_parts[i]}" ;;
+                            esac
+                        done
+                    elif [ -n "${ZSH_VERSION:-}" ]; then
+                        for i in "${(@k)adr_parts}"; do
+                            case $i in
+                                1) adr_data="$adr_data:POBOX:${adr_parts[i]}" ;;
+                                2) adr_data="$adr_data:EXTENDED:${adr_parts[i]}" ;;
+                                3) adr_data="$adr_data:STREET:${adr_parts[i]}" ;;
+                                4) adr_data="$adr_data:LOCALITY:${adr_parts[i]}" ;;
+                                5) adr_data="$adr_data:REGION:${adr_parts[i]}" ;;
+                                6) adr_data="$adr_data:POSTAL:${adr_parts[i]}" ;;
+                                7) adr_data="$adr_data:COUNTRY:${adr_parts[i]}" ;;
+                            esac
+                        done
+                    fi
                     adr_fields+=("$adr_data")
                     ;;
             esac
@@ -215,9 +324,15 @@ parse_vcf_file() {
     done < "$vcf_file"
     
     # Output all fields in a format that can be read by the calling function
-    for field in "${!fields[@]}"; do
-        echo "FIELD:$field:${fields[$field]}"
-    done
+    if [ -n "${BASH_VERSION:-}" ]; then
+        for field in "${!fields[@]}"; do
+            echo "FIELD:$field:${fields[$field]}"
+        done
+    elif [ -n "${ZSH_VERSION:-}" ]; then
+        for field in "${(@k)fields}"; do
+            echo "FIELD:$field:${fields[$field]}"
+        done
+    fi
     
     # Output arrays
     for tel in "${tel_fields[@]}"; do
@@ -242,14 +357,25 @@ generate_markdown() {
     
     # Read parsed VCF data
     while IFS= read -r line; do
-        if [[ "$line" =~ ^FIELD:([^:]+):(.*)$ ]]; then
-            fields["${BASH_REMATCH[1]}"]="${BASH_REMATCH[2]}"
-        elif [[ "$line" =~ ^TEL:(.*)$ ]]; then
-            tel_list+=("${BASH_REMATCH[1]}")
-        elif [[ "$line" =~ ^EMAIL:(.*)$ ]]; then
-            email_list+=("${BASH_REMATCH[1]}")
-        elif [[ "$line" =~ ^ADR:(.*)$ ]]; then
-            adr_list+=("${BASH_REMATCH[1]}")
+        field_result=$(parse_simple_field "$line" "FIELD")
+        if [ $? -eq 0 ]; then
+            IFS=':' read -r field_key field_value <<< "$field_result"
+            fields["$field_key"]="$field_value"
+        else
+            tel_result=$(parse_simple_field "$line" "TEL")
+            if [ $? -eq 0 ]; then
+                tel_list+=("$tel_result")
+            else
+                email_result=$(parse_simple_field "$line" "EMAIL")
+                if [ $? -eq 0 ]; then
+                    email_list+=("$email_result")
+                else
+                    adr_result=$(parse_simple_field "$line" "ADR")
+                    if [ $? -eq 0 ]; then
+                        adr_list+=("$adr_result")
+                    fi
+                fi
+            fi
         fi
     done
     
@@ -374,8 +500,10 @@ determine_filename() {
     
     # Read parsed VCF data to get field values
     while IFS= read -r line; do
-        if [[ "$line" =~ ^FIELD:([^:]+):(.*)$ ]]; then
-            fields["${BASH_REMATCH[1]}"]="${BASH_REMATCH[2]}"
+        field_result=$(parse_simple_field "$line" "FIELD")
+        if [ $? -eq 0 ]; then
+            IFS=':' read -r field_key field_value <<< "$field_result"
+            fields["$field_key"]="$field_value"
         fi
     done
     
@@ -572,6 +700,11 @@ main() {
 }
 
 # Run main function if script is executed directly
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+if [ -n "${BASH_VERSION:-}" ]; then
+    if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+        main "$@"
+    fi
+elif [ -n "${ZSH_VERSION:-}" ]; then
+    # In zsh, we can use $0 directly since we're not sourcing this script
     main "$@"
 fi

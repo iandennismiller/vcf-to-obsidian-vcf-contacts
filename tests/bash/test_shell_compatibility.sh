@@ -17,22 +17,14 @@ else
     exit 1
 fi
 
-# Test 2: Verify script provides helpful error with zsh  
-echo "Test 2: Testing zsh error handling..."
+# Test 2: Verify script works with zsh now that it's compatible
+echo "Test 2: Testing zsh compatibility..."
 if which zsh > /dev/null 2>&1; then
     if zsh "$MAIN_SCRIPT" --help > /dev/null 2>&1; then
-        echo "✗ Test 2 failed: Script should fail with zsh"
-        exit 1
+        echo "✓ Test 2 passed: Script now works with zsh"
     else
-        # Check if error message mentions bash requirement
-        ERROR_OUTPUT=$(zsh "$MAIN_SCRIPT" --help 2>&1)
-        if echo "$ERROR_OUTPUT" | grep -q "requires bash"; then
-            echo "✓ Test 2 passed: Script provides bash requirement error message"
-        else
-            echo "✗ Test 2 failed: Error message should mention bash requirement"
-            echo "Actual error: $ERROR_OUTPUT"
-            exit 1
-        fi
+        echo "✗ Test 2 failed: Script should work with zsh"
+        exit 1
     fi
 else
     echo "⚠ Test 2 skipped: zsh not available"
@@ -88,5 +80,30 @@ else
 fi
 
 rm -f "$TEMP_SCRIPT"
+
+# Test 6: Verify bash 3.2 fallback to zsh behavior
+echo "Test 6: Testing bash 3.2 fallback to zsh..."
+if which zsh > /dev/null 2>&1; then
+    # Create a script that simulates bash 3.2 environment
+    FALLBACK_SCRIPT="/tmp/test_bash32_fallback.sh"
+    cat > "$FALLBACK_SCRIPT" << 'EOF'
+#!/bin/bash
+# Simulate bash 3.2 environment
+export BASH_VERSION="3.2.57(1)-release"
+exec bash scripts/vcf-to-obsidian.sh "$@"
+EOF
+    chmod +x "$FALLBACK_SCRIPT"
+    
+    if "$FALLBACK_SCRIPT" --help > /dev/null 2>&1; then
+        echo "✓ Test 6 passed: bash 3.2 fallback to zsh works"
+    else
+        echo "✗ Test 6 failed: bash 3.2 should fallback to zsh"
+        exit 1
+    fi
+    
+    rm -f "$FALLBACK_SCRIPT"
+else
+    echo "⚠ Test 6 skipped: zsh not available for fallback testing"
+fi
 
 echo "All shell compatibility tests passed! ✅"
