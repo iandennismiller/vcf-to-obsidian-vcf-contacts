@@ -309,3 +309,65 @@ class VCFConverter:
             successful_conversions, total_conversions = 0, 0
         
         return successful_conversions, total_conversions, all_vcf_files
+    
+    def process_tasks(self, folder, obsidian, file, verbose, ignore):
+        """
+        Process VCF conversion tasks from CLI arguments.
+        
+        This method handles the complete CLI workflow including validation, 
+        file collection, processing, and reporting.
+        
+        Args:
+            folder: Tuple/list of folder paths containing VCF files
+            obsidian: Path to destination directory for Markdown files
+            file: Tuple/list of individual VCF file paths to process
+            verbose: Boolean flag for verbose output
+            ignore: Tuple/list of VCF file paths to ignore
+        """
+        import click
+        import sys
+        
+        # Validate that at least one source is specified
+        if not folder and not file:
+            click.echo("Error: Must specify at least one --folder or --file option.", err=True)
+            sys.exit(1)
+        
+        # Validate file and folder sources exist before processing
+        for folder_path in folder:
+            if not folder_path.is_dir():
+                click.echo(f"Error: Source path '{folder_path}' is not a directory.", err=True)
+                sys.exit(1)
+        
+        for file_path in file:
+            if not file_path.exists():
+                click.echo(f"Error: File '{file_path}' does not exist.", err=True)
+                sys.exit(1)
+            if not file_path.is_file():
+                click.echo(f"Error: Path '{file_path}' is not a file.", err=True)
+                sys.exit(1)
+        
+        # Convert tuples to lists for easier handling
+        folder_sources = list(folder) if folder else []
+        file_sources = list(file) if file else []
+        ignore_files = list(ignore) if ignore else []
+        
+        # Use existing method to handle the conversion
+        successful_conversions, total_conversions, all_vcf_files = self.convert_vcf_files_from_sources(
+            folder_sources=folder_sources,
+            file_sources=file_sources,
+            output_dir=obsidian,
+            ignore_files=ignore_files,
+            verbose=verbose
+        )
+        
+        # Handle edge cases for messaging
+        if not all_vcf_files:
+            if not folder_sources and not file_sources:
+                click.echo("No VCF files found to process.", err=True)
+            else:
+                click.echo("No VCF files remaining to process after applying ignore list.", err=True)
+            sys.exit(1)
+        
+        # Report final results
+        click.echo(f"Found {len(all_vcf_files)} VCF file(s) to process")
+        click.echo(f"Successfully completed {successful_conversions}/{len(all_vcf_files)} conversions.")
