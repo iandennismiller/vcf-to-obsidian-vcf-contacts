@@ -25,8 +25,13 @@ class TestCommandLine:
         # Test the help option
         try:
             result = subprocess.run(
+<<<<<<< HEAD:tests/test_command_line.py
                 [sys.executable, "scripts/vcf_to_obsidian.py", "--help"],
                 cwd=Path(__file__).parent.parent,
+=======
+                [sys.executable, "vcf_to_obsidian.py", "--help"],
+                cwd=Path(__file__).parent.parent.parent,
+>>>>>>> main:tests/py/test_command_line.py
                 capture_output=True,
                 text=True,
                 timeout=30
@@ -43,8 +48,13 @@ class TestCommandLine:
         """Test CLI behavior when required arguments are missing."""
         try:
             result = subprocess.run(
+<<<<<<< HEAD:tests/test_command_line.py
                 [sys.executable, "scripts/vcf_to_obsidian.py"],
                 cwd=Path(__file__).parent.parent,
+=======
+                [sys.executable, "vcf_to_obsidian.py"],
+                cwd=Path(__file__).parent.parent.parent,
+>>>>>>> main:tests/py/test_command_line.py
                 capture_output=True,
                 text=True,
                 timeout=30
@@ -60,8 +70,13 @@ class TestCommandLine:
         """Test CLI behavior with invalid source directory."""
         try:
             result = subprocess.run(
+<<<<<<< HEAD:tests/test_command_line.py
                 [sys.executable, "scripts/vcf_to_obsidian.py", "/nonexistent/directory", "/tmp/output"],
                 cwd=Path(__file__).parent.parent,
+=======
+                [sys.executable, "vcf_to_obsidian.py", "/nonexistent/directory", "/tmp/output"],
+                cwd=Path(__file__).parent.parent.parent,
+>>>>>>> main:tests/py/test_command_line.py
                 capture_output=True,
                 text=True,
                 timeout=30
@@ -96,7 +111,7 @@ END:VCARD"""
                     str(temp_dirs['test_vcf_dir']),
                     str(temp_dirs['test_output_dir'])
                 ],
-                cwd=Path(__file__).parent.parent,
+                cwd=Path(__file__).parent.parent.parent,
                 capture_output=True,
                 text=True,
                 timeout=60
@@ -140,7 +155,7 @@ END:VCARD"""
                     str(temp_dirs['test_output_dir']),
                     "--verbose"
                 ],
-                cwd=Path(__file__).parent.parent,
+                cwd=Path(__file__).parent.parent.parent,
                 capture_output=True,
                 text=True,
                 timeout=60
@@ -176,7 +191,7 @@ END:VCARD"""
                     str(temp_dirs['test_output_dir']),
                     "--template", "/some/path"
                 ],
-                cwd=Path(__file__).parent.parent,
+                cwd=Path(__file__).parent.parent.parent,
                 capture_output=True,
                 text=True,
                 timeout=60

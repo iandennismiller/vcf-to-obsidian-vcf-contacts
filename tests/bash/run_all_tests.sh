@@ -104,6 +104,7 @@ trap cleanup EXIT
 # Main execution
 echo "Starting bash implementation test suite..."
 echo "Script directory: $SCRIPT_DIR"
+<<<<<<< HEAD:bash_tests/run_all_tests.sh
 echo "Testing script: $SCRIPT_DIR/../scripts/vcf-to-obsidian.sh"
 
 # Verify the main script exists
@@ -115,16 +116,29 @@ fi
 if [[ ! -x "$SCRIPT_DIR/../scripts/vcf-to-obsidian.sh" ]]; then
     echo "Making main script executable..."
     chmod +x "$SCRIPT_DIR/../scripts/vcf-to-obsidian.sh"
-fi
+=======
+echo "Testing script: $SCRIPT_DIR/../../vcf-to-obsidian.sh"
 
-# Verify test data exists
-if [[ ! -d "$SCRIPT_DIR/../test_data/vcf" ]]; then
-    echo -e "${RED}❌ Test data directory not found: $SCRIPT_DIR/../test_data/vcf${NC}"
+# Verify the main script exists
+if [[ ! -f "$SCRIPT_DIR/../../vcf-to-obsidian.sh" ]]; then
+    echo -e "${RED}❌ Main script not found: $SCRIPT_DIR/../../vcf-to-obsidian.sh${NC}"
     exit 1
 fi
 
-echo "Test data directory: $SCRIPT_DIR/../test_data/vcf"
-vcf_count=$(find "$SCRIPT_DIR/../test_data/vcf" -name "*.vcf" | wc -l)
+if [[ ! -x "$SCRIPT_DIR/../../vcf-to-obsidian.sh" ]]; then
+    echo "Making main script executable..."
+    chmod +x "$SCRIPT_DIR/../../vcf-to-obsidian.sh"
+>>>>>>> main:tests/bash/run_all_tests.sh
+fi
+
+# Verify test data exists
+if [[ ! -d "$SCRIPT_DIR/../data/vcf" ]]; then
+    echo -e "${RED}❌ Test data directory not found: $SCRIPT_DIR/../data/vcf${NC}"
+    exit 1
+fi
+
+echo "Test data directory: $SCRIPT_DIR/../data/vcf"
+vcf_count=$(find "$SCRIPT_DIR/../data/vcf" -name "*.vcf" | wc -l)
 echo "Found $vcf_count VCF test files"
 
 # Run all tests

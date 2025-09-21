@@ -54,7 +54,7 @@ END:VCARD"""
         try:
             result = subprocess.run(
                 [sys.executable, "vcf_to_obsidian.py", "--help"],
-                cwd=Path(__file__).parent.parent,
+                cwd=Path(__file__).parent.parent.parent,
                 capture_output=True,
                 text=True,
                 timeout=30
@@ -76,7 +76,7 @@ END:VCARD"""
         try:
             result = subprocess.run(
                 [sys.executable, "vcf_to_obsidian.py"],
-                cwd=Path(__file__).parent.parent,
+                cwd=Path(__file__).parent.parent.parent,
                 capture_output=True,
                 text=True,
                 timeout=30
@@ -95,7 +95,7 @@ END:VCARD"""
         try:
             result = subprocess.run(
                 [sys.executable, "vcf_to_obsidian.py", "--folder", str(temp_dirs['test_vcf_dir'])],
-                cwd=Path(__file__).parent.parent,
+                cwd=Path(__file__).parent.parent.parent,
                 capture_output=True,
                 text=True,
                 timeout=60
@@ -118,7 +118,7 @@ END:VCARD"""
                     "--folder", str(temp_dirs['test_vcf_dir']),
                     "--obsidian", str(temp_dirs['test_output_dir'])
                 ],
-                cwd=Path(__file__).parent.parent,
+                cwd=Path(__file__).parent.parent.parent,
                 capture_output=True,
                 text=True,
                 timeout=60
@@ -147,7 +147,7 @@ END:VCARD"""
                     "--file", str(vcf_file),
                     "--obsidian", str(temp_dirs['test_output_dir'])
                 ],
-                cwd=Path(__file__).parent.parent,
+                cwd=Path(__file__).parent.parent.parent,
                 capture_output=True,
                 text=True,
                 timeout=60
@@ -179,7 +179,7 @@ END:VCARD"""
                     "--folder", str(temp_dirs['test_output_dir2']),
                     "--obsidian", str(temp_dirs['test_output_dir'])
                 ],
-                cwd=Path(__file__).parent.parent,
+                cwd=Path(__file__).parent.parent.parent,
                 capture_output=True,
                 text=True,
                 timeout=60
@@ -205,7 +205,7 @@ END:VCARD"""
                     "--obsidian", str(temp_dirs['test_output_dir']),
                     "--obsidian", str(temp_dirs['test_output_dir2'])
                 ],
-                cwd=Path(__file__).parent.parent,
+                cwd=Path(__file__).parent.parent.parent,
                 capture_output=True,
                 text=True,
                 timeout=60
@@ -236,7 +236,7 @@ END:VCARD"""
                     "--file", str(vcf_file2),
                     "--obsidian", str(temp_dirs['test_output_dir'])
                 ],
-                cwd=Path(__file__).parent.parent,
+                cwd=Path(__file__).parent.parent.parent,
                 capture_output=True,
                 text=True,
                 timeout=60
@@ -263,7 +263,7 @@ END:VCARD"""
                     "--obsidian", str(temp_dirs['test_output_dir']),
                     "--verbose"
                 ],
-                cwd=Path(__file__).parent.parent,
+                cwd=Path(__file__).parent.parent.parent,
                 capture_output=True,
                 text=True,
                 timeout=60
@@ -275,5 +275,138 @@ END:VCARD"""
             
         except subprocess.TimeoutExpired:
             pytest.skip("CLI verbose test timed out")
+        except FileNotFoundError:
+            pytest.skip("vcf_to_obsidian.py not found for CLI testing")
+
+    def test_cli_ignore_option_help(self):
+        """Test that --ignore option appears in help."""
+        try:
+            result = subprocess.run(
+                [sys.executable, "vcf_to_obsidian.py", "--help"],
+                cwd=Path(__file__).parent.parent,
+                capture_output=True,
+                text=True,
+                timeout=30
+            )
+            assert result.returncode == 0
+            assert "--ignore" in result.stdout
+            assert "Specific VCF file to ignore" in result.stdout
+            assert "can be specified multiple times" in result.stdout or "multiple times" in result.stdout
+        except subprocess.TimeoutExpired:
+            pytest.skip("CLI ignore help test timed out")
+        except FileNotFoundError:
+            pytest.skip("vcf_to_obsidian.py not found for CLI testing")
+
+    def test_cli_ignore_single_file(self, temp_dirs):
+        """Test CLI with --ignore option for a single file."""
+        vcf_file1 = self.create_test_vcf(temp_dirs['test_vcf_dir'], "test1.vcf")
+        vcf_file2 = self.create_test_vcf(temp_dirs['test_vcf_dir'], "test2.vcf")
+        
+        try:
+            result = subprocess.run(
+                [
+                    sys.executable, "vcf_to_obsidian.py",
+                    "--folder", str(temp_dirs['test_vcf_dir']),
+                    "--ignore", str(vcf_file1),
+                    "--obsidian", str(temp_dirs['test_output_dir'])
+                ],
+                cwd=Path(__file__).parent.parent,
+                capture_output=True,
+                text=True,
+                timeout=60
+            )
+            assert result.returncode == 0
+            assert "Found 1 VCF file(s) to process" in result.stdout  # Only test2.vcf should be processed
+            assert "Ignored 1 file(s)" in result.stdout
+            assert "Successfully completed 1/1 conversions" in result.stdout
+            
+        except subprocess.TimeoutExpired:
+            pytest.skip("CLI ignore single file test timed out")
+        except FileNotFoundError:
+            pytest.skip("vcf_to_obsidian.py not found for CLI testing")
+
+    def test_cli_ignore_multiple_files(self, temp_dirs):
+        """Test CLI with multiple --ignore options."""
+        vcf_file1 = self.create_test_vcf(temp_dirs['test_vcf_dir'], "test1.vcf")
+        vcf_file2 = self.create_test_vcf(temp_dirs['test_vcf_dir'], "test2.vcf")
+        vcf_file3 = self.create_test_vcf(temp_dirs['test_vcf_dir'], "test3.vcf")
+        
+        try:
+            result = subprocess.run(
+                [
+                    sys.executable, "vcf_to_obsidian.py",
+                    "--folder", str(temp_dirs['test_vcf_dir']),
+                    "--ignore", str(vcf_file1),
+                    "--ignore", str(vcf_file3),
+                    "--obsidian", str(temp_dirs['test_output_dir'])
+                ],
+                cwd=Path(__file__).parent.parent,
+                capture_output=True,
+                text=True,
+                timeout=60
+            )
+            assert result.returncode == 0
+            assert "Found 1 VCF file(s) to process" in result.stdout  # Only test2.vcf should be processed
+            assert "Ignored 2 file(s)" in result.stdout
+            assert "Successfully completed 1/1 conversions" in result.stdout
+            
+        except subprocess.TimeoutExpired:
+            pytest.skip("CLI ignore multiple files test timed out")
+        except FileNotFoundError:
+            pytest.skip("vcf_to_obsidian.py not found for CLI testing")
+
+    def test_cli_ignore_all_files(self, temp_dirs):
+        """Test CLI when all files are ignored."""
+        vcf_file1 = self.create_test_vcf(temp_dirs['test_vcf_dir'], "test1.vcf")
+        vcf_file2 = self.create_test_vcf(temp_dirs['test_vcf_dir'], "test2.vcf")
+        
+        try:
+            result = subprocess.run(
+                [
+                    sys.executable, "vcf_to_obsidian.py",
+                    "--folder", str(temp_dirs['test_vcf_dir']),
+                    "--ignore", str(vcf_file1),
+                    "--ignore", str(vcf_file2),
+                    "--obsidian", str(temp_dirs['test_output_dir'])
+                ],
+                cwd=Path(__file__).parent.parent,
+                capture_output=True,
+                text=True,
+                timeout=60
+            )
+            assert result.returncode != 0  # Should fail when no files remain
+            assert "No VCF files remaining to process after applying ignore list" in result.stderr
+            
+        except subprocess.TimeoutExpired:
+            pytest.skip("CLI ignore all files test timed out")
+        except FileNotFoundError:
+            pytest.skip("vcf_to_obsidian.py not found for CLI testing")
+
+    def test_cli_ignore_with_verbose(self, temp_dirs):
+        """Test --ignore option with verbose output."""
+        vcf_file1 = self.create_test_vcf(temp_dirs['test_vcf_dir'], "test1.vcf")
+        vcf_file2 = self.create_test_vcf(temp_dirs['test_vcf_dir'], "test2.vcf")
+        
+        try:
+            result = subprocess.run(
+                [
+                    sys.executable, "vcf_to_obsidian.py",
+                    "--folder", str(temp_dirs['test_vcf_dir']),
+                    "--ignore", str(vcf_file1),
+                    "--obsidian", str(temp_dirs['test_output_dir']),
+                    "--verbose"
+                ],
+                cwd=Path(__file__).parent.parent,
+                capture_output=True,
+                text=True,
+                timeout=60
+            )
+            assert result.returncode == 0
+            assert f"Will ignore file: '{vcf_file1}'" in result.stdout
+            assert "Ignored 1 file(s)" in result.stdout
+            assert "Found 1 VCF file(s) to process" in result.stdout
+            
+        except subprocess.TimeoutExpired:
+            pytest.skip("CLI ignore with verbose test timed out")
         except FileNotFoundError:
             pytest.skip("vcf_to_obsidian.py not found for CLI testing")
