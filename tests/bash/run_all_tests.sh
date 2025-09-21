@@ -25,6 +25,7 @@ TEST_FILES=(
     "test_content_validation.sh"
     "test_vcard_support.sh"
     "test_cli_options.sh"
+    "test_shell_compatibility.sh"
 )
 
 # Track results

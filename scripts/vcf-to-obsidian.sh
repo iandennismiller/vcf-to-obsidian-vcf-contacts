@@ -9,6 +9,29 @@
 
 set -euo pipefail
 
+# Check if running in bash - this script requires bash-specific features
+if [ -n "${ZSH_VERSION:-}" ]; then
+    echo "Error: This script requires bash but is running in zsh." >&2
+    echo "zsh version detected: $ZSH_VERSION" >&2
+    echo "" >&2
+    echo "Please run one of the following instead:" >&2
+    echo "  ./scripts/vcf-to-obsidian.sh [options]" >&2
+    echo "  bash scripts/vcf-to-obsidian.sh [options]" >&2
+    echo "" >&2
+    echo "This script uses bash-specific features like BASH_REMATCH and associative arrays." >&2
+    exit 1
+elif [ -z "${BASH_VERSION:-}" ]; then
+    echo "Error: This script requires bash to run." >&2
+    echo "Current shell: ${SHELL##*/}" >&2
+    echo "" >&2
+    echo "Please run one of the following instead:" >&2
+    echo "  ./scripts/vcf-to-obsidian.sh [options]" >&2
+    echo "  bash scripts/vcf-to-obsidian.sh [options]" >&2
+    echo "" >&2
+    echo "This script uses bash-specific features like BASH_REMATCH and associative arrays." >&2
+    exit 1
+fi
+
 # Global variables
 VERBOSE=false
 SOURCES=()
@@ -58,7 +81,7 @@ clean_filename() {
 # Parse VCF file and extract fields
 parse_vcf_file() {
     local vcf_file="$1"
-    declare -A fields
+    typeset -A fields
     
     # Initialize all fields as empty
     fields[FN]=""
@@ -205,7 +228,7 @@ parse_vcf_file() {
 
 # Generate Obsidian markdown content
 generate_markdown() {
-    declare -A fields
+    typeset -A fields
     local -a tel_list
     local -a email_list
     local -a adr_list
@@ -339,7 +362,7 @@ generate_markdown() {
 
 # Determine output filename based on priority
 determine_filename() {
-    declare -A fields
+    typeset -A fields
     local vcf_filename="$1"
     
     # Read parsed VCF data to get field values
