@@ -46,7 +46,15 @@ def parse_vcf_file_vobject(vcf_path):
         'addresses': [],
         'notes': '',
         'url': '',
-        'birthday': ''
+        'birthday': '',
+        'photo': '',
+        'categories': '',
+        'version': '',
+        # Store raw field data with type information
+        'raw_emails': {},  # Will store email addresses with their types
+        'raw_phones': {},  # Will store phone numbers with their types  
+        'raw_urls': {},    # Will store URLs with their types
+        'raw_addresses': {}  # Will store addresses with their types and components
     }
     
     try:
