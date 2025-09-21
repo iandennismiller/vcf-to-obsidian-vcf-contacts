@@ -379,6 +379,59 @@ END:VCARD"""
         # Should NOT contain custom template markers
         self.assertNotIn('custom-template: true', content)
 
+    def test_vcard4_support(self):
+        """Test that vCard 4.0 format is properly supported with vobject."""
+        # Test the vCard 4.0 file we created
+        vcf_path = self.test_data_dir / "vcard4_test.vcf"
+        contact_data = parse_vcf_file(vcf_path)
+        
+        # Verify all fields are correctly parsed
+        self.assertEqual(contact_data['uid'], 'vcard4-test-uuid')
+        self.assertEqual(contact_data['full_name'], 'Jane Doe')
+        self.assertEqual(contact_data['given_name'], 'Jane')
+        self.assertEqual(contact_data['family_name'], 'Doe')
+        self.assertEqual(contact_data['organization'], 'Tech Corp')
+        self.assertEqual(len(contact_data['phone_numbers']), 2)
+        self.assertIn('+1-555-111-1111', contact_data['phone_numbers'])
+        self.assertIn('+1-555-222-2222', contact_data['phone_numbers'])
+        self.assertEqual(len(contact_data['email_addresses']), 2)
+        self.assertIn('jane.doe@personal.com', contact_data['email_addresses'])
+        self.assertIn('jane.doe@techcorp.com', contact_data['email_addresses'])
+        self.assertEqual(len(contact_data['addresses']), 2)
+        self.assertIn('123 Main St, Anytown, State, 12345, USA', contact_data['addresses'])
+        self.assertIn('456 Business Ave, Work City, Work State, 67890, USA', contact_data['addresses'])
+        self.assertEqual(contact_data['notes'], 'This is a vCard 4.0 format test contact')
+        self.assertEqual(contact_data['url'], 'https://janedoe.example.com')
+        self.assertEqual(contact_data['birthday'], '19850315')
+
+    def test_vobject_fallback(self):
+        """Test that fallback to legacy parser works when vobject fails."""
+        import vcf_to_obsidian
+        
+        # Save original state
+        original_has_vobject = vcf_to_obsidian.HAS_VOBJECT
+        
+        try:
+            # Force fallback by disabling vobject
+            vcf_to_obsidian.HAS_VOBJECT = False
+            
+            # Test with a regular VCF file
+            vcf_path = self.load_test_vcf("full_name_and_uid.vcf", "fallback_test.vcf")
+            contact_data = parse_vcf_file(vcf_path)
+            
+            # Should still work with legacy parser
+            self.assertEqual(contact_data['uid'], '12345-abcde-67890')
+            self.assertEqual(contact_data['full_name'], 'John Doe')
+            self.assertEqual(contact_data['given_name'], 'John')
+            self.assertEqual(contact_data['family_name'], 'Doe')
+            self.assertEqual(contact_data['organization'], 'Acme Corporation')
+            self.assertEqual(contact_data['phone_numbers'], ['+1-555-123-4567'])
+            self.assertEqual(contact_data['email_addresses'], ['john.doe@acme.com'])
+            
+        finally:
+            # Restore original state
+            vcf_to_obsidian.HAS_VOBJECT = original_has_vobject
+
 
 def run_tests():
     """Run all tests and return results."""

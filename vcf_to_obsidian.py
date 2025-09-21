@@ -18,11 +18,117 @@ import sys
 from pathlib import Path
 import re
 from jinja2 import Environment, FileSystemLoader, Template
+try:
+    import vobject
+    HAS_VOBJECT = True
+except ImportError:
+    HAS_VOBJECT = False
 
 
-def parse_vcf_file(vcf_path):
+def parse_vcf_file_vobject(vcf_path):
     """
-    Parse a VCF file and extract contact information.
+    Parse a VCF file using vobject library for better vCard 4.0 support.
+    
+    Args:
+        vcf_path (Path): Path to the VCF file
+        
+    Returns:
+        dict: Parsed contact data
+    """
+    contact_data = {
+        'uid': '',
+        'full_name': '',
+        'given_name': '',
+        'family_name': '',
+        'organization': '',
+        'phone_numbers': [],
+        'email_addresses': [],
+        'addresses': [],
+        'notes': '',
+        'url': '',
+        'birthday': ''
+    }
+    
+    try:
+        with open(vcf_path, 'r', encoding='utf-8') as file:
+            content = file.read()
+        
+        vcard = vobject.readOne(content)
+        
+        # Extract UID
+        if hasattr(vcard, 'uid'):
+            contact_data['uid'] = vcard.uid.value
+        
+        # Extract Full Name
+        if hasattr(vcard, 'fn'):
+            contact_data['full_name'] = vcard.fn.value
+        
+        # Extract structured name
+        if hasattr(vcard, 'n'):
+            n = vcard.n.value
+            contact_data['family_name'] = n.family if n.family else ''
+            contact_data['given_name'] = n.given if n.given else ''
+        
+        # Extract organization
+        if hasattr(vcard, 'org'):
+            org_value = vcard.org.value
+            if isinstance(org_value, list) and org_value:
+                contact_data['organization'] = org_value[0]
+            elif isinstance(org_value, str):
+                contact_data['organization'] = org_value
+        
+        # Extract phone numbers
+        if hasattr(vcard, 'tel_list'):
+            for tel in vcard.tel_list:
+                contact_data['phone_numbers'].append(tel.value)
+        
+        # Extract email addresses
+        if hasattr(vcard, 'email_list'):
+            for email in vcard.email_list:
+                contact_data['email_addresses'].append(email.value)
+        
+        # Extract addresses
+        if hasattr(vcard, 'adr_list'):
+            for adr in vcard.adr_list:
+                adr_value = adr.value
+                # Combine non-empty address parts
+                address_parts = []
+                if adr_value.street:
+                    address_parts.append(adr_value.street)
+                if adr_value.city:
+                    address_parts.append(adr_value.city)
+                if adr_value.region:
+                    address_parts.append(adr_value.region)
+                if adr_value.code:
+                    address_parts.append(adr_value.code)
+                if adr_value.country:
+                    address_parts.append(adr_value.country)
+                
+                if address_parts:
+                    contact_data['addresses'].append(', '.join(address_parts))
+        
+        # Extract notes
+        if hasattr(vcard, 'note'):
+            contact_data['notes'] = vcard.note.value
+        
+        # Extract URL
+        if hasattr(vcard, 'url'):
+            contact_data['url'] = vcard.url.value
+        
+        # Extract birthday
+        if hasattr(vcard, 'bday'):
+            contact_data['birthday'] = str(vcard.bday.value)
+            
+    except Exception as e:
+        print(f"Error parsing VCF file {vcf_path} with vobject: {e}")
+        raise  # Re-raise to allow fallback
+        
+    return contact_data
+
+
+def parse_vcf_file_legacy(vcf_path):
+    """
+    Parse a VCF file using legacy line-by-line parsing (fallback method).
     
     Args:
         vcf_path (Path): Path to the VCF file
@@ -104,6 +210,28 @@ def parse_vcf_file(vcf_path):
         print(f"Error parsing VCF file {vcf_path}: {e}")
         
     return contact_data
+
+
+def parse_vcf_file(vcf_path):
+    """
+    Parse a VCF file and extract contact information.
+    Uses vobject library if available for better vCard 4.0 support,
+    falls back to legacy parsing otherwise.
+    
+    Args:
+        vcf_path (Path): Path to the VCF file
+        
+    Returns:
+        dict: Parsed contact data
+    """
+    if HAS_VOBJECT:
+        try:
+            return parse_vcf_file_vobject(vcf_path)
+        except Exception:
+            # Fallback to legacy parser if vobject fails
+            return parse_vcf_file_legacy(vcf_path)
+    else:
+        return parse_vcf_file_legacy(vcf_path)
 
 
 def generate_obsidian_markdown(contact_data, template_path=None):
