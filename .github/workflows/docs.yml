@@ -68,7 +68,7 @@ jobs:
       with:
         name: documentation-html
         path: docx/build/html/
-        retention-days: 30
+        retention-days: 7
         
     # Optional: Deploy to GitHub Pages if this is the main branch
     - name: Deploy to GitHub Pages
