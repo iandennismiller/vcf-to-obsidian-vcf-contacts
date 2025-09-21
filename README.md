@@ -115,13 +115,14 @@ The script supports standard VCF (vCard) format and extracts the following field
 
 ### Filename Generation
 
-The script uses a two-tier approach for generating Markdown filenames:
+The script uses a priority-based approach for generating Markdown filenames:
 
-1. **UID-based naming** (preferred): If a VCF contains a UID field, the generated Markdown file will be named using the UID (e.g., `12345-abcde-67890.md`). This ensures stable filenames even when contact names change.
+1. **Full Name (FN)** (highest priority): Uses the full name from the VCF FN field (e.g., `John Doe.md`)
+2. **Constructed Name** (fallback): If no FN field, combines given and family names (e.g., `John Smith.md`)  
+3. **UID** (fallback): If no name is available, uses the UID field (e.g., `12345-abcde-67890.md`)
+4. **VCF Filename** (final fallback): Uses the original VCF filename if no other options are available
 
-2. **Name-based naming** (fallback): If no UID is present, the script falls back to using the contact's full name for the filename (e.g., `John Doe.md`), maintaining backward compatibility.
-
-This approach allows for automatic synchronization when VCF files are updated - contacts with UIDs will maintain the same filename regardless of name changes, while contacts without UIDs continue to work as before.
+This approach prioritizes human-readable filenames while providing UID-based fallback for stability when contact information is incomplete.
 
 ## Output Format
 
@@ -155,6 +156,35 @@ email-addresses:
 **Email Addresses:**
 - john.doe@acme.com
 ```
+
+## Testing
+
+The project includes a comprehensive test suite to ensure reliability and correctness.
+
+### Running Tests
+
+Run the test suite using Python's built-in unittest module:
+
+```bash
+python test_vcf_to_obsidian.py
+```
+
+Or run with verbose output:
+
+```bash
+python test_vcf_to_obsidian.py -v
+```
+
+### Test Coverage
+
+The test suite covers:
+
+- VCF parsing with various field combinations
+- Filename generation priority logic (FN > constructed name > UID > filename)
+- Special character handling in filenames and UIDs
+- Markdown content generation and frontmatter
+- Edge cases (empty fields, missing data)
+- Error handling scenarios
 
 ## Error Handling
 

@@ -205,21 +205,22 @@ def convert_vcf_to_markdown(vcf_path, output_dir):
         # Generate Markdown content
         markdown_content = generate_obsidian_markdown(contact_data)
         
-        # Create output filename based on UID (preferred) or contact name (fallback)
-        if contact_data['uid']:
-            # Use UID as filename for stability when contact name changes
+        # Create output filename based on FN (preferred) or UID (fallback)
+        contact_name = contact_data['full_name']
+        if not contact_name and (contact_data['given_name'] or contact_data['family_name']):
+            contact_name = f"{contact_data['given_name']} {contact_data['family_name']}".strip()
+        
+        if contact_name:
+            # Use contact name as filename (preferred)
+            safe_filename = re.sub(r'[<>:"/\\|?*]', '_', contact_name)
+            output_file = output_dir / f"{safe_filename}.md"
+        elif contact_data['uid']:
+            # Fallback to UID if no contact name is available
             safe_filename = re.sub(r'[<>:"/\\|?*]', '_', contact_data['uid'])
             output_file = output_dir / f"{safe_filename}.md"
         else:
-            # Fallback to contact name if no UID is available
-            contact_name = contact_data['full_name']
-            if not contact_name and (contact_data['given_name'] or contact_data['family_name']):
-                contact_name = f"{contact_data['given_name']} {contact_data['family_name']}".strip()
-            if not contact_name:
-                contact_name = vcf_path.stem
-            
-            # Sanitize filename
-            safe_filename = re.sub(r'[<>:"/\\|?*]', '_', contact_name)
+            # Final fallback to VCF filename if neither name nor UID is available
+            safe_filename = vcf_path.stem
             output_file = output_dir / f"{safe_filename}.md"
         
         # Write Markdown file
