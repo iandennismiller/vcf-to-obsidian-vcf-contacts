@@ -3,8 +3,6 @@ VCF Converter module for handling VCF to Markdown conversion.
 """
 
 from pathlib import Path
-from queue import Queue
-from threading import Thread
 from .vcf_reader import VCFReader
 from .markdown_writer import MarkdownWriter
 from .filename_generator import FilenameGenerator
@@ -64,78 +62,12 @@ class VCFConverter:
             return False
     
     
-    def create_conversion_task_queue(self, vcf_files, output_dir):
-        """
-        Create a task queue for VCF file conversion.
-        
-        Args:
-            vcf_files (list): List of VCF file paths
-            output_dir (Path): Output directory for Markdown files
-            
-        Returns:
-            Queue: Queue containing conversion tasks
-        """
-        task_queue = Queue()
-        
-        for vcf_file in vcf_files:
-            task_queue.put((vcf_file, output_dir))
-        
-        return task_queue
-    
-    def process_task_queue(self, task_queue, num_workers=1, validate_uuids=False):
-        """
-        Process a task queue for VCF file conversion.
-        
-        Args:
-            task_queue (Queue): Queue containing conversion tasks
-            num_workers (int): Number of worker threads to use
-            validate_uuids (bool): Whether to validate UUIDs before conversion
-            
-        Returns:
-            tuple: (successful_count, total_count)
-        """
-        successful_count = 0
-        total_count = task_queue.qsize()
-        results_queue = Queue()
-        
-        def worker():
-            while True:
-                try:
-                    vcf_file, output_dir = task_queue.get(block=False)
-                    # Always use convert_vcf_to_markdown now, validate_uuids parameter is ignored
-                    result = self.convert_vcf_to_markdown(vcf_file, output_dir)
-                    results_queue.put(result)
-                    task_queue.task_done()
-                except:
-                    break
-        
-        # Start worker threads
-        threads = []
-        for _ in range(num_workers):
-            thread = Thread(target=worker)
-            thread.start()
-            threads.append(thread)
-        
-        # Wait for all tasks to complete
-        task_queue.join()
-        
-        # Wait for all threads to finish
-        for thread in threads:
-            thread.join()
-        
-        # Count successful conversions
-        while not results_queue.empty():
-            if results_queue.get():
-                successful_count += 1
-        
-        return successful_count, total_count
-    
     def convert_vcf_files_from_sources(self, folder_sources, file_sources, output_dir, ignore_files=None, verbose=False):
         """
         Convert VCF files from multiple sources (folders and individual files) to Markdown format.
         
         This method collects VCF files from the specified sources, applies ignore filters,
-        and processes them using the task queue system.
+        and processes them directly using convert_vcf_to_markdown.
         
         Args:
             folder_sources (list): List of Path objects for directories containing VCF files
@@ -231,12 +163,13 @@ class VCFConverter:
         if verbose:
             click.echo(f"Converting to Markdown in '{output_dir}'")
         
-        # Convert each VCF file to the destination using task queue
-        if all_vcf_files:
-            task_queue = self.create_conversion_task_queue(all_vcf_files, output_dir)
-            successful_conversions, total_conversions = self.process_task_queue(task_queue, validate_uuids=True)
-        else:
-            successful_conversions, total_conversions = 0, 0
+        # Convert each VCF file to the destination directly
+        successful_conversions = 0
+        total_conversions = len(all_vcf_files)
+        
+        for vcf_file in all_vcf_files:
+            if self.convert_vcf_to_markdown(vcf_file, output_dir):
+                successful_conversions += 1
         
         return successful_conversions, total_conversions, all_vcf_files
     
