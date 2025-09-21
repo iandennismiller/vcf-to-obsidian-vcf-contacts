@@ -6,10 +6,25 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MAIN_SCRIPT="$SCRIPT_DIR/../../scripts/vcf-to-obsidian.sh"
-DATA_DIR="$SCRIPT_DIR/../data/vcf"
 
-echo "🧪 Running all bash implementation tests..."
-echo "========================================"
+# Common test configuration (merged from test_common.sh)
+VCF_TO_OBSIDIAN="$SCRIPT_DIR/../../scripts/vcf-to-obsidian.sh"
+TEST_DATA_DIR="$SCRIPT_DIR/../data/vcf"
+BASE_OUTPUT_DIR="/tmp/vcf_to_obsidian_test"
+
+# Create a unique test output directory
+# Usage: OUTPUT_DIR=$(create_unique_test_dir "test_name")
+create_unique_test_dir() {
+    local test_name="$1"
+    local timestamp=$(date +%s)
+    local unique_dir="$BASE_OUTPUT_DIR/${test_name}_${timestamp}_$$"
+    
+    mkdir -p "$unique_dir"
+    echo "$unique_dir"
+}
+
+# Ensure base test directory exists
+mkdir -p "$BASE_OUTPUT_DIR"
 
 # Colors for output
 GREEN='\033[0;32m'
@@ -93,12 +108,18 @@ print_summary() {
 cleanup() {
     echo ""
     echo "🧹 Cleaning up temporary test files..."
-    rm -rf /tmp/vcf_to_obsidian_test
+    rm -rf "$BASE_OUTPUT_DIR"
     echo "Cleanup complete."
 }
 
 # Set up trap for cleanup
 trap cleanup EXIT
+
+# Only run the main execution if this script is executed directly (not sourced)
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+
+echo "🧪 Running all bash implementation tests..."
+echo "========================================"
 
 # Main execution
 echo "Starting bash implementation test suite..."
@@ -117,13 +138,13 @@ if [[ ! -x "$MAIN_SCRIPT" ]]; then
 fi
 
 # Verify test data exists
-if [[ ! -d "$DATA_DIR" ]]; then
-    echo -e "${RED}❌ Test data directory not found: $DATA_DIR${NC}"
+if [[ ! -d "$TEST_DATA_DIR" ]]; then
+    echo -e "${RED}❌ Test data directory not found: $TEST_DATA_DIR${NC}"
     exit 1
 fi
 
-echo "Test data directory: $DATA_DIR"
-vcf_count=$(find "$DATA_DIR" -name "*.vcf" | wc -l)
+echo "Test data directory: $TEST_DATA_DIR"
+vcf_count=$(find "$TEST_DATA_DIR" -name "*.vcf" | wc -l)
 echo "Found $vcf_count VCF test files"
 
 # Run all tests
@@ -133,3 +154,5 @@ done
 
 # Print final summary and exit with appropriate code
 print_summary
+
+fi  # End of direct execution check
