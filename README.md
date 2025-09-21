@@ -17,17 +17,42 @@ This repository provides two implementations:
 
 ## Quick Start
 
-### Installation
+### Python Implementation
+
+#### Installation
 
 ```bash
 pip install vcf-to-obsidian-vcf-contacts
 ```
 
-### Usage
+#### Usage
 
 Convert all VCF files from a directory:
 ```bash
 vcf-to-obsidian --folder ./contacts --obsidian ./obsidian-vault/contacts
+```
+
+### Bash Implementation (Zero Dependencies)
+
+#### Installation
+
+Clone the repository and make the script executable:
+```bash
+git clone https://github.com/iandennismiller/vcf-to-obsidian-vcf-contacts.git
+cd vcf-to-obsidian-vcf-contacts
+chmod +x scripts/vcf-to-obsidian.sh
+```
+
+#### Usage
+
+Convert all VCF files from a directory:
+```bash
+./scripts/vcf-to-obsidian.sh --folder ./contacts --obsidian ./obsidian-vault/contacts
+```
+
+Convert a specific VCF file:
+```bash
+./scripts/vcf-to-obsidian.sh --file ./contact.vcf --obsidian ./obsidian-vault/contacts
 ```
 
 ## Documentation
