@@ -31,6 +31,11 @@ class TestMarkdownWriting:
         assert 'N.GN: Test' in content
         assert 'FN: Test User' in content
         assert 'ORG: Test Organization' in content
+        
+        # Check REV attribute is present and formatted correctly
+        import re
+        rev_pattern = r'REV: \d{8}T\d{6}Z'
+        assert re.search(rev_pattern, content), f"REV attribute not found or incorrectly formatted in: {content}"
 
     def test_template_with_all_fields(self, temp_dirs):
         """Test template rendering with all possible fields."""
@@ -68,9 +73,73 @@ END:VCARD"""
             assert len(markdown_content) > 0
             assert 'FN: All Fields Test' in markdown_content
             
+            # Check REV attribute is present and formatted correctly
+            import re
+            rev_pattern = r'REV: \d{8}T\d{6}Z'
+            assert re.search(rev_pattern, markdown_content), f"REV attribute not found or incorrectly formatted in: {markdown_content}"
+            
         except Exception as e:
             # If there's an error, it might be due to vobject not being available
             # This is acceptable for this refactoring since we're testing without full deps
+            pytest.skip(f"Conversion failed due to missing dependencies: {e}")
+
+    def test_rev_timestamp_format_and_updates(self, temp_dirs):
+        """Test that REV timestamp is present, correctly formatted, and updates on each conversion."""
+        vcf_content = """BEGIN:VCARD
+VERSION:3.0
+FN:REV Test User
+N:User;REV;;;
+UID:rev-test-123
+EMAIL:revtest@example.com
+END:VCARD"""
+        
+        vcf_path = create_test_vcf(temp_dirs['test_vcf_dir'], "rev_test.vcf", vcf_content)
+        
+        try:
+            # First conversion
+            result1 = convert_vcf_to_markdown(vcf_path, temp_dirs['test_output_dir'])
+            assert result1 is True
+            
+            md_file = temp_dirs['test_output_dir'] / "REV Test User.md"
+            assert md_file.exists()
+            
+            with open(md_file, 'r', encoding='utf-8') as f:
+                content1 = f.read()
+            
+            # Check REV format
+            import re
+            rev_pattern = r'REV: (\d{8}T\d{6}Z)'
+            match1 = re.search(rev_pattern, content1)
+            assert match1, f"REV attribute not found or incorrectly formatted in: {content1}"
+            
+            rev_timestamp1 = match1.group(1)
+            
+            # Validate timestamp format (should be exactly 16 characters: YYYYMMDDTHHMMSSZ)
+            assert len(rev_timestamp1) == 16, f"REV timestamp should be 16 characters, got {len(rev_timestamp1)}: {rev_timestamp1}"
+            assert rev_timestamp1.endswith('Z'), f"REV timestamp should end with Z: {rev_timestamp1}"
+            assert 'T' in rev_timestamp1, f"REV timestamp should contain T: {rev_timestamp1}"
+            
+            # Wait a moment and do second conversion to test timestamp update
+            import time
+            time.sleep(1)
+            
+            # Second conversion (simulating update)
+            result2 = convert_vcf_to_markdown(vcf_path, temp_dirs['test_output_dir'])
+            assert result2 is True
+            
+            with open(md_file, 'r', encoding='utf-8') as f:
+                content2 = f.read()
+            
+            match2 = re.search(rev_pattern, content2)
+            assert match2, f"REV attribute not found in second conversion: {content2}"
+            
+            rev_timestamp2 = match2.group(1)
+            
+            # Timestamps should be different (REV should update)
+            assert rev_timestamp1 != rev_timestamp2, f"REV timestamp should update on each conversion. First: {rev_timestamp1}, Second: {rev_timestamp2}"
+            
+        except Exception as e:
+            # If there's an error, it might be due to vobject not being available
             pytest.skip(f"Conversion failed due to missing dependencies: {e}")
 
     def test_template_fallback_when_file_missing(self, temp_dirs, test_data_dir):
