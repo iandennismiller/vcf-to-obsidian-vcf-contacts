@@ -1,0 +1,7 @@
+BEGIN:VCARD
+VERSION:3.0
+UID:test-uid-12345
+FN:John Smith
+N:Smith;John;;;
+EMAIL:john.smith@example.com
+END:VCARD

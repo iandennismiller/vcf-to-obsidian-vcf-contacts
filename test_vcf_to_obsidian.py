@@ -436,6 +436,92 @@ END:VCARD"""
             # Restore original state
             vcf_to_obsidian.HAS_VOBJECT = original_has_vobject
 
+    def test_fn_change_with_same_uid(self):
+        """Test that when FN changes but UID stays the same, the old file is removed and new file is created."""
+        # First, create a contact with the original FN
+        vcf_path_1 = self.load_test_vcf("fn_change_before.vcf", "contact.vcf")
+        result_1 = convert_vcf_to_markdown(vcf_path_1, self.test_output_dir)
+        
+        self.assertTrue(result_1)
+        # Should create file with original FN
+        original_file = self.test_output_dir / "John Smith.md"
+        self.assertTrue(original_file.exists())
+        
+        # Verify the UID in the original file content
+        with open(original_file, 'r', encoding='utf-8') as f:
+            original_content = f.read()
+        self.assertIn('UID: test-uid-12345', original_content)
+        
+        # Now, update the VCF with a new FN but same UID
+        vcf_path_2 = self.load_test_vcf("fn_change_after.vcf", "contact.vcf")
+        result_2 = convert_vcf_to_markdown(vcf_path_2, self.test_output_dir)
+        
+        self.assertTrue(result_2)
+        # Should create file with new FN
+        new_file = self.test_output_dir / "John Doe.md"
+        self.assertTrue(new_file.exists())
+        
+        # Verify the UID in the new file content
+        with open(new_file, 'r', encoding='utf-8') as f:
+            new_content = f.read()
+        self.assertIn('UID: test-uid-12345', new_content)
+        self.assertIn('FN: John Doe', new_content)
+        
+        # Old file should be removed since it has the same UID
+        self.assertFalse(original_file.exists())
+
+    def test_fn_change_same_filename_no_removal(self):
+        """Test that when converting the same contact with same FN, the file is not removed."""
+        # Create a contact
+        vcf_path = self.load_test_vcf("fn_change_before.vcf", "contact.vcf")
+        result_1 = convert_vcf_to_markdown(vcf_path, self.test_output_dir)
+        
+        self.assertTrue(result_1)
+        original_file = self.test_output_dir / "John Smith.md"
+        self.assertTrue(original_file.exists())
+        
+        # Convert the same contact again (same FN, same UID)
+        result_2 = convert_vcf_to_markdown(vcf_path, self.test_output_dir)
+        
+        self.assertTrue(result_2)
+        # File should still exist (not removed and recreated)
+        self.assertTrue(original_file.exists())
+
+    def test_fn_change_no_uid_no_removal(self):
+        """Test that when there's no UID, old files are not removed."""
+        # Create VCF without UID
+        vcf_content_1 = """BEGIN:VCARD
+VERSION:3.0
+FN:John Smith
+N:Smith;John;;;
+EMAIL:john.smith@example.com
+END:VCARD"""
+        
+        vcf_content_2 = """BEGIN:VCARD
+VERSION:3.0
+FN:John Doe
+N:Doe;John;;;
+EMAIL:john.smith@example.com
+END:VCARD"""
+        
+        vcf_path_1 = self.create_test_vcf("contact1.vcf", vcf_content_1)
+        result_1 = convert_vcf_to_markdown(vcf_path_1, self.test_output_dir)
+        
+        self.assertTrue(result_1)
+        file_1 = self.test_output_dir / "John Smith.md"
+        self.assertTrue(file_1.exists())
+        
+        vcf_path_2 = self.create_test_vcf("contact2.vcf", vcf_content_2)
+        result_2 = convert_vcf_to_markdown(vcf_path_2, self.test_output_dir)
+        
+        self.assertTrue(result_2)
+        file_2 = self.test_output_dir / "John Doe.md"
+        self.assertTrue(file_2.exists())
+        
+        # Both files should exist since there's no UID to match
+        self.assertTrue(file_1.exists())
+        self.assertTrue(file_2.exists())
+
 
 def run_tests():
     """Run all tests and return results."""

@@ -472,6 +472,37 @@ VERSION: "{{ version }}"
     return content.strip() + '\n'
 
 
+def find_existing_files_with_uid(output_dir, uid):
+    """
+    Find existing Markdown files in output directory that have the same UID.
+    
+    Args:
+        output_dir (Path): Output directory to search
+        uid (str): UID to search for
+        
+    Returns:
+        list: List of Path objects for files with matching UID
+    """
+    if not uid:
+        return []
+    
+    matching_files = []
+    md_files = output_dir.glob("*.md")
+    
+    for md_file in md_files:
+        try:
+            with open(md_file, 'r', encoding='utf-8') as f:
+                content = f.read()
+                # Look for UID line in the content
+                if f"UID: {uid}" in content:
+                    matching_files.append(md_file)
+        except Exception:
+            # Skip files that can't be read
+            continue
+    
+    return matching_files
+
+
 def convert_vcf_to_markdown(vcf_path, output_dir, template_path=None):
     """
     Convert a single VCF file to Markdown format.
@@ -508,6 +539,17 @@ def convert_vcf_to_markdown(vcf_path, output_dir, template_path=None):
             # Final fallback to VCF filename if neither name nor UID is available
             safe_filename = vcf_path.stem
             output_file = output_dir / f"{safe_filename}.md"
+        
+        # Remove existing files with the same UID if the filename would be different
+        if contact_data['uid']:
+            existing_files = find_existing_files_with_uid(output_dir, contact_data['uid'])
+            for existing_file in existing_files:
+                if existing_file != output_file:
+                    try:
+                        existing_file.unlink()
+                        print(f"Removed old file: {existing_file.name}")
+                    except Exception as e:
+                        print(f"Warning: Could not remove old file {existing_file.name}: {e}")
         
         # Write Markdown file
         with open(output_file, 'w', encoding='utf-8') as f:
