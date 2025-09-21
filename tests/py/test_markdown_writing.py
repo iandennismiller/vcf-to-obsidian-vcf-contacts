@@ -5,7 +5,7 @@ Tests for Markdown generation and templating functionality.
 import pytest
 from pathlib import Path
 from conftest import load_test_vcf, create_test_vcf
-from vcf_to_obsidian import convert_vcf_to_markdown, generate_obsidian_markdown
+from vcf_to_obsidian import VCFConverter, MarkdownWriter
 
 
 class TestMarkdownWriting:
@@ -13,8 +13,10 @@ class TestMarkdownWriting:
 
     def test_markdown_content_generation(self, temp_dirs, test_data_dir):
         """Test that markdown content is generated correctly."""
+        converter = VCFConverter()
+        
         vcf_path = load_test_vcf(test_data_dir, temp_dirs['test_vcf_dir'], "content_generation_test.vcf", "test.vcf")
-        result = convert_vcf_to_markdown(vcf_path, temp_dirs['test_output_dir'])
+        result = converter.convert_vcf_to_markdown(vcf_path, temp_dirs['test_output_dir'])
         
         assert result
         
@@ -39,6 +41,8 @@ class TestMarkdownWriting:
 
     def test_template_with_all_fields(self, temp_dirs):
         """Test template rendering with all possible fields."""
+        converter = VCFConverter()
+        
         vcf_content = """BEGIN:VCARD
 VERSION:3.0
 FN:All Fields Test
@@ -59,7 +63,7 @@ END:VCARD"""
         
         # Test complete conversion
         try:
-            result = convert_vcf_to_markdown(vcf_path, temp_dirs['test_output_dir'])
+            result = converter.convert_vcf_to_markdown(vcf_path, temp_dirs['test_output_dir'])
             assert result is True
             
             # Check that markdown file was created
@@ -85,6 +89,8 @@ END:VCARD"""
 
     def test_rev_timestamp_format_and_updates(self, temp_dirs):
         """Test that REV timestamp is present, correctly formatted, and updates on each conversion."""
+        converter = VCFConverter()
+        
         vcf_content = """BEGIN:VCARD
 VERSION:3.0
 FN:REV Test User
@@ -97,7 +103,7 @@ END:VCARD"""
         
         try:
             # First conversion
-            result1 = convert_vcf_to_markdown(vcf_path, temp_dirs['test_output_dir'])
+            result1 = converter.convert_vcf_to_markdown(vcf_path, temp_dirs['test_output_dir'])
             assert result1 is True
             
             md_file = temp_dirs['test_output_dir'] / "REV Test User.md"
@@ -124,7 +130,7 @@ END:VCARD"""
             time.sleep(1)
             
             # Second conversion (simulating update)
-            result2 = convert_vcf_to_markdown(vcf_path, temp_dirs['test_output_dir'])
+            result2 = converter.convert_vcf_to_markdown(vcf_path, temp_dirs['test_output_dir'])
             assert result2 is True
             
             with open(md_file, 'r', encoding='utf-8') as f:
@@ -144,6 +150,8 @@ END:VCARD"""
 
     def test_template_fallback_when_file_missing(self, temp_dirs, test_data_dir):
         """Test that default template is used when custom template file doesn't exist."""
+        converter = VCFConverter()
+        
         vcf_content = """BEGIN:VCARD
 VERSION:3.0
 FN:Fallback Test
@@ -154,7 +162,7 @@ END:VCARD"""
         vcf_path = create_test_vcf(temp_dirs['test_vcf_dir'], "fallback_test.vcf", vcf_content)
         
         # Now there's no template parameter support, so just test basic conversion
-        result = convert_vcf_to_markdown(vcf_path, temp_dirs['test_output_dir'])
+        result = converter.convert_vcf_to_markdown(vcf_path, temp_dirs['test_output_dir'])
         
         # Should create markdown file using the only available template  
         md_file = temp_dirs['test_output_dir'] / "Fallback Test.md"

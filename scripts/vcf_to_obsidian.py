@@ -25,12 +25,5 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from vcf_to_obsidian import main
 
-# For backward compatibility, import individual functions
-from vcf_to_obsidian import (
-    convert_vcf_to_markdown,
-    generate_obsidian_markdown,
-    find_existing_files_with_uid
-)
-
 if __name__ == "__main__":
     main()

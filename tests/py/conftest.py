@@ -13,7 +13,8 @@ import sys
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-from vcf_to_obsidian import convert_vcf_to_markdown, generate_obsidian_markdown
+# Import classes that will be used by tests
+from vcf_to_obsidian import VCFConverter, MarkdownWriter
 
 
 @pytest.fixture
