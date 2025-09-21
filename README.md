@@ -34,6 +34,8 @@ vcf-to-obsidian --folder ./contacts --obsidian ./obsidian-vault/contacts
 
 ### Bash Implementation (Zero Dependencies)
 
+**Note:** The bash script requires bash to run and uses bash-specific features. On macOS where zsh is the default shell, make sure to run the script with its shebang (`./script.sh`) or explicitly with bash (`bash script.sh`).
+
 #### Installation
 
 Clone the repository and make the script executable:
