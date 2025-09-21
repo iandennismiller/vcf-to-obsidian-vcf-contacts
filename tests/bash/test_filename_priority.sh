@@ -5,8 +5,13 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+<<<<<<< HEAD:bash_tests/test_filename_priority.sh
+VCF_TO_OBSIDIAN="$SCRIPT_DIR/../scripts/vcf-to-obsidian.sh"
+TEST_DATA_DIR="$SCRIPT_DIR/../test_data/vcf"
+=======
 VCF_TO_OBSIDIAN="$SCRIPT_DIR/../../vcf-to-obsidian.sh"
 TEST_DATA_DIR="$SCRIPT_DIR/../data/vcf"
+>>>>>>> main:tests/bash/test_filename_priority.sh
 OUTPUT_DIR="/tmp/vcf_to_obsidian_test_filename_priority"
 
 echo "Running filename priority tests..."

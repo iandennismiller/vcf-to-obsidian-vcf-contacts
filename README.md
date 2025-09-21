@@ -3,8 +3,8 @@
 A collection of tools that batch-convert VCF files into Markdown files compatible with the obsidian-vcf-contacts plugin for ObsidianMD.
 
 This repository provides two implementations:
-- **Python script** (`vcf_to_obsidian.py`) - Full-featured implementation with vobject library
-- **Bash script** (`vcf-to-obsidian.sh`) - Pure bash implementation for environments without Python dependencies
+- **Python script** (`scripts/vcf_to_obsidian.py`) - Full-featured implementation with vobject library
+- **Bash script** (`scripts/vcf-to-obsidian.sh`) - Pure bash implementation for environments without Python dependencies
 
 ## Features
 
@@ -24,16 +24,16 @@ The bash script requires only standard Unix tools and works on any system with b
 
 ```bash
 # Make executable
-chmod +x vcf-to-obsidian.sh
+chmod +x scripts/vcf-to-obsidian.sh
 
 # Convert a single file
-./vcf-to-obsidian.sh --file contact.vcf --obsidian ./output
+./scripts/vcf-to-obsidian.sh --file contact.vcf --obsidian ./output
 
 # Convert a folder
-./vcf-to-obsidian.sh --folder ./contacts --obsidian ./output
+./scripts/vcf-to-obsidian.sh --folder ./contacts --obsidian ./output
 
 # Multiple sources
-./vcf-to-obsidian.sh --folder ./contacts1 --file ./special.vcf --obsidian ./output
+./scripts/vcf-to-obsidian.sh --folder ./contacts1 --file ./special.vcf --obsidian ./output
 ```
 
 ### Python Implementation
@@ -77,20 +77,20 @@ This installs the package in editable mode along with pytest for running tests.
 
 ### Bash Script
 
-The bash script (`vcf-to-obsidian.sh`) provides the same functionality as the Python version but with zero dependencies:
+The bash script (`scripts/vcf-to-obsidian.sh`) provides the same functionality as the Python version but with zero dependencies:
 
 ```bash
 # Convert a single VCF file
-./vcf-to-obsidian.sh --file contact.vcf --obsidian ./obsidian-vault/contacts
+./scripts/vcf-to-obsidian.sh --file contact.vcf --obsidian ./obsidian-vault/contacts
 
 # Convert all VCF files in a directory  
-./vcf-to-obsidian.sh --folder ./contacts --obsidian ./obsidian-vault/contacts
+./scripts/vcf-to-obsidian.sh --folder ./contacts --obsidian ./obsidian-vault/contacts
 
 # Process multiple sources
-./vcf-to-obsidian.sh --folder ./contacts1 --folder ./contacts2 --file ./special.vcf --obsidian ./vault
+./scripts/vcf-to-obsidian.sh --folder ./contacts1 --folder ./contacts2 --file ./special.vcf --obsidian ./vault
 
 # Enable verbose output
-./vcf-to-obsidian.sh --folder ./contacts --obsidian ./vault --verbose
+./scripts/vcf-to-obsidian.sh --folder ./contacts --obsidian ./vault --verbose
 ```
 
 ### Python Script
@@ -102,7 +102,7 @@ vcf-to-obsidian --folder <source_vcf_directory> --obsidian <destination_obsidian
 
 Or using the Python script directly:
 ```bash
-python vcf_to_obsidian.py --folder <source_vcf_directory> --obsidian <destination_obsidian_folder>
+python scripts/vcf_to_obsidian.py --folder <source_vcf_directory> --obsidian <destination_obsidian_folder>
 ```
 
 ### Examples

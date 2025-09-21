@@ -5,8 +5,13 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+<<<<<<< HEAD:bash_tests/test_content_validation.sh
+VCF_TO_OBSIDIAN="$SCRIPT_DIR/../scripts/vcf-to-obsidian.sh"
+TEST_DATA_DIR="$SCRIPT_DIR/../test_data/vcf"
+=======
 VCF_TO_OBSIDIAN="$SCRIPT_DIR/../../vcf-to-obsidian.sh"
 TEST_DATA_DIR="$SCRIPT_DIR/../data/vcf"
+>>>>>>> main:tests/bash/test_content_validation.sh
 OUTPUT_DIR="/tmp/vcf_to_obsidian_test_content"
 
 echo "Running content validation tests..."

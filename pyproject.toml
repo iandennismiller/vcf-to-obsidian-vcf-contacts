@@ -42,3 +42,7 @@ Issues = "https://github.com/iandennismiller/vcf-to-obsidian-vcf-contacts/issues
 [project.scripts]
 vcf-to-obsidian = "vcf_to_obsidian:main"
 
+[tool.hatch.build.targets.wheel]
+packages = ["vcf_to_obsidian"]
+include = ["scripts/*"]
+
