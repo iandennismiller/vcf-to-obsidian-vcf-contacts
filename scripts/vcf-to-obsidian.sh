@@ -12,14 +12,13 @@
 
 set -euo pipefail
 
-# Check shell compatibility - this script requires bash 4.0+ or zsh for associative arrays
+# Check shell compatibility - this script requires bash 4.0+ for associative arrays
 if [ -z "${BASH_VERSION:-}" ] && [ -z "${ZSH_VERSION:-}" ]; then
-    echo "Error: This script requires bash 4.0+ or zsh to run." >&2
+    echo "Error: This script requires bash 4.0+ to run." >&2
     echo "Current shell: ${SHELL##*/}" >&2
     echo "" >&2
     echo "Please run one of the following instead:" >&2
     echo "  bash scripts/vcf-to-obsidian.sh [options]" >&2
-    echo "  zsh scripts/vcf-to-obsidian.sh [options]" >&2
     echo "  ./scripts/vcf-to-obsidian.sh [options]" >&2
     exit 1
 fi
@@ -29,21 +28,28 @@ if [ -n "${BASH_VERSION:-}" ]; then
     # Extract major version from BASH_VERSION (e.g., "4.2.46(2)-release" -> "4")
     BASH_MAJOR=$(echo "$BASH_VERSION" | cut -d. -f1)
     if [ "$BASH_MAJOR" -lt 4 ]; then
-        # Check if zsh is available as a fallback
-        if command -v zsh >/dev/null 2>&1; then
-            # Re-exec the script with zsh
-            exec zsh "$0" "$@"
+        # Check if /usr/local/bin/bash is available as a fallback
+        if [ -x "/usr/local/bin/bash" ]; then
+            # Check version of /usr/local/bin/bash
+            LOCAL_BASH_VERSION=$(/usr/local/bin/bash -c 'echo $BASH_VERSION')
+            LOCAL_BASH_MAJOR=$(echo "$LOCAL_BASH_VERSION" | cut -d. -f1)
+            if [ "$LOCAL_BASH_MAJOR" -ge 4 ]; then
+                # Re-exec the script with /usr/local/bin/bash
+                exec /usr/local/bin/bash "$0" "$@"
+            else
+                echo "Error: /usr/local/bin/bash version $LOCAL_BASH_VERSION is too old (need 4.0+)" >&2
+                exit 1
+            fi
         else
             # No compatible shell found
-            echo "Error: This script requires bash 4.0+ or zsh, but you have bash $BASH_VERSION" >&2
+            echo "Error: This script requires bash 4.0+, but you have bash $BASH_VERSION" >&2
             echo "" >&2
             echo "macOS ships with bash 3.2 due to licensing restrictions." >&2
             echo "Associative arrays were added in bash 4.0 (2009)." >&2
             echo "" >&2
             echo "Solutions:" >&2
             echo "  1. Install bash 4.0+ via Homebrew: brew install bash" >&2
-            echo "  2. Install zsh: brew install zsh (or use system zsh)" >&2
-            echo "  3. Use the Python implementation: pip install vcf-to-obsidian-vcf-contacts" >&2
+            echo "  2. Use the Python implementation: pip install vcf-to-obsidian-vcf-contacts" >&2
             echo "" >&2
             echo "Note: The /usr/local/bin/bash from Homebrew should be used instead of /bin/bash" >&2
             exit 1
