@@ -42,8 +42,8 @@ class TestVCFReading:
         for uid in invalid_uuids:
             assert not reader.is_valid_uuid(uid), f"Expected {uid} to be invalid"
 
-    def test_convert_vcf_skips_invalid_uuid(self, temp_dirs):
-        """Test that VCF files with invalid UUIDs are skipped."""
+    def test_convert_vcf_accepts_invalid_uuid(self, temp_dirs):
+        """Test that VCF files with invalid UUIDs are now processed normally (UUID validation removed)."""
         from vcf_to_obsidian.cli import CLI
         import io
         import sys
@@ -61,23 +61,22 @@ END:VCARD"""
         
         cli = CLI()
         
-        # Capture stdout to check warning message
+        # Capture stdout to check no warning message
         captured_output = io.StringIO()
         with redirect_stdout(captured_output):
             result = cli.convert_vcf_to_markdown(vcf_path, temp_dirs['test_output_dir'])
         
         output = captured_output.getvalue()
         
-        # Should return False and print warning
-        assert result == False
-        assert "Warning: VCF file" in output
-        assert "contains invalid UUID" in output
-        assert "invalid-uuid-format" in output
-        assert "skipping file" in output
+        # Should return True and not print validation warnings (UUID validation removed)
+        assert result == True
+        assert "Warning: VCF file" not in output or "invalid UUID" not in output
+        assert "skipping file" not in output
+        assert "Converted:" in output
         
-        # No markdown file should be created
+        # Markdown file should be created
         md_files = list(temp_dirs['test_output_dir'].glob("*.md"))
-        assert len(md_files) == 0
+        assert len(md_files) > 0
 
     def test_convert_vcf_accepts_valid_uuid(self, temp_dirs):
         """Test that VCF files with valid UUIDs are processed normally."""
