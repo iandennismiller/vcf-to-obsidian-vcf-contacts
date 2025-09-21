@@ -1,0 +1,12 @@
+Defaulting to user installation because normal site-packages is not writeable
+Requirement already satisfied: jinja2 in /usr/lib/python3/dist-packages (3.1.2)
+Collecting vobject
+  Downloading vobject-0.9.9-py2.py3-none-any.whl.metadata
+     - 1.8 kB ? 0:00:00
+Requirement already satisfied: pytz in /usr/lib/python3/dist-packages (from vobject) (2024.1)
+Requirement already satisfied: six in /usr/lib/python3/dist-packages (from vobject) (1.16.0)
+Requirement already satisfied: python-dateutil>=2.7.0 in /usr/lib/python3/dist-packages (from vobject) (2.8.2)
+Downloading vobject-0.9.9-py2.py3-none-any.whl
+   - 47.5 kB 211.6 MB/s 0:00:00
+Installing collected packages: vobject
+Successfully installed vobject-0.9.9
