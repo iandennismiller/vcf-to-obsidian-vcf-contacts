@@ -30,6 +30,7 @@ def parse_vcf_file(vcf_path):
         dict: Parsed contact data
     """
     contact_data = {
+        'uid': '',
         'full_name': '',
         'given_name': '',
         'family_name': '',
@@ -56,6 +57,9 @@ def parse_vcf_file(vcf_path):
             if line.startswith('FN:'):
                 # Full Name
                 contact_data['full_name'] = line[3:].strip()
+            elif line.startswith('UID:'):
+                # Unique Identifier
+                contact_data['uid'] = line[4:].strip()
             elif line.startswith('N:'):
                 # Structured Name (Family;Given;Additional;Prefix;Suffix)
                 name_parts = line[2:].split(';')
@@ -201,16 +205,22 @@ def convert_vcf_to_markdown(vcf_path, output_dir):
         # Generate Markdown content
         markdown_content = generate_obsidian_markdown(contact_data)
         
-        # Create output filename
-        contact_name = contact_data['full_name']
-        if not contact_name and (contact_data['given_name'] or contact_data['family_name']):
-            contact_name = f"{contact_data['given_name']} {contact_data['family_name']}".strip()
-        if not contact_name:
-            contact_name = vcf_path.stem
-        
-        # Sanitize filename
-        safe_filename = re.sub(r'[<>:"/\\|?*]', '_', contact_name)
-        output_file = output_dir / f"{safe_filename}.md"
+        # Create output filename based on UID (preferred) or contact name (fallback)
+        if contact_data['uid']:
+            # Use UID as filename for stability when contact name changes
+            safe_filename = re.sub(r'[<>:"/\\|?*]', '_', contact_data['uid'])
+            output_file = output_dir / f"{safe_filename}.md"
+        else:
+            # Fallback to contact name if no UID is available
+            contact_name = contact_data['full_name']
+            if not contact_name and (contact_data['given_name'] or contact_data['family_name']):
+                contact_name = f"{contact_data['given_name']} {contact_data['family_name']}".strip()
+            if not contact_name:
+                contact_name = vcf_path.stem
+            
+            # Sanitize filename
+            safe_filename = re.sub(r'[<>:"/\\|?*]', '_', contact_name)
+            output_file = output_dir / f"{safe_filename}.md"
         
         # Write Markdown file
         with open(output_file, 'w', encoding='utf-8') as f:
