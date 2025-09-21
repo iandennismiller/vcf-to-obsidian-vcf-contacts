@@ -19,8 +19,8 @@ help: ## Show this help message
 PYTHON := python3
 PIP := pip3
 PYTEST := pytest
-BASH_TEST_DIR := bash_tests
-TEST_DIR := tests
+BASH_TEST_DIR := tests/bash
+TEST_DIR := tests/py
 PYTHON_FILES := vcf_to_obsidian.py $(TEST_DIR)/*.py
 
 # Installation targets
@@ -212,16 +212,16 @@ quick-start: ## Show quick start guide
 	@echo ""
 	@echo "4. Use the tools:"
 	@echo "   # Bash implementation (no dependencies)"
-	@echo "   ./vcf-to-obsidian.sh --folder ./test_data/vcf --obsidian ./output"
+	@echo "   ./vcf-to-obsidian.sh --folder ./tests/data/vcf --obsidian ./output"
 	@echo ""
 	@echo "   # Python implementation (requires dependencies)"
-	@echo "   python vcf_to_obsidian.py --folder ./test_data/vcf --obsidian ./output"
+	@echo "   python vcf_to_obsidian.py --folder ./tests/data/vcf --obsidian ./output"
 
 demo: ## Run a quick demo with test data
 	@echo "Running demo with test data..."
 	@mkdir -p /tmp/demo_output
 	@echo "Testing bash implementation..."
-	@./vcf-to-obsidian.sh --folder ./test_data/vcf --obsidian /tmp/demo_output --verbose
+	@./vcf-to-obsidian.sh --folder ./tests/data/vcf --obsidian /tmp/demo_output --verbose
 	@echo ""
 	@echo "Demo output created in /tmp/demo_output"
 	@echo "Generated files:"
