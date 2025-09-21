@@ -1,7 +1,7 @@
 # Makefile for vcf-to-obsidian-vcf-contacts
 # Provides installation, testing, linting, and maintenance tasks
 
-.PHONY: help install install-dev install-lint test test-python test-bash test-all lint lint-python lint-bash format clean build package check-deps docs setup-dev shell
+.PHONY: help install install-dev install-lint test test-python test-bash test-all lint lint-python lint-bash format clean build package check-deps docs setup-dev shell docs-html docs-clean docs-serve docs-install
 
 # Default target
 help: ## Show this help message
@@ -173,6 +173,29 @@ docs: ## Show usage documentation
 	@echo ""
 	@echo "Bash Implementation:"
 	@./scripts/vcf-to-obsidian.sh --help
+
+docs-install: ## Install documentation dependencies
+	$(PIP) install sphinx sphinx-autoapi sphinx-rtd-theme
+
+docs-html: ## Build HTML documentation using Sphinx
+	@echo "Building HTML documentation..."
+	@if command -v sphinx-build >/dev/null 2>&1; then \
+		cd sphinx && make html; \
+		echo "Documentation built successfully in sphinx/build/html/"; \
+	else \
+		echo "Sphinx not available. Install with: make docs-install"; \
+		exit 1; \
+	fi
+
+docs-clean: ## Clean documentation build files
+	@echo "Cleaning documentation build files..."
+	@cd sphinx && make clean 2>/dev/null || true
+	@echo "Documentation build files cleaned"
+
+docs-serve: ## Serve documentation locally (requires Python 3)
+	@echo "Starting local documentation server..."
+	@echo "Open http://localhost:8000 in your browser"
+	@cd sphinx/build/html && $(PYTHON) -m http.server 8000
 
 shell: ## Start interactive shell with project environment
 	@echo "Starting shell with project environment..."
