@@ -308,6 +308,10 @@ generate_markdown() {
         echo "VERSION: \"${fields[VERSION]}\""
     fi
     
+    # Add REV timestamp - always current time when markdown is created/updated
+    local current_time=$(date -u +"%Y%m%dT%H%M%SZ")
+    echo "REV: $current_time"
+    
     echo ""
     echo "---"
     

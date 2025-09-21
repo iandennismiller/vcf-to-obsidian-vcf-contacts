@@ -100,8 +100,26 @@ fi
 
 echo "✓ Test 4 passed: Contact tags validation"
 
-# Test 5: Complex contact validation (VCard 4.0)
-echo "Test 5: Validating complex contact content..."
+# Test 5: REV timestamp validation
+echo "Test 5: Validating REV timestamp..."
+if ! grep -q "REV: " "$output_file"; then
+    echo "FAIL: Missing REV timestamp"
+    exit 1
+fi
+
+# Validate REV format: YYYYMMDDTHHMMSSZ
+rev_line=$(grep "REV: " "$output_file")
+rev_timestamp=$(echo "$rev_line" | sed 's/REV: //')
+
+if [[ ! "$rev_timestamp" =~ ^[0-9]{8}T[0-9]{6}Z$ ]]; then
+    echo "FAIL: REV timestamp format invalid. Expected YYYYMMDDTHHMMSSZ, got: $rev_timestamp"
+    exit 1
+fi
+
+echo "✓ Test 5 passed: REV timestamp validation"
+
+# Test 6: Complex contact validation (VCard 4.0)
+echo "Test 6: Validating complex contact content..."
 "$VCF_TO_OBSIDIAN" --file "$TEST_DATA_DIR/vcard4_test.vcf" --obsidian "$OUTPUT_DIR"
 
 complex_file="$OUTPUT_DIR/Jane Doe.md"
@@ -127,10 +145,16 @@ if ! grep -q 'EMAIL\[HOME\]' "$complex_file" || ! grep -q 'EMAIL\[WORK\]' "$comp
     exit 1
 fi
 
-echo "✓ Test 5 passed: Complex contact validation"
+# Check for REV timestamp in complex file too
+if ! grep -q "REV: " "$complex_file"; then
+    echo "FAIL: Missing REV timestamp in complex contact"
+    exit 1
+fi
 
-# Test 6: Empty fields handling
-echo "Test 6: Validating empty fields handling..."
+echo "✓ Test 6 passed: Complex contact validation"
+
+# Test 7: Empty fields handling
+echo "Test 7: Validating empty fields handling..."
 "$VCF_TO_OBSIDIAN" --file "$TEST_DATA_DIR/minimal_contact.vcf" --obsidian "$OUTPUT_DIR"
 
 minimal_file="$OUTPUT_DIR/minimal_contact.md"
@@ -145,7 +169,13 @@ if ! grep -q "^---$" "$minimal_file"; then
     exit 1
 fi
 
-echo "✓ Test 6 passed: Empty fields handling"
+# Verify REV timestamp in minimal file too
+if ! grep -q "REV: " "$minimal_file"; then
+    echo "FAIL: Missing REV timestamp in minimal contact"
+    exit 1
+fi
+
+echo "✓ Test 7 passed: Empty fields handling"
 
 # Clean up
 rm -rf "$OUTPUT_DIR"

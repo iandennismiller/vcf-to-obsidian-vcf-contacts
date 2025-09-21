@@ -2,6 +2,8 @@
 Markdown Writer module for generating Markdown content from VCF data.
 """
 
+from datetime import datetime, timezone
+
 
 class MarkdownWriter:
     """Class responsible for generating Markdown content from vCard objects."""
@@ -133,6 +135,10 @@ class MarkdownWriter:
         # Extract version
         if hasattr(vcard, 'version') and vcard.version.value:
             lines.append(f'VERSION: "{vcard.version.value}"')
+        
+        # Add REV timestamp - always current time when markdown is created/updated
+        current_time = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        lines.append(f"REV: {current_time}")
         
         lines.append("")
         lines.append("---")
