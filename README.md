@@ -49,32 +49,45 @@ This installs the package in editable mode along with pytest for running tests.
 
 After installing with pip or pipx:
 ```bash
-vcf-to-obsidian <source_vcf_directory> <destination_obsidian_folder>
+vcf-to-obsidian --folder <source_vcf_directory> --obsidian <destination_obsidian_folder>
 ```
 
 Or using the Python script directly:
 ```bash
-python vcf_to_obsidian.py <source_vcf_directory> <destination_obsidian_folder>
+python vcf_to_obsidian.py --folder <source_vcf_directory> --obsidian <destination_obsidian_folder>
 ```
 
 ### Examples
 
-Convert all VCF files from a directory (using installed CLI):
+Convert all VCF files from a directory:
 ```bash
-vcf-to-obsidian ./contacts ./obsidian-vault/contacts
+vcf-to-obsidian --folder ./contacts --obsidian ./obsidian-vault/contacts
 ```
 
-With verbose output (using installed CLI):
+Convert a specific VCF file:
 ```bash
-vcf-to-obsidian ./contacts ./obsidian-vault/contacts --verbose
+vcf-to-obsidian --file ./contact.vcf --obsidian ./obsidian-vault/contacts
+```
+
+Process multiple sources to single destination:
+```bash
+vcf-to-obsidian --folder ./contacts1 --folder ./contacts2 --file ./special.vcf --obsidian ./vault
+```
+
+With verbose output:
+```bash
+vcf-to-obsidian --folder ./contacts --obsidian ./obsidian-vault/contacts --verbose
 ```
 
 ### Command Line Options
 
-- `source_dir`: Directory containing VCF files to convert
-- `dest_dir`: Destination directory for generated Markdown files
+- `--folder`: Source directory containing VCF files (can be specified multiple times)
+- `--obsidian`: Destination directory for generated Markdown files (required, single directory only)
+- `--file`: Specific VCF file to process (can be specified multiple times)
 - `--verbose` or `-v`: Enable verbose output
 - `--help` or `-h`: Show help message
+
+**Note**: You must specify at least one source (either `--folder` or `--file`) and exactly one destination (`--obsidian`).
 
 ## Template Output
 
