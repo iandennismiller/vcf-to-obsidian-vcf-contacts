@@ -1,0 +1,6 @@
+BEGIN:VCARD
+VERSION:3.0
+UID:
+FN:Empty UID Test
+N:Test;Empty;;;
+END:VCARD

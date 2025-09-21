@@ -1,0 +1,5 @@
+BEGIN:VCARD
+VERSION:3.0
+UID:should-not-be-used-2
+N:ConstructedTest;Priority;;;
+END:VCARD

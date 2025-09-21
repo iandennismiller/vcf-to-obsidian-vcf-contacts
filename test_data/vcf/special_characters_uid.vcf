@@ -1,0 +1,5 @@
+BEGIN:VCARD
+VERSION:3.0
+UID:special/chars:in<uid>file*name?
+N:Test;User;;;
+END:VCARD

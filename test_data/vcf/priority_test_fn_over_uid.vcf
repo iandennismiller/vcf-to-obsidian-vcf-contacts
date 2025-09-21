@@ -1,0 +1,6 @@
+BEGIN:VCARD
+VERSION:3.0
+UID:should-not-be-used
+FN:Priority Test 1
+N:Test;Priority;;;
+END:VCARD

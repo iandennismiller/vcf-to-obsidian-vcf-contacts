@@ -1,0 +1,6 @@
+BEGIN:VCARD
+VERSION:3.0
+UID:12345-abcde-67890
+FN:John Doe
+N:Doe;John;;;
+END:VCARD
