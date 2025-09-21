@@ -6,7 +6,11 @@ A Python script that batch-converts a folder containing VCF files into Markdown 
 that are compatible with obsidian-vcf-contacts plugin for ObsidianMD.
 
 Usage:
-    python vcf_to_obsidian.py <source_vcf_directory> <destination_obsidian_folder>
+    python vcf_to_obsidian.py --folder <source_vcf_directory> --obsidian <destination_obsidian_folder>
+    python vcf_to_obsidian.py --file <vcf_file> --obsidian <destination_obsidian_folder>
+
+Options can be specified multiple times to process multiple sources and destinations:
+    python vcf_to_obsidian.py --folder <dir1> --folder <dir2> --file <file> --obsidian <out1> --obsidian <out2>
 
 Author: Ian Dennis Miller
 License: MIT
@@ -307,6 +311,7 @@ def main(folder, obsidian, file, verbose):
     
     # Collect all VCF files to process
     all_vcf_files = []
+    processed_paths = set()  # Track processed file paths to avoid duplicates
     
     # Process folder sources
     for source_path in folder:
@@ -316,10 +321,19 @@ def main(folder, obsidian, file, verbose):
         
         # Find all VCF files in this directory
         vcf_files = list(source_path.glob("*.vcf")) + list(source_path.glob("*.VCF"))
-        all_vcf_files.extend(vcf_files)
+        new_files_count = 0
+        for vcf_file in vcf_files:
+            absolute_path = vcf_file.resolve()
+            if absolute_path not in processed_paths:
+                all_vcf_files.append(vcf_file)
+                processed_paths.add(absolute_path)
+                new_files_count += 1
         
         if verbose:
-            click.echo(f"Found {len(vcf_files)} VCF file(s) in '{source_path}'")
+            if new_files_count < len(vcf_files):
+                click.echo(f"Found {len(vcf_files)} VCF file(s) in '{source_path}' ({new_files_count} new, {len(vcf_files) - new_files_count} duplicates)")
+            else:
+                click.echo(f"Found {len(vcf_files)} VCF file(s) in '{source_path}'")
     
     # Process individual file sources
     for file_path in file:
@@ -335,10 +349,16 @@ def main(folder, obsidian, file, verbose):
         if file_path.suffix.lower() not in ['.vcf']:
             click.echo(f"Warning: File '{file_path}' does not have a .vcf extension.", err=True)
         
-        all_vcf_files.append(file_path)
-        
-        if verbose:
-            click.echo(f"Added individual file: '{file_path}'")
+        absolute_path = file_path.resolve()
+        if absolute_path not in processed_paths:
+            all_vcf_files.append(file_path)
+            processed_paths.add(absolute_path)
+            
+            if verbose:
+                click.echo(f"Added individual file: '{file_path}'")
+        else:
+            if verbose:
+                click.echo(f"Skipping duplicate file: '{file_path}'")
     
     if not all_vcf_files:
         click.echo("No VCF files found to process.", err=True)
