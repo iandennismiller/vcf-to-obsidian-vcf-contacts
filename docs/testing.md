@@ -114,7 +114,7 @@ The main test runner (`run_all_tests.sh`) provides:
 
 ### Test Data
 
-Tests use the VCF files in `tests/data/vcf/` which contain various test scenarios:
+Tests use the VCF files in `tests/data/` which contain various test scenarios:
 - Different VCard versions (3.0 and 4.0)
 - Various field combinations
 - Special characters and edge cases
