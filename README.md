@@ -13,8 +13,8 @@ A Python script that batch-converts a folder containing VCF files into Markdown 
 ## Requirements
 
 - Python 3.12+ (tested with Python 3.12.3)
-- Jinja2 3.0.0+ (for templating)
 - vobject 0.9.0+ (for enhanced vCard 3.0/4.0 parsing)
+- click 8.0.0+ (for command line interface)
 
 ## Installation
 
@@ -69,46 +69,21 @@ With verbose output (using installed CLI):
 vcf-to-obsidian ./contacts ./obsidian-vault/contacts --verbose
 ```
 
-Using a custom template:
-```bash
-python vcf_to_obsidian.py ./contacts ./obsidian-vault/contacts --template ./my_template.md.j2
-```
-
 ### Command Line Options
 
 - `source_dir`: Directory containing VCF files to convert
 - `dest_dir`: Destination directory for generated Markdown files
-- `--template` or `-t`: Path to custom Jinja2 template file (optional)
 - `--verbose` or `-v`: Enable verbose output
 - `--help` or `-h`: Show help message
 
-## Templates
+## Template Output
 
-The script uses Jinja2 templates to generate the markdown output, providing flexibility for customization while maintaining compatibility with obsidian-vcf-contacts.
+The script generates markdown output with a fixed template that is compatible with the obsidian-vcf-contacts plugin format. The template includes:
 
-### Default Template
+- YAML frontmatter with all contact metadata extracted directly from the VCF file
+- Structured markdown content optimized for Obsidian
 
-By default, the script uses a built-in template that generates markdown compatible with the obsidian-vcf-contacts plugin format. This template includes:
-
-- YAML frontmatter with `vcf-contact: true` and all contact metadata
-- Structured markdown content with contact information
-
-### Custom Templates
-
-You can provide your own Jinja2 template using the `--template` option. The template has access to the following variables:
-
-- `title`: Contact's display name (full name or constructed from given/family names)
-- `uid`: Unique identifier from VCF
-- `full_name`: Full name from FN field
-- `given_name`: Given (first) name
-- `family_name`: Family (last) name
-- `organization`: Organization name
-- `phone_numbers`: List of phone numbers
-- `email_addresses`: List of email addresses
-- `addresses`: List of formatted addresses
-- `notes`: Notes text
-- `url`: Website URL
-- `birthday`: Birthday date
+The template works directly with the VCF data structure to ensure maximum compatibility and reduce complexity. No custom templates are supported - the built-in template ensures consistent, reliable output.
 
 ## VCF Support
 
@@ -181,7 +156,7 @@ pytest tests/test_integration.py      # End-to-end integration tests
 Tests are organized into separate files by functionality:
 
 - **`tests/test_vcf_reading.py`** - VCF file parsing and data extraction
-- **`tests/test_markdown_writing.py`** - Markdown content generation and templating
+- **`tests/test_markdown_writing.py`** - Markdown content generation
 - **`tests/test_command_line.py`** - Command line interface functionality
 - **`tests/test_filename_generation.py`** - Filename generation logic and special character handling
 - **`tests/test_integration.py`** - End-to-end integration tests
