@@ -26,7 +26,7 @@ class CLI:
         Returns:
             bool: True if successful, False otherwise
         """
-        return self.converter.convert_vcf_to_markdown_with_validation(vcf_path, output_dir)
+        return self.converter.convert_vcf_to_markdown(vcf_path, output_dir)
 
 
 # Create the click command outside the class
