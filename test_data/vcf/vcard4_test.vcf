@@ -1,0 +1,16 @@
+BEGIN:VCARD
+VERSION:4.0
+UID:vcard4-test-uuid
+FN:Jane Doe
+N:Doe;Jane;Mary;Dr.;PhD
+ORG:Tech Corp
+TEL;TYPE=home:+1-555-111-1111
+TEL;TYPE=work,voice:+1-555-222-2222
+EMAIL;TYPE=home:jane.doe@personal.com
+EMAIL;TYPE=work:jane.doe@techcorp.com
+ADR;TYPE=home:;;123 Main St;Anytown;State;12345;USA
+ADR;TYPE=work:;;456 Business Ave;Work City;Work State;67890;USA
+NOTE:This is a vCard 4.0 format test contact
+URL:https://janedoe.example.com
+BDAY:19850315
+END:VCARD

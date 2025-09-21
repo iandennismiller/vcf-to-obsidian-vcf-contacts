@@ -14,6 +14,7 @@ A Python script that batch-converts a folder containing VCF files into Markdown 
 
 - Python 3.12+ (tested with Python 3.12.3)
 - Jinja2 3.0.0+ (for templating)
+- vobject 0.9.0+ (for enhanced vCard 3.0/4.0 parsing)
 
 ## Installation
 
@@ -50,7 +51,12 @@ git clone https://github.com/iandennismiller/vcf-to-obsidian-vcf-contacts.git
 cd vcf-to-obsidian-vcf-contacts
 ```
 
-2. Make the script executable (optional):
+2. Install dependencies:
+```bash
+pip install jinja2 vobject
+```
+
+3. Make the script executable (optional):
 ```bash
 chmod +x vcf_to_obsidian.py
 ```
@@ -160,7 +166,7 @@ name: "{{ title }}"
 
 ## VCF Support
 
-The script supports standard VCF (vCard) format and extracts the following fields:
+The script supports both vCard 3.0 and vCard 4.0 formats and extracts the following fields:
 
 - **UID**: Unique Identifier (used for stable filename generation)
 - **FN**: Full Name
@@ -172,6 +178,24 @@ The script supports standard VCF (vCard) format and extracts the following field
 - **URL**: Website URL
 - **BDAY**: Birthday
 - **NOTE**: Notes/Comments
+
+### vCard 4.0 Support
+
+The script uses the `vobject` library for enhanced vCard parsing, which provides:
+
+- **Better vCard 4.0 compatibility**: Improved parsing of modern vCard format
+- **Robust field handling**: More accurate extraction of complex fields like addresses
+- **Type parameter support**: Proper handling of type parameters (HOME, WORK, etc.)
+- **Fallback mechanism**: Automatically falls back to legacy parsing if vobject is unavailable
+
+### Parsing Engine
+
+The script automatically uses the best available parsing method:
+
+1. **vobject library** (preferred): Uses the `vobject` library for comprehensive vCard 3.0/4.0 support
+2. **Legacy parser** (fallback): Uses a simple line-by-line parser if `vobject` is not available
+
+This dual approach ensures maximum compatibility while taking advantage of modern parsing capabilities when available.
 
 ### Filename Generation
 
