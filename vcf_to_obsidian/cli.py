@@ -34,6 +34,12 @@ class CLI:
             # Read VCF file
             vcard = self.reader.read_vcf_file(vcf_path)
             
+            # Check if UID exists and validate it as a proper UUID
+            if hasattr(vcard, 'uid') and vcard.uid and vcard.uid.value:
+                if not self.reader.is_valid_uuid(vcard.uid.value):
+                    print(f"Warning: VCF file '{vcf_path}' contains invalid UUID '{vcard.uid.value}' - skipping file")
+                    return False
+            
             # Generate markdown content
             markdown_content = self.writer.generate_obsidian_markdown(vcard)
             
@@ -63,14 +69,15 @@ class CLI:
             print(f"Error converting {vcf_path}: {e}")
             return False
     
-    def run_cli(self, folder, obsidian, file, verbose):
+    def run_cli(self, folder, obsidian, file, verbose, ignore):
         """Convert VCF files to Markdown format for obsidian-vcf-contacts plugin
         
         Use --folder to specify source directories containing VCF files
         Use --obsidian to specify the destination directory for Markdown files  
         Use --file to specify individual VCF files to process
+        Use --ignore to specify individual VCF files to skip
         
-        --folder and --file options can be specified multiple times to process multiple sources.
+        --folder, --file, and --ignore options can be specified multiple times.
         """
         # Validate that at least one source is specified
         if not folder and not file:
@@ -134,6 +141,28 @@ class CLI:
             click.echo("No VCF files found to process.", err=True)
             sys.exit(1)
         
+        # Process ignore list - remove specified files from the task queue
+        if ignore:
+            ignore_paths = set()
+            for ignore_path in ignore:
+                absolute_ignore_path = ignore_path.resolve()
+                ignore_paths.add(absolute_ignore_path)
+                if verbose:
+                    click.echo(f"Will ignore file: '{ignore_path}'")
+            
+            # Filter out ignored files
+            initial_count = len(all_vcf_files)
+            all_vcf_files = [vcf_file for vcf_file in all_vcf_files 
+                           if vcf_file.resolve() not in ignore_paths]
+            ignored_count = initial_count - len(all_vcf_files)
+            
+            if ignored_count > 0:
+                click.echo(f"Ignored {ignored_count} file(s)")
+        
+        if not all_vcf_files:
+            click.echo("No VCF files remaining to process after applying ignore list.", err=True)
+            sys.exit(1)
+        
         click.echo(f"Found {len(all_vcf_files)} VCF file(s) to process")
         
         # Create destination directory
@@ -174,14 +203,19 @@ class CLI:
 @click.option('--verbose', '-v',
               is_flag=True,
               help="Enable verbose output")
-def main_cli(folder, obsidian, file, verbose):
+@click.option('--ignore',
+              type=click.Path(exists=True, file_okay=True, dir_okay=False, path_type=Path),
+              multiple=True,
+              help="Specific VCF file to ignore (can be specified multiple times)")
+def main_cli(folder, obsidian, file, verbose, ignore):
     """Convert VCF files to Markdown format for obsidian-vcf-contacts plugin
     
     Use --folder to specify source directories containing VCF files
     Use --obsidian to specify the destination directory for Markdown files  
     Use --file to specify individual VCF files to process
+    Use --ignore to specify individual VCF files to skip
     
-    --folder and --file options can be specified multiple times to process multiple sources.
+    --folder, --file, and --ignore options can be specified multiple times.
     """
     cli = CLI()
-    cli.run_cli(folder, obsidian, file, verbose)
+    cli.run_cli(folder, obsidian, file, verbose, ignore)
