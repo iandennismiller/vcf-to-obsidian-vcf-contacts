@@ -18,11 +18,7 @@ import sys
 from pathlib import Path
 import re
 from jinja2 import Environment, FileSystemLoader, Template
-try:
-    import vobject
-    HAS_VOBJECT = True
-except ImportError:
-    HAS_VOBJECT = False
+import vobject
 
 
 def parse_vcf_file_vobject(vcf_path):
@@ -46,7 +42,15 @@ def parse_vcf_file_vobject(vcf_path):
         'addresses': [],
         'notes': '',
         'url': '',
-        'birthday': ''
+        'birthday': '',
+        'photo': '',
+        'categories': '',
+        'version': '',
+        # Store raw field data with type information
+        'raw_emails': {},  # Will store email addresses with their types
+        'raw_phones': {},  # Will store phone numbers with their types  
+        'raw_urls': {},    # Will store URLs with their types
+        'raw_addresses': {}  # Will store addresses with their types and components
     }
     
     try:
@@ -81,11 +85,35 @@ def parse_vcf_file_vobject(vcf_path):
         if hasattr(vcard, 'tel_list'):
             for tel in vcard.tel_list:
                 contact_data['phone_numbers'].append(tel.value)
+                
+                # Extract type information for raw_phones
+                type_label = 'DEFAULT'
+                if hasattr(tel, 'params') and 'TYPE' in tel.params:
+                    type_values = tel.params['TYPE']
+                    if isinstance(type_values, list) and type_values:
+                        type_label = type_values[0].upper()
+                    elif isinstance(type_values, str):
+                        type_label = type_values.upper()
+                
+                field_key = f"TEL[{type_label}]"
+                contact_data['raw_phones'][field_key] = tel.value
         
         # Extract email addresses
         if hasattr(vcard, 'email_list'):
             for email in vcard.email_list:
                 contact_data['email_addresses'].append(email.value)
+                
+                # Extract type information for raw_emails
+                type_label = 'DEFAULT'
+                if hasattr(email, 'params') and 'TYPE' in email.params:
+                    type_values = email.params['TYPE']
+                    if isinstance(type_values, list) and type_values:
+                        type_label = type_values[0].upper()
+                    elif isinstance(type_values, str):
+                        type_label = type_values.upper()
+                
+                field_key = f"EMAIL[{type_label}]"
+                contact_data['raw_emails'][field_key] = email.value
         
         # Extract addresses
         if hasattr(vcard, 'adr_list'):
@@ -106,6 +134,32 @@ def parse_vcf_file_vobject(vcf_path):
                 
                 if address_parts:
                     contact_data['addresses'].append(', '.join(address_parts))
+                
+                # Extract type information for raw_addresses
+                type_label = 'DEFAULT'
+                if hasattr(adr, 'params') and 'TYPE' in adr.params:
+                    type_values = adr.params['TYPE']
+                    if isinstance(type_values, list) and type_values:
+                        type_label = type_values[0].upper()
+                    elif isinstance(type_values, str):
+                        type_label = type_values.upper()
+                
+                # Store address components
+                base_key = f"ADR[{type_label}]"
+                if adr_value.box:
+                    contact_data['raw_addresses'][f"{base_key}.POBOX"] = adr_value.box
+                if adr_value.extended:
+                    contact_data['raw_addresses'][f"{base_key}.EXTENDED"] = adr_value.extended
+                if adr_value.street:
+                    contact_data['raw_addresses'][f"{base_key}.STREET"] = adr_value.street
+                if adr_value.city:
+                    contact_data['raw_addresses'][f"{base_key}.LOCALITY"] = adr_value.city
+                if adr_value.region:
+                    contact_data['raw_addresses'][f"{base_key}.REGION"] = adr_value.region
+                if adr_value.code:
+                    contact_data['raw_addresses'][f"{base_key}.POSTAL"] = adr_value.code
+                if adr_value.country:
+                    contact_data['raw_addresses'][f"{base_key}.COUNTRY"] = adr_value.country
         
         # Extract notes
         if hasattr(vcard, 'note'):
@@ -114,222 +168,37 @@ def parse_vcf_file_vobject(vcf_path):
         # Extract URL
         if hasattr(vcard, 'url'):
             contact_data['url'] = vcard.url.value
+            
+            # Extract type information for raw_urls
+            type_label = 'DEFAULT'
+            if hasattr(vcard.url, 'params') and 'TYPE' in vcard.url.params:
+                type_values = vcard.url.params['TYPE']
+                if isinstance(type_values, list) and type_values:
+                    type_label = type_values[0].upper()
+                elif isinstance(type_values, str):
+                    type_label = type_values.upper()
+            
+            field_key = f"URL[{type_label}]"
+            contact_data['raw_urls'][field_key] = vcard.url.value
         
         # Extract birthday
         if hasattr(vcard, 'bday'):
             contact_data['birthday'] = str(vcard.bday.value)
+        
+        # Extract photo
+        if hasattr(vcard, 'photo'):
+            contact_data['photo'] = vcard.photo.value
+        
+        # Extract categories
+        if hasattr(vcard, 'categories'):
+            contact_data['categories'] = vcard.categories.value
+        
+        # Extract version
+        if hasattr(vcard, 'version'):
+            contact_data['version'] = vcard.version.value
             
     except Exception as e:
         print(f"Error parsing VCF file {vcf_path} with vobject: {e}")
-        raise  # Re-raise to allow fallback
-        
-    return contact_data
-
-
-def parse_vcf_file_legacy(vcf_path):
-    """
-    Parse a VCF file using legacy line-by-line parsing (fallback method).
-    
-    Args:
-        vcf_path (Path): Path to the VCF file
-        
-    Returns:
-        dict: Parsed contact data
-    """
-    contact_data = {
-        'uid': '',
-        'full_name': '',
-        'given_name': '',
-        'family_name': '',
-        'organization': '',
-        'phone_numbers': [],
-        'email_addresses': [],
-        'addresses': [],
-        'notes': '',
-        'url': '',
-        'birthday': '',
-        'photo': '',
-        'categories': '',
-        'version': '',
-        # Store raw field data with type information
-        'raw_emails': {},  # Will store email addresses with their types
-        'raw_phones': {},  # Will store phone numbers with their types  
-        'raw_urls': {},    # Will store URLs with their types
-        'raw_addresses': {}  # Will store addresses with their types and components
-    }
-    
-    try:
-        with open(vcf_path, 'r', encoding='utf-8') as file:
-            content = file.read()
-            
-        # Parse VCF properties
-        lines = content.split('\n')
-        for line in lines:
-            line = line.strip()
-            if not line:
-                continue
-                
-            if line.startswith('FN:'):
-                # Full Name
-                contact_data['full_name'] = line[3:].strip()
-            elif line.startswith('UID:'):
-                # Unique Identifier
-                contact_data['uid'] = line[4:].strip()
-            elif line.startswith('N:'):
-                # Structured Name (Family;Given;Additional;Prefix;Suffix)
-                name_parts = line[2:].split(';')
-                if len(name_parts) >= 2:
-                    contact_data['family_name'] = name_parts[0].strip()
-                    contact_data['given_name'] = name_parts[1].strip()
-            elif line.startswith('ORG:'):
-                # Organization
-                contact_data['organization'] = line[4:].strip()
-            elif line.startswith('TEL'):
-                # Phone numbers
-                phone_match = re.search(r'TEL([^:]*):(.+)', line)
-                if phone_match:
-                    type_info = phone_match.group(1).strip()
-                    phone_number = phone_match.group(2).strip()
-                    contact_data['phone_numbers'].append(phone_number)
-                    
-                    # Extract type information (e.g., ;TYPE=CELL -> [CELL])
-                    type_label = 'DEFAULT'
-                    if ';TYPE=' in type_info:
-                        type_match = re.search(r';TYPE=([^;]+)', type_info)
-                        if type_match:
-                            type_label = type_match.group(1).upper()
-                    elif type_info and type_info.startswith(';'):
-                        # Handle other type formats
-                        type_parts = type_info.split(';')
-                        for part in type_parts:
-                            if part and part.upper() in ['CELL', 'HOME', 'WORK', 'FAX', 'VOICE', 'SECURE', 'CANADA']:
-                                type_label = part.upper()
-                                break
-                    
-                    field_key = f"TEL[{type_label}]"
-                    contact_data['raw_phones'][field_key] = phone_number
-                    
-            elif line.startswith('EMAIL'):
-                # Email addresses
-                email_match = re.search(r'EMAIL([^:]*):(.+)', line)
-                if email_match:
-                    type_info = email_match.group(1).strip()
-                    email_address = email_match.group(2).strip()
-                    contact_data['email_addresses'].append(email_address)
-                    
-                    # Extract type information (e.g., ;TYPE=HOME -> [HOME])
-                    type_label = 'DEFAULT'
-                    if ';TYPE=' in type_info:
-                        type_match = re.search(r';TYPE=([^;]+)', type_info)
-                        if type_match:
-                            type_label = type_match.group(1).upper()
-                    elif type_info and type_info.startswith(';'):
-                        # Handle other type formats
-                        type_parts = type_info.split(';')
-                        for part in type_parts:
-                            if part and part.upper() in ['HOME', 'WORK', 'INTERNET']:
-                                type_label = part.upper()
-                                break
-                    
-                    field_key = f"EMAIL[{type_label}]"
-                    contact_data['raw_emails'][field_key] = email_address
-                    
-            elif line.startswith('ADR'):
-                # Addresses
-                addr_match = re.search(r'ADR([^:]*):(.+)', line)
-                if addr_match:
-                    type_info = addr_match.group(1).strip()
-                    addr_value = addr_match.group(2).strip()
-                    
-                    # ADR format: PO Box;Extended;Street;City;State;Postal Code;Country
-                    addr_parts = addr_value.split(';')
-                    # Combine non-empty parts into a readable address
-                    address = ', '.join([part.strip() for part in addr_parts if part.strip()])
-                    if address:
-                        contact_data['addresses'].append(address)
-                    
-                    # Extract type information
-                    type_label = 'DEFAULT'
-                    if ';TYPE=' in type_info:
-                        type_match = re.search(r';TYPE=([^;]+)', type_info)
-                        if type_match:
-                            type_label = type_match.group(1).upper()
-                    elif type_info and type_info.startswith(';'):
-                        # Handle other type formats
-                        type_parts = type_info.split(';')
-                        for part in type_parts:
-                            if part and part.upper() in ['HOME', 'WORK']:
-                                type_label = part.upper()
-                                break
-                    
-                    # Store address components
-                    if len(addr_parts) >= 7:
-                        po_box = addr_parts[0].strip()
-                        extended = addr_parts[1].strip()
-                        street = addr_parts[2].strip()
-                        locality = addr_parts[3].strip()
-                        region = addr_parts[4].strip()
-                        postal = addr_parts[5].strip()
-                        country = addr_parts[6].strip()
-                        
-                        base_key = f"ADR[{type_label}]"
-                        if po_box:
-                            contact_data['raw_addresses'][f"{base_key}.POBOX"] = po_box
-                        if extended:
-                            contact_data['raw_addresses'][f"{base_key}.EXTENDED"] = extended
-                        if street:
-                            contact_data['raw_addresses'][f"{base_key}.STREET"] = street
-                        if locality:
-                            contact_data['raw_addresses'][f"{base_key}.LOCALITY"] = locality
-                        if region:
-                            contact_data['raw_addresses'][f"{base_key}.REGION"] = region
-                        if postal:
-                            contact_data['raw_addresses'][f"{base_key}.POSTAL"] = postal
-                        if country:
-                            contact_data['raw_addresses'][f"{base_key}.COUNTRY"] = country
-            elif line.startswith('NOTE:'):
-                # Notes
-                contact_data['notes'] = line[5:].strip()
-            elif line.startswith('URL'):
-                # URL
-                url_match = re.search(r'URL([^:]*):(.+)', line)
-                if url_match:
-                    type_info = url_match.group(1).strip()
-                    url_value = url_match.group(2).strip()
-                    contact_data['url'] = url_value
-                    
-                    # Extract type information
-                    type_label = 'DEFAULT'
-                    if ';TYPE=' in type_info:
-                        type_match = re.search(r';TYPE=([^;]+)', type_info)
-                        if type_match:
-                            type_label = type_match.group(1).upper()
-                    elif type_info and type_info.startswith(';'):
-                        # Handle other type formats
-                        type_parts = type_info.split(';')
-                        for part in type_parts:
-                            if part and part.upper() in ['HOME', 'WORK']:
-                                type_label = part.upper()
-                                break
-                    
-                    field_key = f"URL[{type_label}]"
-                    contact_data['raw_urls'][field_key] = url_value
-                    
-            elif line.startswith('BDAY:'):
-                # Birthday
-                contact_data['birthday'] = line[5:].strip()
-            elif line.startswith('PHOTO:'):
-                # Photo
-                contact_data['photo'] = line[6:].strip()
-            elif line.startswith('CATEGORIES:'):
-                # Categories
-                contact_data['categories'] = line[11:].strip()
-            elif line.startswith('VERSION:'):
-                # Version
-                contact_data['version'] = line[8:].strip()
-                
-    except Exception as e:
-        print(f"Error parsing VCF file {vcf_path}: {e}")
         
     return contact_data
 
@@ -337,8 +206,7 @@ def parse_vcf_file_legacy(vcf_path):
 def parse_vcf_file(vcf_path):
     """
     Parse a VCF file and extract contact information.
-    Uses vobject library if available for better vCard 4.0 support,
-    falls back to legacy parsing otherwise.
+    Uses vobject library for vCard parsing.
     
     Args:
         vcf_path (Path): Path to the VCF file
@@ -346,14 +214,7 @@ def parse_vcf_file(vcf_path):
     Returns:
         dict: Parsed contact data
     """
-    if HAS_VOBJECT:
-        try:
-            return parse_vcf_file_vobject(vcf_path)
-        except Exception:
-            # Fallback to legacy parser if vobject fails
-            return parse_vcf_file_legacy(vcf_path)
-    else:
-        return parse_vcf_file_legacy(vcf_path)
+    return parse_vcf_file_vobject(vcf_path)
 
 
 def generate_obsidian_markdown(contact_data, template_path=None):

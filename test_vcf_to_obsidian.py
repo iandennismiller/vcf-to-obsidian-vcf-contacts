@@ -408,33 +408,20 @@ END:VCARD"""
         self.assertEqual(contact_data['url'], 'https://janedoe.example.com')
         self.assertEqual(contact_data['birthday'], '19850315')
 
-    def test_vobject_fallback(self):
-        """Test that fallback to legacy parser works when vobject fails."""
-        import vcf_to_obsidian
+    def test_vobject_parsing(self):
+        """Test that vobject parser works correctly for all standard VCF data."""
+        # Test with a regular VCF file
+        vcf_path = self.load_test_vcf("full_name_and_uid.vcf", "vobject_test.vcf")
+        contact_data = parse_vcf_file(vcf_path)
         
-        # Save original state
-        original_has_vobject = vcf_to_obsidian.HAS_VOBJECT
-        
-        try:
-            # Force fallback by disabling vobject
-            vcf_to_obsidian.HAS_VOBJECT = False
-            
-            # Test with a regular VCF file
-            vcf_path = self.load_test_vcf("full_name_and_uid.vcf", "fallback_test.vcf")
-            contact_data = parse_vcf_file(vcf_path)
-            
-            # Should still work with legacy parser
-            self.assertEqual(contact_data['uid'], '12345-abcde-67890')
-            self.assertEqual(contact_data['full_name'], 'John Doe')
-            self.assertEqual(contact_data['given_name'], 'John')
-            self.assertEqual(contact_data['family_name'], 'Doe')
-            self.assertEqual(contact_data['organization'], 'Acme Corporation')
-            self.assertEqual(contact_data['phone_numbers'], ['+1-555-123-4567'])
-            self.assertEqual(contact_data['email_addresses'], ['john.doe@acme.com'])
-            
-        finally:
-            # Restore original state
-            vcf_to_obsidian.HAS_VOBJECT = original_has_vobject
+        # Should correctly parse all fields
+        self.assertEqual(contact_data['uid'], '12345-abcde-67890')
+        self.assertEqual(contact_data['full_name'], 'John Doe')
+        self.assertEqual(contact_data['given_name'], 'John')
+        self.assertEqual(contact_data['family_name'], 'Doe')
+        self.assertEqual(contact_data['organization'], 'Acme Corporation')
+        self.assertEqual(contact_data['phone_numbers'], ['+1-555-123-4567'])
+        self.assertEqual(contact_data['email_addresses'], ['john.doe@acme.com'])
 
     def test_fn_change_with_same_uid(self):
         """Test that when FN changes but UID stays the same, the old file is removed and new file is created."""
