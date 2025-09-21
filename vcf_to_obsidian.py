@@ -6,7 +6,9 @@ A Python script that batch-converts a folder containing VCF files into Markdown 
 that are compatible with obsidian-vcf-contacts plugin for ObsidianMD.
 
 Usage:
-    python vcf_to_obsidian.py <source_vcf_directory> <destination_obsidian_folder>
+    python vcf_to_obsidian.py --folder <source_directory> --obsidian <destination_folder>
+    python vcf_to_obsidian.py --file <vcf_file> --obsidian <destination_folder>
+    python vcf_to_obsidian.py --folder <dir1> --folder <dir2> --file <file1.vcf> --obsidian <destination>
 
 Author: Ian Dennis Miller
 License: MIT
@@ -271,50 +273,88 @@ def convert_vcf_to_markdown(vcf_path, output_dir):
 
 
 @click.command()
-@click.argument('source_dir', 
-                type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path))
-@click.argument('dest_dir',
-                type=click.Path(path_type=Path))
+@click.option('--folder',
+              type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path),
+              multiple=True,
+              help="Source folder containing VCF files to convert")
+@click.option('--obsidian',
+              type=click.Path(path_type=Path),
+              required=True,
+              help="Destination directory for Markdown files")
+@click.option('--file',
+              type=click.Path(exists=True, file_okay=True, dir_okay=False, path_type=Path),
+              multiple=True,
+              help="Specific VCF file to convert (can be specified multiple times)")
 @click.option('--verbose', '-v',
               is_flag=True,
               help="Enable verbose output")
-def main(source_dir, dest_dir, verbose):
+def main(folder, obsidian, file, verbose):
     """Convert VCF files to Markdown format for obsidian-vcf-contacts plugin
     
-    \b
-    SOURCE_DIR  Source directory containing VCF files
-    DEST_DIR    Destination directory for Markdown files
+    Use --folder to process all VCF files in a directory, or --file to process
+    specific files. You can mix --folder and --file options.
     """
-    # Validate source directory (Click already validates existence)
-    source_path = source_dir
-    if not source_path.is_dir():
-        click.echo(f"Error: Source path '{source_path}' is not a directory.", err=True)
+    # Validate that at least one source is provided
+    if not folder and not file:
+        click.echo("Error: Must specify at least one --folder or --file option.", err=True)
         sys.exit(1)
     
     # Create destination directory if it doesn't exist
-    dest_path = dest_dir
+    dest_path = obsidian
     dest_path.mkdir(parents=True, exist_ok=True)
     
-    # Find all VCF files
-    vcf_files = list(source_path.glob("*.vcf")) + list(source_path.glob("*.VCF"))
+    # Build task list of VCF files to process
+    task_list = []
     
-    if not vcf_files:
-        click.echo(f"No VCF files found in '{source_path}'", err=True)
+    # Add files from folders
+    for folder_path in folder:
+        if not folder_path.is_dir():
+            click.echo(f"Error: Folder path '{folder_path}' is not a directory.", err=True)
+            sys.exit(1)
+        
+        # Find all VCF files in this folder
+        folder_vcf_files = list(folder_path.glob("*.vcf")) + list(folder_path.glob("*.VCF"))
+        task_list.extend(folder_vcf_files)
+        
+        if verbose:
+            click.echo(f"Found {len(folder_vcf_files)} VCF file(s) in '{folder_path}'")
+    
+    # Add individual files
+    for file_path in file:
+        if not file_path.suffix.lower() == '.vcf':
+            click.echo(f"Warning: File '{file_path}' does not have a .vcf extension", err=True)
+        task_list.append(file_path)
+        
+        if verbose:
+            click.echo(f"Added individual file: {file_path}")
+    
+    # Remove duplicates while preserving order
+    seen = set()
+    unique_task_list = []
+    for vcf_file in task_list:
+        if vcf_file not in seen:
+            seen.add(vcf_file)
+            unique_task_list.append(vcf_file)
+    
+    task_list = unique_task_list
+    
+    if not task_list:
+        click.echo("No VCF files found to process.", err=True)
         sys.exit(1)
     
-    click.echo(f"Found {len(vcf_files)} VCF file(s) in '{source_path}'")
+    click.echo(f"Processing {len(task_list)} VCF file(s)")
     click.echo(f"Converting to Markdown in '{dest_path}'")
     
-    # Convert each VCF file
+    # Convert each VCF file in the task list
     success_count = 0
-    for vcf_file in vcf_files:
+    for vcf_file in task_list:
         if verbose:
             click.echo(f"Processing: {vcf_file}")
         
         if convert_vcf_to_markdown(vcf_file, dest_path):
             success_count += 1
     
-    click.echo(f"Successfully converted {success_count}/{len(vcf_files)} files.")
+    click.echo(f"Successfully converted {success_count}/{len(task_list)} files.")
 
 
 if __name__ == "__main__":
