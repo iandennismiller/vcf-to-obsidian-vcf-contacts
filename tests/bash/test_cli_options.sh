@@ -4,16 +4,12 @@
 
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-VCF_TO_OBSIDIAN="$SCRIPT_DIR/../../scripts/vcf-to-obsidian.sh"
-TEST_DATA_DIR="$SCRIPT_DIR/../data/vcf"
-OUTPUT_DIR="/tmp/vcf_to_obsidian_test_cli"
+# Source common test configuration
+source "$(dirname "${BASH_SOURCE[0]}")/test_common.sh"
+
+OUTPUT_DIR=$(create_unique_test_dir "cli")
 
 echo "Running CLI options tests..."
-
-# Clean up previous test runs
-rm -rf "$OUTPUT_DIR"
-mkdir -p "$OUTPUT_DIR"
 
 # Test 1: Help option
 echo "Test 1: Testing --help option..."
@@ -67,16 +63,16 @@ echo "✓ Test 6 passed: Non-existent directory error handling"
 
 # Test 7: Multiple --obsidian options (should use last one)
 echo "Test 7: Testing multiple --obsidian options..."
-mkdir -p "/tmp/test_obsidian1" "/tmp/test_obsidian2"
-rm -rf "/tmp/test_obsidian1"/* "/tmp/test_obsidian2"/*
+OBSIDIAN_DIR1=$(create_unique_test_dir "obsidian1")
+OBSIDIAN_DIR2=$(create_unique_test_dir "obsidian2")
 
-output=$("$VCF_TO_OBSIDIAN" --file "$TEST_DATA_DIR/content_generation_test.vcf" --obsidian "/tmp/test_obsidian1" --obsidian "/tmp/test_obsidian2" 2>&1)
+output=$("$VCF_TO_OBSIDIAN" --file "$TEST_DATA_DIR/content_generation_test.vcf" --obsidian "$OBSIDIAN_DIR1" --obsidian "$OBSIDIAN_DIR2" 2>&1)
 
 # File should be in the second directory
-if [[ ! -f "/tmp/test_obsidian2/Test User.md" ]]; then
+if [[ ! -f "$OBSIDIAN_DIR2/Test User.md" ]]; then
     echo "FAIL: Multiple --obsidian options not handled correctly"
     echo "Output: $output"
-    ls -la /tmp/test_obsidian1/ /tmp/test_obsidian2/
+    ls -la "$OBSIDIAN_DIR1/" "$OBSIDIAN_DIR2/"
     exit 1
 fi
 
@@ -87,7 +83,6 @@ if [[ ! "$output" =~ "Warning: Multiple --obsidian options" ]]; then
     exit 1
 fi
 
-rm -rf "/tmp/test_obsidian1" "/tmp/test_obsidian2"
 echo "✓ Test 7 passed: Multiple --obsidian options"
 
 # Test 8: Invalid option
@@ -100,27 +95,23 @@ echo "✓ Test 8 passed: Invalid option error handling"
 
 # Test 9: Non-VCF file handling
 echo "Test 9: Testing non-VCF file handling..."
-echo "This is not a VCF file" > "/tmp/test_not_vcf.txt"
-if "$VCF_TO_OBSIDIAN" --file "/tmp/test_not_vcf.txt" --obsidian "$OUTPUT_DIR" 2>/dev/null; then
+NON_VCF_FILE="$BASE_OUTPUT_DIR/test_not_vcf.txt"
+echo "This is not a VCF file" > "$NON_VCF_FILE"
+if "$VCF_TO_OBSIDIAN" --file "$NON_VCF_FILE" --obsidian "$OUTPUT_DIR" 2>/dev/null; then
     echo "FAIL: Should have warned about non-VCF file"
     # Note: This might not fail completely but should show a warning
 fi
-rm -f "/tmp/test_not_vcf.txt"
 echo "✓ Test 9 passed: Non-VCF file handling"
 
 # Test 10: Empty directory handling
 echo "Test 10: Testing empty directory handling..."
-mkdir -p "/tmp/empty_vcf_dir"
-output=$("$VCF_TO_OBSIDIAN" --folder "/tmp/empty_vcf_dir" --obsidian "$OUTPUT_DIR" 2>&1 || echo "EXIT_CODE:$?")
+EMPTY_VCF_DIR=$(create_unique_test_dir "empty_vcf")
+output=$("$VCF_TO_OBSIDIAN" --folder "$EMPTY_VCF_DIR" --obsidian "$OUTPUT_DIR" 2>&1 || echo "EXIT_CODE:$?")
 if [[ ! "$output" =~ "No VCF files found" ]]; then
     echo "FAIL: Should warn about empty directory"
     echo "Output: $output"
     # Don't exit 1 here as this might be a warning, not an error
 fi
-rm -rf "/tmp/empty_vcf_dir"
 echo "✓ Test 10 passed: Empty directory handling"
-
-# Clean up
-rm -rf "$OUTPUT_DIR"
 
 echo "All CLI options tests passed! ✅"

@@ -4,16 +4,12 @@
 
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-VCF_TO_OBSIDIAN="$SCRIPT_DIR/../../scripts/vcf-to-obsidian.sh"
-TEST_DATA_DIR="$SCRIPT_DIR/../data/vcf"
-OUTPUT_DIR="/tmp/vcf_to_obsidian_test_vcard"
+# Source common test configuration
+source "$(dirname "${BASH_SOURCE[0]}")/test_common.sh"
+
+OUTPUT_DIR=$(create_unique_test_dir "vcard")
 
 echo "Running VCard format support tests..."
-
-# Clean up previous test runs
-rm -rf "$OUTPUT_DIR"
-mkdir -p "$OUTPUT_DIR"
 
 # Test 1: VCard 3.0 support
 echo "Test 1: Testing VCard 3.0 support..."
@@ -80,23 +76,23 @@ echo "✓ Test 3 passed: VCard 4.0 advanced features"
 
 # Test 4: Mixed VCard versions in batch
 echo "Test 4: Testing mixed VCard versions..."
-rm -rf "$OUTPUT_DIR"/*
-mkdir -p "/tmp/test_mixed_vcards"
-cp "$TEST_DATA_DIR/content_generation_test.vcf" "/tmp/test_mixed_vcards/"  # v3.0
-cp "$TEST_DATA_DIR/vcard4_test.vcf" "/tmp/test_mixed_vcards/"              # v4.0
+OUTPUT_DIR_4=$(create_unique_test_dir "vcard_mixed")
+MIXED_VCARDS_DIR=$(create_unique_test_dir "mixed_vcards")
+cp "$TEST_DATA_DIR/content_generation_test.vcf" "$MIXED_VCARDS_DIR/"  # v3.0
+cp "$TEST_DATA_DIR/vcard4_test.vcf" "$MIXED_VCARDS_DIR/"              # v4.0
 
-"$VCF_TO_OBSIDIAN" --folder "/tmp/test_mixed_vcards" --obsidian "$OUTPUT_DIR"
+"$VCF_TO_OBSIDIAN" --folder "$MIXED_VCARDS_DIR" --obsidian "$OUTPUT_DIR_4"
 
 # Both files should be processed
-if [[ ! -f "$OUTPUT_DIR/Test User.md" ]] || [[ ! -f "$OUTPUT_DIR/Jane Doe.md" ]]; then
+if [[ ! -f "$OUTPUT_DIR_4/Test User.md" ]] || [[ ! -f "$OUTPUT_DIR_4/Jane Doe.md" ]]; then
     echo "FAIL: Mixed VCard versions not all processed"
-    ls -la "$OUTPUT_DIR"
+    ls -la "$OUTPUT_DIR_4"
     exit 1
 fi
 
 # Check versions in output
-v3_file="$OUTPUT_DIR/Test User.md"
-v4_file="$OUTPUT_DIR/Jane Doe.md"
+v3_file="$OUTPUT_DIR_4/Test User.md"
+v4_file="$OUTPUT_DIR_4/Jane Doe.md"
 
 if ! grep -q 'VERSION: "3.0"' "$v3_file"; then
     echo "FAIL: VCard 3.0 version lost in mixed processing"
@@ -132,9 +128,5 @@ for field in "${fields_to_check[@]}"; do
 done
 
 echo "✓ Test 5 passed: VCard extended features"
-
-# Clean up
-rm -rf "/tmp/test_mixed_vcards"
-rm -rf "$OUTPUT_DIR"
 
 echo "All VCard format support tests passed! ✅"

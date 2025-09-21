@@ -4,16 +4,12 @@
 
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-VCF_TO_OBSIDIAN="$SCRIPT_DIR/../../scripts/vcf-to-obsidian.sh"
-TEST_DATA_DIR="$SCRIPT_DIR/../data/vcf"
-OUTPUT_DIR="/tmp/vcf_to_obsidian_test_filename_priority"
+# Source common test configuration
+source "$(dirname "${BASH_SOURCE[0]}")/test_common.sh"
+
+OUTPUT_DIR=$(create_unique_test_dir "filename_priority")
 
 echo "Running filename priority tests..."
-
-# Clean up previous test runs
-rm -rf "$OUTPUT_DIR"
-mkdir -p "$OUTPUT_DIR"
 
 # Test 1: FN (Full Name) priority - highest priority
 echo "Test 1: Testing FN priority over UID..."
@@ -79,8 +75,5 @@ if [[ "$file_found" != "true" ]]; then
     exit 1
 fi
 echo "✓ Test 6 passed: Constructed name from N field"
-
-# Clean up
-rm -rf "$OUTPUT_DIR"
 
 echo "All filename priority tests passed! ✅"
