@@ -54,7 +54,7 @@ END:VCARD"""
         try:
             result = subprocess.run(
                 [sys.executable, "vcf_to_obsidian.py", "--help"],
-                cwd=Path(__file__).parent.parent,
+                cwd=Path(__file__).parent.parent.parent,
                 capture_output=True,
                 text=True,
                 timeout=30
@@ -76,7 +76,7 @@ END:VCARD"""
         try:
             result = subprocess.run(
                 [sys.executable, "vcf_to_obsidian.py"],
-                cwd=Path(__file__).parent.parent,
+                cwd=Path(__file__).parent.parent.parent,
                 capture_output=True,
                 text=True,
                 timeout=30
@@ -95,7 +95,7 @@ END:VCARD"""
         try:
             result = subprocess.run(
                 [sys.executable, "vcf_to_obsidian.py", "--folder", str(temp_dirs['test_vcf_dir'])],
-                cwd=Path(__file__).parent.parent,
+                cwd=Path(__file__).parent.parent.parent,
                 capture_output=True,
                 text=True,
                 timeout=60
@@ -118,7 +118,7 @@ END:VCARD"""
                     "--folder", str(temp_dirs['test_vcf_dir']),
                     "--obsidian", str(temp_dirs['test_output_dir'])
                 ],
-                cwd=Path(__file__).parent.parent,
+                cwd=Path(__file__).parent.parent.parent,
                 capture_output=True,
                 text=True,
                 timeout=60
@@ -147,7 +147,7 @@ END:VCARD"""
                     "--file", str(vcf_file),
                     "--obsidian", str(temp_dirs['test_output_dir'])
                 ],
-                cwd=Path(__file__).parent.parent,
+                cwd=Path(__file__).parent.parent.parent,
                 capture_output=True,
                 text=True,
                 timeout=60
@@ -179,7 +179,7 @@ END:VCARD"""
                     "--folder", str(temp_dirs['test_output_dir2']),
                     "--obsidian", str(temp_dirs['test_output_dir'])
                 ],
-                cwd=Path(__file__).parent.parent,
+                cwd=Path(__file__).parent.parent.parent,
                 capture_output=True,
                 text=True,
                 timeout=60
@@ -205,7 +205,7 @@ END:VCARD"""
                     "--obsidian", str(temp_dirs['test_output_dir']),
                     "--obsidian", str(temp_dirs['test_output_dir2'])
                 ],
-                cwd=Path(__file__).parent.parent,
+                cwd=Path(__file__).parent.parent.parent,
                 capture_output=True,
                 text=True,
                 timeout=60
@@ -236,7 +236,7 @@ END:VCARD"""
                     "--file", str(vcf_file2),
                     "--obsidian", str(temp_dirs['test_output_dir'])
                 ],
-                cwd=Path(__file__).parent.parent,
+                cwd=Path(__file__).parent.parent.parent,
                 capture_output=True,
                 text=True,
                 timeout=60
@@ -263,7 +263,7 @@ END:VCARD"""
                     "--obsidian", str(temp_dirs['test_output_dir']),
                     "--verbose"
                 ],
-                cwd=Path(__file__).parent.parent,
+                cwd=Path(__file__).parent.parent.parent,
                 capture_output=True,
                 text=True,
                 timeout=60

@@ -5,8 +5,8 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-VCF_TO_OBSIDIAN="$SCRIPT_DIR/../vcf-to-obsidian.sh"
-TEST_DATA_DIR="$SCRIPT_DIR/../test_data/vcf"
+VCF_TO_OBSIDIAN="$SCRIPT_DIR/../../vcf-to-obsidian.sh"
+TEST_DATA_DIR="$SCRIPT_DIR/../data/vcf"
 OUTPUT_DIR="/tmp/vcf_to_obsidian_test_special_chars"
 
 echo "Running special character handling tests..."

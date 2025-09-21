@@ -10,7 +10,7 @@ import os
 import sys
 
 # Add the project root to Python path to import the module
-project_root = Path(__file__).parent.parent
+project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 from vcf_to_obsidian import parse_vcf_file, convert_vcf_to_markdown, generate_obsidian_markdown
@@ -38,7 +38,7 @@ def temp_dirs():
 @pytest.fixture
 def test_data_dir():
     """Path to the test data directory."""
-    return Path(__file__).parent.parent / "test_data" / "vcf"
+    return Path(__file__).parent.parent / "data" / "vcf"
 
 
 def create_test_vcf(test_vcf_dir, filename, content):
