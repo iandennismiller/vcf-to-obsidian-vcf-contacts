@@ -28,16 +28,16 @@ if [ -n "${BASH_VERSION:-}" ]; then
     # Extract major version from BASH_VERSION (e.g., "4.2.46(2)-release" -> "4")
     BASH_MAJOR=$(echo "$BASH_VERSION" | cut -d. -f1)
     if [ "$BASH_MAJOR" -lt 4 ]; then
-        # Check if /usr/local/bin/bash is available as a fallback
-        if [ -x "/usr/local/bin/bash" ]; then
-            # Check version of /usr/local/bin/bash
-            LOCAL_BASH_VERSION=$(/usr/local/bin/bash -c 'echo $BASH_VERSION')
+        # Check if /opt/homebrew/bin/bash is available as a fallback
+        if [ -x "/opt/homebrew/bin/bash" ]; then
+            # Check version of /opt/homebrew/bin/bash
+            LOCAL_BASH_VERSION=$(/opt/homebrew/bin/bash -c 'echo $BASH_VERSION')
             LOCAL_BASH_MAJOR=$(echo "$LOCAL_BASH_VERSION" | cut -d. -f1)
             if [ "$LOCAL_BASH_MAJOR" -ge 4 ]; then
-                # Re-exec the script with /usr/local/bin/bash
-                exec /usr/local/bin/bash "$0" "$@"
+                # Re-exec the script with /opt/homebrew/bin/bash
+                exec /opt/homebrew/bin/bash "$0" "$@"
             else
-                echo "Error: /usr/local/bin/bash version $LOCAL_BASH_VERSION is too old (need 4.0+)" >&2
+                echo "Error: /opt/homebrew/bin/bash version $LOCAL_BASH_VERSION is too old (need 4.0+)" >&2
                 exit 1
             fi
         else
@@ -51,7 +51,7 @@ if [ -n "${BASH_VERSION:-}" ]; then
             echo "  1. Install bash 4.0+ via Homebrew: brew install bash" >&2
             echo "  2. Use the Python implementation: pip install vcf-to-obsidian-vcf-contacts" >&2
             echo "" >&2
-            echo "Note: The /usr/local/bin/bash from Homebrew should be used instead of /bin/bash" >&2
+            echo "Note: The /opt/homebrew/bin/bash from Homebrew should be used instead of /bin/bash" >&2
             exit 1
         fi
     fi
