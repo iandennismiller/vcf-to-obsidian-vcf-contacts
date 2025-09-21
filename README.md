@@ -130,16 +130,10 @@ The script uses the `vobject` library for enhanced vCard parsing, which provides
 - **Better vCard 4.0 compatibility**: Improved parsing of modern vCard format
 - **Robust field handling**: More accurate extraction of complex fields like addresses
 - **Type parameter support**: Proper handling of type parameters (HOME, WORK, etc.)
-- **Fallback mechanism**: Automatically falls back to legacy parsing if vobject is unavailable
 
 ### Parsing Engine
 
-The script automatically uses the best available parsing method:
-
-1. **vobject library** (preferred): Uses the `vobject` library for comprehensive vCard 3.0/4.0 support
-2. **Legacy parser** (fallback): Uses a simple line-by-line parser if `vobject` is not available
-
-This dual approach ensures maximum compatibility while taking advantage of modern parsing capabilities when available.
+The script uses the `vobject` library for comprehensive vCard 3.0/4.0 support. This ensures reliable parsing of VCF files while taking advantage of modern parsing capabilities.
 
 ### Filename Generation
 
