@@ -12,7 +12,7 @@ Author: Ian Dennis Miller
 License: MIT
 """
 
-import argparse
+import click
 import os
 import sys
 from pathlib import Path
@@ -563,64 +563,54 @@ def convert_vcf_to_markdown(vcf_path, output_dir, template_path=None):
         return False
 
 
-def main():
-    """Main function to handle command-line interface and batch conversion."""
-    parser = argparse.ArgumentParser(
-        description="Convert VCF files to Markdown format for obsidian-vcf-contacts plugin"
-    )
-    parser.add_argument(
-        "source_dir",
-        help="Source directory containing VCF files"
-    )
-    parser.add_argument(
-        "dest_dir", 
-        help="Destination directory for Markdown files"
-    )
-    parser.add_argument(
-        "--template", "-t",
-        help="Path to custom Jinja2 template file"
-    )
-    parser.add_argument(
-        "--verbose", "-v",
-        action="store_true",
-        help="Enable verbose output"
-    )
+@click.command()
+@click.argument('source_dir', 
+                type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path))
+@click.argument('dest_dir',
+                type=click.Path(path_type=Path))
+@click.option('--template', '-t',
+              type=click.Path(exists=True, dir_okay=False, path_type=Path),
+              help="Path to custom Jinja2 template file")
+@click.option('--verbose', '-v',
+              is_flag=True,
+              help="Enable verbose output")
+def main(source_dir, dest_dir, template, verbose):
+    """Convert VCF files to Markdown format for obsidian-vcf-contacts plugin
     
-    args = parser.parse_args()
-    
-    # Validate source directory
-    source_path = Path(args.source_dir)
-    if not source_path.exists():
-        print(f"Error: Source directory '{source_path}' does not exist.")
-        sys.exit(1)
+    \b
+    SOURCE_DIR  Source directory containing VCF files
+    DEST_DIR    Destination directory for Markdown files
+    """
+    # Validate source directory (Click already validates existence)
+    source_path = source_dir
     if not source_path.is_dir():
-        print(f"Error: Source path '{source_path}' is not a directory.")
+        click.echo(f"Error: Source path '{source_path}' is not a directory.", err=True)
         sys.exit(1)
     
     # Create destination directory if it doesn't exist
-    dest_path = Path(args.dest_dir)
+    dest_path = dest_dir
     dest_path.mkdir(parents=True, exist_ok=True)
     
     # Find all VCF files
     vcf_files = list(source_path.glob("*.vcf")) + list(source_path.glob("*.VCF"))
     
     if not vcf_files:
-        print(f"No VCF files found in '{source_path}'")
+        click.echo(f"No VCF files found in '{source_path}'", err=True)
         sys.exit(1)
     
-    print(f"Found {len(vcf_files)} VCF file(s) in '{source_path}'")
-    print(f"Converting to Markdown in '{dest_path}'")
+    click.echo(f"Found {len(vcf_files)} VCF file(s) in '{source_path}'")
+    click.echo(f"Converting to Markdown in '{dest_path}'")
     
     # Convert each VCF file
     success_count = 0
     for vcf_file in vcf_files:
-        if args.verbose:
-            print(f"Processing: {vcf_file}")
+        if verbose:
+            click.echo(f"Processing: {vcf_file}")
         
-        if convert_vcf_to_markdown(vcf_file, dest_path, args.template):
+        if convert_vcf_to_markdown(vcf_file, dest_path, template):
             success_count += 1
     
-    print(f"Successfully converted {success_count}/{len(vcf_files)} files.")
+    click.echo(f"Successfully converted {success_count}/{len(vcf_files)} files.")
 
 
 if __name__ == "__main__":
