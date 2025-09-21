@@ -59,14 +59,19 @@ Convert a specific VCF file:
 
 ## Documentation
 
-For detailed information, see the documentation in the [`/docs`](docs/) folder:
+For detailed information, see the comprehensive documentation:
 
-- **[Installation Guide](docs/installation.md)** - All installation options (pip, pipx, development setup)
-- **[Usage Guide](docs/usage.md)** - Comprehensive usage examples and command-line options
-- **[Implementation Comparison](docs/implementation-comparison.md)** - Comparing bash vs Python implementations
-- **[VCF Support](docs/vcf-support.md)** - Supported vCard fields and filename generation
-- **[Testing](docs/testing.md)** - Running and organizing tests
-- **[Development](docs/development.md)** - Development setup and maintenance tasks
+- **[Online Documentation](https://iandennismiller.github.io/vcf-to-obsidian-vcf-contacts/)** - Complete documentation hosted on GitHub Pages
+- **[Build Documentation Locally](docx/)** - Build the documentation locally using Sphinx
+
+### Quick Links:
+- [Installation Guide](https://iandennismiller.github.io/vcf-to-obsidian-vcf-contacts/installation.html) - All installation options (pip, pipx, development setup)
+- [Usage Guide](https://iandennismiller.github.io/vcf-to-obsidian-vcf-contacts/usage.html) - Comprehensive usage examples and command-line options
+- [Implementation Comparison](https://iandennismiller.github.io/vcf-to-obsidian-vcf-contacts/implementation-comparison.html) - Comparing bash vs Python implementations
+- [VCF Support](https://iandennismiller.github.io/vcf-to-obsidian-vcf-contacts/vcf-support.html) - Supported vCard fields and filename generation
+- [Testing](https://iandennismiller.github.io/vcf-to-obsidian-vcf-contacts/testing.html) - Running and organizing tests
+- [Development](https://iandennismiller.github.io/vcf-to-obsidian-vcf-contacts/development.html) - Development setup and maintenance tasks
+- [API Reference](https://iandennismiller.github.io/vcf-to-obsidian-vcf-contacts/autoapi/vcf_to_obsidian/index.html) - Complete API documentation
 
 ## License
 

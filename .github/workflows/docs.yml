@@ -5,13 +5,13 @@ on:
     branches: [ main ]
     paths:
       - 'vcf_to_obsidian/**/*.py'
-      - 'sphinx/**'
+      - 'docx/**'
       - '.github/workflows/docs.yml'
   pull_request:
     branches: [ main ]
     paths:
       - 'vcf_to_obsidian/**/*.py'
-      - 'sphinx/**'
+      - 'docx/**'
       - '.github/workflows/docs.yml'
   # Allow manual triggering
   workflow_dispatch:
@@ -42,32 +42,32 @@ jobs:
         
     - name: Build documentation
       run: |
-        cd sphinx
+        cd docx
         make clean
         make html
         
     - name: Check documentation build
       run: |
         # Verify that documentation was built successfully
-        if [ ! -f "sphinx/build/html/index.html" ]; then
+        if [ ! -f "docx/build/html/index.html" ]; then
           echo "Error: Documentation build failed - index.html not found"
           exit 1
         fi
         
         # Check for autoapi generated content
-        if [ ! -d "sphinx/build/html/autoapi/vcf_to_obsidian" ]; then
+        if [ ! -d "docx/build/html/autoapi/vcf_to_obsidian" ]; then
           echo "Error: AutoAPI documentation not generated"
           exit 1
         fi
         
         echo "Documentation build successful!"
-        ls -la sphinx/build/html/
+        ls -la docx/build/html/
         
     - name: Upload documentation artifacts
       uses: actions/upload-artifact@v4
       with:
         name: documentation-html
-        path: sphinx/build/html/
+        path: docx/build/html/
         retention-days: 30
         
     # Optional: Deploy to GitHub Pages if this is the main branch
@@ -76,5 +76,5 @@ jobs:
       uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./sphinx/build/html
+        publish_dir: ./docx/build/html
         force_orphan: true
