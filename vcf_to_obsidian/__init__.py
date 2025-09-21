@@ -18,9 +18,6 @@ from .cli import CLI
 from .vcf_reader import VCFReader as parse_vcf_file_class
 from .markdown_writer import MarkdownWriter as generate_obsidian_markdown_class
 
-# For backward compatibility with test that expects HAS_VOBJECT
-HAS_VOBJECT = True
-
 # Main conversion function
 def convert_vcf_to_markdown(vcf_path, output_dir):
     """
@@ -42,10 +39,7 @@ def generate_obsidian_markdown(vcard):
     writer = MarkdownWriter()
     return writer.generate_obsidian_markdown(vcard)
 
-def parse_vcf_file(vcf_path):
-    """Parse a VCF file and return contact data."""
-    reader = VCFReader()
-    return reader.parse_vcf_file(vcf_path)
+
 
 def find_existing_files_with_uid(output_dir, uid):
     """Find existing Markdown files with the same UID."""
@@ -61,5 +55,5 @@ def main():
 __all__ = [
     'VCFReader', 'MarkdownWriter', 'FilenameGenerator', 'VCFConverter', 'CLI',
     'convert_vcf_to_markdown', 'generate_obsidian_markdown', 
-    'parse_vcf_file', 'find_existing_files_with_uid', 'main'
+    'find_existing_files_with_uid', 'main'
 ]

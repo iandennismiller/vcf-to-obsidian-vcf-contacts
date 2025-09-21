@@ -29,7 +29,6 @@ from vcf_to_obsidian import main
 from vcf_to_obsidian import (
     convert_vcf_to_markdown,
     generate_obsidian_markdown,
-    parse_vcf_file,
     find_existing_files_with_uid
 )
 
