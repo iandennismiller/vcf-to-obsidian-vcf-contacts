@@ -51,9 +51,12 @@ def generate_obsidian_markdown(vcard):
     if hasattr(vcard, 'fn') and vcard.fn.value:
         lines.append(f"FN: {vcard.fn.value}")
     
-    # Extract photo
+    # Extract photo - only include if it's a URL
     if hasattr(vcard, 'photo') and vcard.photo.value:
-        lines.append(f"PHOTO: {vcard.photo.value}")
+        photo_value = vcard.photo.value
+        # Only include PHOTO if it's a URL (starts with http:// or https://)
+        if isinstance(photo_value, str) and (photo_value.startswith('http://') or photo_value.startswith('https://')):
+            lines.append(f"PHOTO: {photo_value}")
     
     # Extract email addresses with type information
     if hasattr(vcard, 'email_list'):
@@ -141,9 +144,12 @@ def generate_obsidian_markdown(vcard):
     if hasattr(vcard, 'categories') and vcard.categories.value:
         lines.append(f"CATEGORIES: {vcard.categories.value}")
     
-    # Extract UID
+    # Extract UID - ensure it has urn:uuid: namespace prefix
     if hasattr(vcard, 'uid') and vcard.uid.value:
-        lines.append(f"UID: {vcard.uid.value}")
+        uid_value = vcard.uid.value
+        if not uid_value.startswith('urn:uuid:'):
+            uid_value = f"urn:uuid:{uid_value}"
+        lines.append(f"UID: {uid_value}")
     
     # Extract version
     if hasattr(vcard, 'version') and vcard.version.value:

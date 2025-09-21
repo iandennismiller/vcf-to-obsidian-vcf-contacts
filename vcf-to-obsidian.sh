@@ -71,6 +71,7 @@ parse_vcf_file() {
     fields[NOTE]=""
     fields[URL]=""
     fields[CATEGORIES]=""
+    fields[PHOTO]=""
     
     # Arrays for multiple-value fields
     local -a tel_fields
@@ -141,6 +142,12 @@ parse_vcf_file() {
                     ;;
                 "CATEGORIES")
                     fields[CATEGORIES]="$value"
+                    ;;
+                "PHOTO")
+                    # Only include PHOTO if it's a URL (starts with http:// or https://)
+                    if [[ "$value" =~ ^https?:// ]]; then
+                        fields[PHOTO]="$value"
+                    fi
                     ;;
                 "TEL")
                     # Extract type from parameters if present
@@ -239,6 +246,11 @@ generate_markdown() {
         echo "FN: ${fields[FN]}"
     fi
     
+    # Extract photo - only if it's a URL
+    if [[ -n "${fields[PHOTO]:-}" ]]; then
+        echo "PHOTO: ${fields[PHOTO]}"
+    fi
+    
     # Extract email addresses with type information
     for email in "${email_list[@]}"; do
         IFS=':' read -r type value <<< "$email"
@@ -298,9 +310,13 @@ generate_markdown() {
         echo "CATEGORIES: ${fields[CATEGORIES]}"
     fi
     
-    # Extract UID
+    # Extract UID - ensure it has urn:uuid: namespace prefix
     if [[ -n "${fields[UID]:-}" ]]; then
-        echo "UID: ${fields[UID]}"
+        local uid_value="${fields[UID]}"
+        if [[ ! "$uid_value" =~ ^urn:uuid: ]]; then
+            uid_value="urn:uuid:$uid_value"
+        fi
+        echo "UID: $uid_value"
     fi
     
     # Extract version

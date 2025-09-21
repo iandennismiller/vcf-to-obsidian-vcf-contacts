@@ -32,7 +32,7 @@ if ! grep -q "FN: Test User" "$output_file"; then
     exit 1
 fi
 
-if ! grep -q "UID: content-test-123" "$output_file"; then
+if ! grep -q "UID: urn:uuid:content-test-123" "$output_file"; then
     echo "FAIL: Output file missing UID field"
     cat "$output_file"
     exit 1
