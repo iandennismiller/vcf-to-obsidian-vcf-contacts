@@ -25,7 +25,23 @@ vcf-contacts plugin. The library includes:
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: User Guide:
+
+   installation
+   usage
+   implementation-comparison
+   vcf-support
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Development:
+
+   development
+   testing
+
+.. toctree::
+   :maxdepth: 2
+   :caption: API Reference:
 
    autoapi/vcf_to_obsidian/index
 
