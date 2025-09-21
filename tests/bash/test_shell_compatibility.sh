@@ -4,7 +4,7 @@
 # Tests for shell compatibility and error handling
 
 # Source common test configuration
-source "$(dirname "${BASH_SOURCE[0]}")/test_common.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/run_all_tests.sh"
 
 echo "Running shell compatibility tests..."
 

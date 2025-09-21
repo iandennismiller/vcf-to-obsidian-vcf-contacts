@@ -5,7 +5,7 @@
 set -e
 
 # Source common test configuration
-source "$(dirname "${BASH_SOURCE[0]}")/test_common.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/run_all_tests.sh"
 
 OUTPUT_DIR=$(create_unique_test_dir "content")
 
