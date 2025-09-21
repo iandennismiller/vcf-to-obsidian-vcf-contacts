@@ -17,320 +17,158 @@ import os
 import sys
 from pathlib import Path
 import re
-from jinja2 import Environment, FileSystemLoader, Template
 import vobject
 
 
-def parse_vcf_file_vobject(vcf_path):
+
+def generate_obsidian_markdown(vcard):
     """
-    Parse a VCF file using vobject library for better vCard 4.0 support.
+    Generate Markdown content compatible with obsidian-vcf-contacts plugin.
+    Works directly with vobject instead of intermediate representation.
     
     Args:
-        vcf_path (Path): Path to the VCF file
+        vcard: vobject vCard object
         
     Returns:
-        dict: Parsed contact data
+        str: Markdown content with frontmatter
     """
-    contact_data = {
-        'uid': '',
-        'full_name': '',
-        'given_name': '',
-        'family_name': '',
-        'organization': '',
-        'phone_numbers': [],
-        'email_addresses': [],
-        'addresses': [],
-        'notes': '',
-        'url': '',
-        'birthday': '',
-        'photo': '',
-        'categories': '',
-        'version': '',
-        # Store raw field data with type information
-        'raw_emails': {},  # Will store email addresses with their types
-        'raw_phones': {},  # Will store phone numbers with their types  
-        'raw_urls': {},    # Will store URLs with their types
-        'raw_addresses': {}  # Will store addresses with their types and components
-    }
+    # Build the markdown content directly from vobject
+    lines = ["---"]
     
-    try:
-        with open(vcf_path, 'r', encoding='utf-8') as file:
-            content = file.read()
-        
-        vcard = vobject.readOne(content)
-        
-        # Extract UID
-        if hasattr(vcard, 'uid'):
-            contact_data['uid'] = vcard.uid.value
-        
-        # Extract Full Name
-        if hasattr(vcard, 'fn'):
-            contact_data['full_name'] = vcard.fn.value
-        
-        # Extract structured name
-        if hasattr(vcard, 'n'):
-            n = vcard.n.value
-            contact_data['family_name'] = n.family if n.family else ''
-            contact_data['given_name'] = n.given if n.given else ''
-        
-        # Extract organization
-        if hasattr(vcard, 'org'):
-            org_value = vcard.org.value
-            if isinstance(org_value, list) and org_value:
-                contact_data['organization'] = org_value[0]
-            elif isinstance(org_value, str):
-                contact_data['organization'] = org_value
-        
-        # Extract phone numbers
-        if hasattr(vcard, 'tel_list'):
-            for tel in vcard.tel_list:
-                contact_data['phone_numbers'].append(tel.value)
-                
-                # Extract type information for raw_phones
-                type_label = 'DEFAULT'
-                if hasattr(tel, 'params') and 'TYPE' in tel.params:
-                    type_values = tel.params['TYPE']
-                    if isinstance(type_values, list) and type_values:
-                        type_label = type_values[0].upper()
-                    elif isinstance(type_values, str):
-                        type_label = type_values.upper()
-                
-                field_key = f"TEL[{type_label}]"
-                contact_data['raw_phones'][field_key] = tel.value
-        
-        # Extract email addresses
-        if hasattr(vcard, 'email_list'):
-            for email in vcard.email_list:
-                contact_data['email_addresses'].append(email.value)
-                
-                # Extract type information for raw_emails
-                type_label = 'DEFAULT'
-                if hasattr(email, 'params') and 'TYPE' in email.params:
-                    type_values = email.params['TYPE']
-                    if isinstance(type_values, list) and type_values:
-                        type_label = type_values[0].upper()
-                    elif isinstance(type_values, str):
-                        type_label = type_values.upper()
-                
-                field_key = f"EMAIL[{type_label}]"
-                contact_data['raw_emails'][field_key] = email.value
-        
-        # Extract addresses
-        if hasattr(vcard, 'adr_list'):
-            for adr in vcard.adr_list:
-                adr_value = adr.value
-                # Combine non-empty address parts
-                address_parts = []
-                if adr_value.street:
-                    address_parts.append(adr_value.street)
-                if adr_value.city:
-                    address_parts.append(adr_value.city)
-                if adr_value.region:
-                    address_parts.append(adr_value.region)
-                if adr_value.code:
-                    address_parts.append(adr_value.code)
-                if adr_value.country:
-                    address_parts.append(adr_value.country)
-                
-                if address_parts:
-                    contact_data['addresses'].append(', '.join(address_parts))
-                
-                # Extract type information for raw_addresses
-                type_label = 'DEFAULT'
-                if hasattr(adr, 'params') and 'TYPE' in adr.params:
-                    type_values = adr.params['TYPE']
-                    if isinstance(type_values, list) and type_values:
-                        type_label = type_values[0].upper()
-                    elif isinstance(type_values, str):
-                        type_label = type_values.upper()
-                
-                # Store address components
-                base_key = f"ADR[{type_label}]"
-                if adr_value.box:
-                    contact_data['raw_addresses'][f"{base_key}.POBOX"] = adr_value.box
-                if adr_value.extended:
-                    contact_data['raw_addresses'][f"{base_key}.EXTENDED"] = adr_value.extended
-                if adr_value.street:
-                    contact_data['raw_addresses'][f"{base_key}.STREET"] = adr_value.street
-                if adr_value.city:
-                    contact_data['raw_addresses'][f"{base_key}.LOCALITY"] = adr_value.city
-                if adr_value.region:
-                    contact_data['raw_addresses'][f"{base_key}.REGION"] = adr_value.region
-                if adr_value.code:
-                    contact_data['raw_addresses'][f"{base_key}.POSTAL"] = adr_value.code
-                if adr_value.country:
-                    contact_data['raw_addresses'][f"{base_key}.COUNTRY"] = adr_value.country
-        
-        # Extract notes
-        if hasattr(vcard, 'note'):
-            contact_data['notes'] = vcard.note.value
-        
-        # Extract URL
-        if hasattr(vcard, 'url'):
-            contact_data['url'] = vcard.url.value
-            
-            # Extract type information for raw_urls
+    # Extract structured name
+    if hasattr(vcard, 'n') and vcard.n.value:
+        n = vcard.n.value
+        if hasattr(n, 'family') and n.family:
+            lines.append(f"N.FN: {n.family}")
+        if hasattr(n, 'given') and n.given:
+            lines.append(f"N.GN: {n.given}")
+    
+    # Extract Full Name
+    if hasattr(vcard, 'fn') and vcard.fn.value:
+        lines.append(f"FN: {vcard.fn.value}")
+    
+    # Extract photo
+    if hasattr(vcard, 'photo') and vcard.photo.value:
+        lines.append(f"PHOTO: {vcard.photo.value}")
+    
+    # Extract email addresses with type information
+    if hasattr(vcard, 'email_list'):
+        for email in vcard.email_list:
             type_label = 'DEFAULT'
-            if hasattr(vcard.url, 'params') and 'TYPE' in vcard.url.params:
-                type_values = vcard.url.params['TYPE']
+            if hasattr(email, 'params') and 'TYPE' in email.params:
+                type_values = email.params['TYPE']
                 if isinstance(type_values, list) and type_values:
                     type_label = type_values[0].upper()
                 elif isinstance(type_values, str):
                     type_label = type_values.upper()
             
-            field_key = f"URL[{type_label}]"
-            contact_data['raw_urls'][field_key] = vcard.url.value
-        
-        # Extract birthday
-        if hasattr(vcard, 'bday'):
-            contact_data['birthday'] = str(vcard.bday.value)
-        
-        # Extract photo
-        if hasattr(vcard, 'photo'):
-            contact_data['photo'] = vcard.photo.value
-        
-        # Extract categories
-        if hasattr(vcard, 'categories'):
-            contact_data['categories'] = vcard.categories.value
-        
-        # Extract version
-        if hasattr(vcard, 'version'):
-            contact_data['version'] = vcard.version.value
+            field_key = f"EMAIL[{type_label}]"
+            lines.append(f'"{field_key}": {email.value}')
+    
+    # Extract phone numbers with type information
+    if hasattr(vcard, 'tel_list'):
+        for tel in vcard.tel_list:
+            type_label = 'DEFAULT'
+            if hasattr(tel, 'params') and 'TYPE' in tel.params:
+                type_values = tel.params['TYPE']
+                if isinstance(type_values, list) and type_values:
+                    type_label = type_values[0].upper()
+                elif isinstance(type_values, str):
+                    type_label = type_values.upper()
             
-    except Exception as e:
-        print(f"Error parsing VCF file {vcf_path} with vobject: {e}")
+            field_key = f"TEL[{type_label}]"
+            lines.append(f'"{field_key}": "{tel.value}"')
+    
+    # Extract birthday
+    if hasattr(vcard, 'bday') and vcard.bday.value:
+        lines.append(f"BDAY: {vcard.bday.value}")
+    
+    # Extract URLs with type information
+    if hasattr(vcard, 'url') and vcard.url.value:
+        type_label = 'DEFAULT'
+        if hasattr(vcard.url, 'params') and 'TYPE' in vcard.url.params:
+            type_values = vcard.url.params['TYPE']
+            if isinstance(type_values, list) and type_values:
+                type_label = type_values[0].upper()
+            elif isinstance(type_values, str):
+                type_label = type_values.upper()
         
-    return contact_data
-
-
-def parse_vcf_file(vcf_path):
-    """
-    Parse a VCF file and extract contact information.
-    Uses vobject library for vCard parsing.
+        field_key = f"URL[{type_label}]"
+        lines.append(f'"{field_key}": {vcard.url.value}')
     
-    Args:
-        vcf_path (Path): Path to the VCF file
+    # Extract organization
+    if hasattr(vcard, 'org') and vcard.org.value:
+        org_value = vcard.org.value
+        if isinstance(org_value, list) and org_value:
+            lines.append(f"ORG: {org_value[0]}")
+        elif isinstance(org_value, str):
+            lines.append(f"ORG: {org_value}")
+    
+    # Extract addresses with type information
+    if hasattr(vcard, 'adr_list'):
+        for adr in vcard.adr_list:
+            adr_value = adr.value
+            type_label = 'DEFAULT'
+            if hasattr(adr, 'params') and 'TYPE' in adr.params:
+                type_values = adr.params['TYPE']
+                if isinstance(type_values, list) and type_values:
+                    type_label = type_values[0].upper()
+                elif isinstance(type_values, str):
+                    type_label = type_values.upper()
+            
+            base_key = f"ADR[{type_label}]"
+            
+            if hasattr(adr_value, 'box') and adr_value.box:
+                lines.append(f'"{base_key}.POBOX": {adr_value.box}')
+            if hasattr(adr_value, 'extended') and adr_value.extended:
+                lines.append(f'"{base_key}.EXTENDED": {adr_value.extended}')
+            if hasattr(adr_value, 'street') and adr_value.street:
+                lines.append(f'"{base_key}.STREET": {adr_value.street}')
+            if hasattr(adr_value, 'city') and adr_value.city:
+                lines.append(f'"{base_key}.LOCALITY": {adr_value.city}')
+            if hasattr(adr_value, 'region') and adr_value.region:
+                lines.append(f'"{base_key}.REGION": {adr_value.region}')
+            if hasattr(adr_value, 'code') and adr_value.code:
+                lines.append(f'"{base_key}.POSTAL": "{adr_value.code}"')
+            if hasattr(adr_value, 'country') and adr_value.country:
+                lines.append(f'"{base_key}.COUNTRY": {adr_value.country}')
+    
+    # Extract categories
+    if hasattr(vcard, 'categories') and vcard.categories.value:
+        lines.append(f"CATEGORIES: {vcard.categories.value}")
+    
+    # Extract UID
+    if hasattr(vcard, 'uid') and vcard.uid.value:
+        lines.append(f"UID: {vcard.uid.value}")
+    
+    # Extract version
+    if hasattr(vcard, 'version') and vcard.version.value:
+        lines.append(f'VERSION: "{vcard.version.value}"')
+    
+    lines.append("")
+    lines.append("---")
+    
+    # Add notes section if available
+    notes_added = False
+    if hasattr(vcard, 'note') and vcard.note.value:
+        notes_added = True
+    if hasattr(vcard, 'categories') and vcard.categories.value:
+        notes_added = True
+    
+    if notes_added:
+        lines.append("#### Notes")
+        lines.append("")
         
-    Returns:
-        dict: Parsed contact data
-    """
-    return parse_vcf_file_vobject(vcf_path)
-
-
-def generate_obsidian_markdown(contact_data, template_path=None):
-    """
-    Generate Markdown content compatible with obsidian-vcf-contacts plugin.
-    
-    Args:
-        contact_data (dict): Parsed contact data
-        template_path (str, optional): Path to custom Jinja2 template file.
-                                     If None, uses default template.
-        
-    Returns:
-        str: Markdown content with frontmatter
-    """
-    # Use full name as title, fallback to given + family name
-    title = contact_data['full_name']
-    if not title and (contact_data['given_name'] or contact_data['family_name']):
-        title = f"{contact_data['given_name']} {contact_data['family_name']}".strip()
-    
-    # Prepare template variables
-    template_vars = {
-        'title': title,
-        'uid': contact_data['uid'],
-        'full_name': contact_data['full_name'],
-        'given_name': contact_data['given_name'],
-        'family_name': contact_data['family_name'],
-        'organization': contact_data['organization'],
-        'phone_numbers': contact_data['phone_numbers'],
-        'email_addresses': contact_data['email_addresses'],
-        'addresses': contact_data['addresses'],
-        'notes': contact_data['notes'],
-        'url': contact_data['url'],
-        'birthday': contact_data['birthday'],
-        'photo': contact_data['photo'],
-        'categories': contact_data['categories'],
-        'version': contact_data['version'],
-        'raw_emails': contact_data['raw_emails'],
-        'raw_phones': contact_data['raw_phones'],
-        'raw_urls': contact_data['raw_urls'],
-        'raw_addresses': contact_data['raw_addresses']
-    }
-    
-    if template_path and Path(template_path).exists():
-        # Use custom template
-        template_dir = Path(template_path).parent
-        template_name = Path(template_path).name
-        env = Environment(loader=FileSystemLoader(template_dir))
-        template = env.get_template(template_name)
-    else:
-        # Use default template
-        script_dir = Path(__file__).parent
-        template_dir = script_dir / 'templates'
-        if template_dir.exists():
-            env = Environment(loader=FileSystemLoader(template_dir))
-            template = env.get_template('default.md.j2')
+        if hasattr(vcard, 'categories') and vcard.categories.value:
+            category_list = vcard.categories.value.split(',')
+            contact_line = "#Contact"
+            for category in category_list:
+                contact_line += f" #{category.strip()}"
+            lines.append(contact_line)
         else:
-            # Fallback to inline template if templates directory doesn't exist
-            template_str = """---
-{%- if family_name %}
-N.FN: {{ family_name }}
-{%- endif %}
-{%- if given_name %}
-N.GN: {{ given_name }}
-{%- endif %}
-{%- if full_name %}
-FN: {{ full_name }}
-{%- endif %}
-{%- if photo %}
-PHOTO: {{ photo }}
-{%- endif %}
-{%- for email_key, email_value in raw_emails.items() %}
-"{{ email_key }}": {{ email_value }}
-{%- endfor %}
-{%- for phone_key, phone_value in raw_phones.items() %}
-"{{ phone_key }}": "{{ phone_value }}"
-{%- endfor %}
-{%- if birthday %}
-BDAY: {{ birthday }}
-{%- endif %}
-{%- for url_key, url_value in raw_urls.items() %}
-"{{ url_key }}": {{ url_value }}
-{%- endfor %}
-{%- if organization %}
-ORG: {{ organization }}
-{%- endif %}
-{%- for addr_key, addr_value in raw_addresses.items() %}
-"{{ addr_key }}": {% if addr_key.endswith('.POSTAL') %}"{{ addr_value }}"{% else %}{{ addr_value }}{% endif %}
-{%- endfor %}
-{%- if categories %}
-CATEGORIES: {{ categories }}
-{%- endif %}
-{%- if uid %}
-UID: {{ uid }}
-{%- endif %}
-{%- if version %}
-VERSION: "{{ version }}"
-{%- endif %}
-
----
-{%- if notes or categories %}
-#### Notes
-
-{%- if categories %}
-{%- set category_list = categories.split(',') %}
-#Contact{% for category in category_list %} #{{ category.strip() }}{% endfor %}
-{%- else %}
-#Contact
-{%- endif %}
-{%- endif %}"""
-            template = Template(template_str)
+            lines.append("#Contact")
     
-    # Render the template with contact data
-    content = template.render(**template_vars)
-    
-    # Clean up any extra whitespace/newlines at the end
-    return content.strip() + '\n'
+    return '\n'.join(lines) + '\n'
 
 
 def find_existing_files_with_uid(output_dir, uid):
@@ -364,37 +202,45 @@ def find_existing_files_with_uid(output_dir, uid):
     return matching_files
 
 
-def convert_vcf_to_markdown(vcf_path, output_dir, template_path=None):
+def convert_vcf_to_markdown(vcf_path, output_dir):
     """
     Convert a single VCF file to Markdown format.
     
     Args:
         vcf_path (Path): Path to the VCF file
         output_dir (Path): Output directory for Markdown files
-        template_path (str, optional): Path to custom Jinja2 template file
         
     Returns:
         bool: True if successful, False otherwise
     """
     try:
-        # Parse VCF file
-        contact_data = parse_vcf_file(vcf_path)
+        # Parse VCF file directly with vobject
+        with open(vcf_path, 'r', encoding='utf-8') as file:
+            content = file.read()
         
-        # Generate Markdown content
-        markdown_content = generate_obsidian_markdown(contact_data, template_path)
+        vcard = vobject.readOne(content)
+        
+        # Generate Markdown content directly from vobject
+        markdown_content = generate_obsidian_markdown(vcard)
         
         # Create output filename based on FN (preferred) or UID (fallback)
-        contact_name = contact_data['full_name']
-        if not contact_name and (contact_data['given_name'] or contact_data['family_name']):
-            contact_name = f"{contact_data['given_name']} {contact_data['family_name']}".strip()
+        contact_name = ''
+        if hasattr(vcard, 'fn') and vcard.fn.value:
+            contact_name = vcard.fn.value
+        elif hasattr(vcard, 'n') and vcard.n.value:
+            n = vcard.n.value
+            given_name = getattr(n, 'given', '') or ''
+            family_name = getattr(n, 'family', '') or ''
+            if given_name or family_name:
+                contact_name = f"{given_name} {family_name}".strip()
         
         if contact_name:
             # Use contact name as filename (preferred)
             safe_filename = re.sub(r'[<>:"/\\|?*]', '_', contact_name)
             output_file = output_dir / f"{safe_filename}.md"
-        elif contact_data['uid']:
+        elif hasattr(vcard, 'uid') and vcard.uid.value:
             # Fallback to UID if no contact name is available
-            safe_filename = re.sub(r'[<>:"/\\|?*]', '_', contact_data['uid'])
+            safe_filename = re.sub(r'[<>:"/\\|?*]', '_', vcard.uid.value)
             output_file = output_dir / f"{safe_filename}.md"
         else:
             # Final fallback to VCF filename if neither name nor UID is available
@@ -402,8 +248,8 @@ def convert_vcf_to_markdown(vcf_path, output_dir, template_path=None):
             output_file = output_dir / f"{safe_filename}.md"
         
         # Remove existing files with the same UID if the filename would be different
-        if contact_data['uid']:
-            existing_files = find_existing_files_with_uid(output_dir, contact_data['uid'])
+        if hasattr(vcard, 'uid') and vcard.uid.value:
+            existing_files = find_existing_files_with_uid(output_dir, vcard.uid.value)
             for existing_file in existing_files:
                 if existing_file != output_file:
                     try:
@@ -429,13 +275,10 @@ def convert_vcf_to_markdown(vcf_path, output_dir, template_path=None):
                 type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path))
 @click.argument('dest_dir',
                 type=click.Path(path_type=Path))
-@click.option('--template', '-t',
-              type=click.Path(exists=True, dir_okay=False, path_type=Path),
-              help="Path to custom Jinja2 template file")
 @click.option('--verbose', '-v',
               is_flag=True,
               help="Enable verbose output")
-def main(source_dir, dest_dir, template, verbose):
+def main(source_dir, dest_dir, verbose):
     """Convert VCF files to Markdown format for obsidian-vcf-contacts plugin
     
     \b
@@ -468,7 +311,7 @@ def main(source_dir, dest_dir, template, verbose):
         if verbose:
             click.echo(f"Processing: {vcf_file}")
         
-        if convert_vcf_to_markdown(vcf_file, dest_path, template):
+        if convert_vcf_to_markdown(vcf_file, dest_path):
             success_count += 1
     
     click.echo(f"Successfully converted {success_count}/{len(vcf_files)} files.")
