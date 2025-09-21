@@ -271,50 +271,106 @@ def convert_vcf_to_markdown(vcf_path, output_dir):
 
 
 @click.command()
-@click.argument('source_dir', 
-                type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path))
-@click.argument('dest_dir',
-                type=click.Path(path_type=Path))
+@click.option('--folder', 
+              type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path),
+              multiple=True,
+              help="Source directory containing VCF files (can be specified multiple times)")
+@click.option('--obsidian',
+              type=click.Path(path_type=Path),
+              multiple=True,
+              help="Destination directory for Markdown files (can be specified multiple times)")
+@click.option('--file',
+              type=click.Path(exists=True, file_okay=True, dir_okay=False, path_type=Path),
+              multiple=True,
+              help="Specific VCF file to process (can be specified multiple times)")
 @click.option('--verbose', '-v',
               is_flag=True,
               help="Enable verbose output")
-def main(source_dir, dest_dir, verbose):
+def main(folder, obsidian, file, verbose):
     """Convert VCF files to Markdown format for obsidian-vcf-contacts plugin
     
-    \b
-    SOURCE_DIR  Source directory containing VCF files
-    DEST_DIR    Destination directory for Markdown files
+    Use --folder to specify source directories containing VCF files
+    Use --obsidian to specify destination directories for Markdown files  
+    Use --file to specify individual VCF files to process
+    
+    All options can be specified multiple times to process multiple sources/destinations.
     """
-    # Validate source directory (Click already validates existence)
-    source_path = source_dir
-    if not source_path.is_dir():
-        click.echo(f"Error: Source path '{source_path}' is not a directory.", err=True)
+    # Validate that at least one source is specified
+    if not folder and not file:
+        click.echo("Error: Must specify at least one --folder or --file option.", err=True)
         sys.exit(1)
     
-    # Create destination directory if it doesn't exist
-    dest_path = dest_dir
-    dest_path.mkdir(parents=True, exist_ok=True)
-    
-    # Find all VCF files
-    vcf_files = list(source_path.glob("*.vcf")) + list(source_path.glob("*.VCF"))
-    
-    if not vcf_files:
-        click.echo(f"No VCF files found in '{source_path}'", err=True)
+    # Validate that at least one destination is specified
+    if not obsidian:
+        click.echo("Error: Must specify at least one --obsidian option.", err=True)
         sys.exit(1)
     
-    click.echo(f"Found {len(vcf_files)} VCF file(s) in '{source_path}'")
-    click.echo(f"Converting to Markdown in '{dest_path}'")
+    # Collect all VCF files to process
+    all_vcf_files = []
     
-    # Convert each VCF file
-    success_count = 0
-    for vcf_file in vcf_files:
-        if verbose:
-            click.echo(f"Processing: {vcf_file}")
+    # Process folder sources
+    for source_path in folder:
+        if not source_path.is_dir():
+            click.echo(f"Error: Source path '{source_path}' is not a directory.", err=True)
+            sys.exit(1)
         
-        if convert_vcf_to_markdown(vcf_file, dest_path):
-            success_count += 1
+        # Find all VCF files in this directory
+        vcf_files = list(source_path.glob("*.vcf")) + list(source_path.glob("*.VCF"))
+        all_vcf_files.extend(vcf_files)
+        
+        if verbose:
+            click.echo(f"Found {len(vcf_files)} VCF file(s) in '{source_path}'")
     
-    click.echo(f"Successfully converted {success_count}/{len(vcf_files)} files.")
+    # Process individual file sources
+    for file_path in file:
+        if not file_path.exists():
+            click.echo(f"Error: File '{file_path}' does not exist.", err=True)
+            sys.exit(1)
+        
+        if not file_path.is_file():
+            click.echo(f"Error: Path '{file_path}' is not a file.", err=True)
+            sys.exit(1)
+        
+        # Check if it's a VCF file by extension
+        if file_path.suffix.lower() not in ['.vcf']:
+            click.echo(f"Warning: File '{file_path}' does not have a .vcf extension.", err=True)
+        
+        all_vcf_files.append(file_path)
+        
+        if verbose:
+            click.echo(f"Added individual file: '{file_path}'")
+    
+    if not all_vcf_files:
+        click.echo("No VCF files found to process.", err=True)
+        sys.exit(1)
+    
+    click.echo(f"Found {len(all_vcf_files)} VCF file(s) to process")
+    
+    # Create all destination directories
+    dest_paths = []
+    for dest_path in obsidian:
+        dest_path.mkdir(parents=True, exist_ok=True)
+        dest_paths.append(dest_path)
+        if verbose:
+            click.echo(f"Destination directory: '{dest_path}'")
+    
+    click.echo(f"Converting to Markdown in {len(dest_paths)} destination(s)")
+    
+    # Convert each VCF file to each destination
+    total_conversions = 0
+    successful_conversions = 0
+    
+    for vcf_file in all_vcf_files:
+        for dest_path in dest_paths:
+            total_conversions += 1
+            
+            if verbose:
+                click.echo(f"Processing: {vcf_file} -> {dest_path}")
+            
+            if convert_vcf_to_markdown(vcf_file, dest_path):
+                successful_conversions += 1
+    
+    click.echo(f"Successfully completed {successful_conversions}/{total_conversions} conversions.")
 
 
 if __name__ == "__main__":
