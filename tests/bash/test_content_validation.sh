@@ -4,16 +4,12 @@
 
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-VCF_TO_OBSIDIAN="$SCRIPT_DIR/../../scripts/vcf-to-obsidian.sh"
-TEST_DATA_DIR="$SCRIPT_DIR/../data/vcf"
-OUTPUT_DIR="/tmp/vcf_to_obsidian_test_content"
+# Source common test configuration
+source "$(dirname "${BASH_SOURCE[0]}")/test_common.sh"
+
+OUTPUT_DIR=$(create_unique_test_dir "content")
 
 echo "Running content validation tests..."
-
-# Clean up previous test runs
-rm -rf "$OUTPUT_DIR"
-mkdir -p "$OUTPUT_DIR"
 
 # Test 1: Basic content validation
 echo "Test 1: Validating basic output content..."
@@ -176,8 +172,5 @@ if ! grep -q "REV: " "$minimal_file"; then
 fi
 
 echo "✓ Test 7 passed: Empty fields handling"
-
-# Clean up
-rm -rf "$OUTPUT_DIR"
 
 echo "All content validation tests passed! ✅"

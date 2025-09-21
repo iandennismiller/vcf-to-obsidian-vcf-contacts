@@ -4,16 +4,12 @@
 
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-VCF_TO_OBSIDIAN="$SCRIPT_DIR/../../scripts/vcf-to-obsidian.sh"
-TEST_DATA_DIR="$SCRIPT_DIR/../data/vcf"
-OUTPUT_DIR="/tmp/vcf_to_obsidian_test_special_chars"
+# Source common test configuration
+source "$(dirname "${BASH_SOURCE[0]}")/test_common.sh"
+
+OUTPUT_DIR=$(create_unique_test_dir "special_chars")
 
 echo "Running special character handling tests..."
-
-# Clean up previous test runs
-rm -rf "$OUTPUT_DIR"
-mkdir -p "$OUTPUT_DIR"
 
 # Test 1: Special characters in FN field
 echo "Test 1: Testing special character handling in filename..."
@@ -65,8 +61,5 @@ for file in "$OUTPUT_DIR"/*.md; do
     fi
 done
 echo "✓ Test 4 passed: Filename character replacement"
-
-# Clean up
-rm -rf "$OUTPUT_DIR"
 
 echo "All special character handling tests passed! ✅"

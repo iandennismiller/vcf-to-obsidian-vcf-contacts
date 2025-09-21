@@ -4,16 +4,12 @@
 
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-VCF_TO_OBSIDIAN="$SCRIPT_DIR/../../scripts/vcf-to-obsidian.sh"
-TEST_DATA_DIR="$SCRIPT_DIR/../data/vcf"
-OUTPUT_DIR="/tmp/vcf_to_obsidian_test_rev"
+# Source common test configuration
+source "$(dirname "${BASH_SOURCE[0]}")/test_common.sh"
+
+OUTPUT_DIR=$(create_unique_test_dir "rev")
 
 echo "Running REV timestamp tests..."
-
-# Clean up previous test runs
-rm -rf "$OUTPUT_DIR"
-mkdir -p "$OUTPUT_DIR"
 
 # Test 1: REV timestamp presence and format
 echo "Test 1: Validating REV timestamp presence and format..."
@@ -101,14 +97,14 @@ echo "✓ Test 3 passed: REV in different VCF files"
 
 # Test 4: REV timestamp consistency across multiple files in batch
 echo "Test 4: Validating REV in batch processing..."
-rm -rf "$OUTPUT_DIR"/*
-"$VCF_TO_OBSIDIAN" --folder "$TEST_DATA_DIR" --obsidian "$OUTPUT_DIR"
+OUTPUT_DIR_4=$(create_unique_test_dir "rev_batch")
+"$VCF_TO_OBSIDIAN" --folder "$TEST_DATA_DIR" --obsidian "$OUTPUT_DIR_4"
 
 # Check that all generated files have REV timestamps
 rev_count=0
 total_files=0
 
-for md_file in "$OUTPUT_DIR"/*.md; do
+for md_file in "$OUTPUT_DIR_4"/*.md; do
     if [[ -f "$md_file" ]]; then
         total_files=$((total_files + 1))
         if grep -q "REV: " "$md_file"; then
@@ -126,8 +122,5 @@ if [[ $rev_count -ne $total_files ]]; then
 fi
 
 echo "✓ Test 4 passed: REV in batch processing ($rev_count/$total_files files)"
-
-# Clean up
-rm -rf "$OUTPUT_DIR"
 
 echo "All REV timestamp tests passed! ✅"

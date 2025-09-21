@@ -93,11 +93,7 @@ print_summary() {
 cleanup() {
     echo ""
     echo "🧹 Cleaning up temporary test files..."
-    rm -rf /tmp/vcf_to_obsidian_test_*
-    rm -rf /tmp/test_vcf_subset
-    rm -rf /tmp/test_mixed_vcards
-    rm -rf /tmp/empty_vcf_dir
-    rm -rf /tmp/test_obsidian*
+    rm -rf /tmp/vcf_to_obsidian_test
     echo "Cleanup complete."
 }
 
