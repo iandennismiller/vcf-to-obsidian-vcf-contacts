@@ -43,27 +43,7 @@ cd vcf-to-obsidian-vcf-contacts
 pip install -e .
 ```
 
-### Option 4: Direct Script Usage
-
-1. Clone this repository:
-```bash
-git clone https://github.com/iandennismiller/vcf-to-obsidian-vcf-contacts.git
-cd vcf-to-obsidian-vcf-contacts
-```
-
-2. Install dependencies:
-```bash
-pip install jinja2 vobject
-```
-
-3. Make the script executable (optional):
-```bash
-chmod +x vcf_to_obsidian.py
-```
-
 ## Usage
-
-### Basic Usage
 
 After installing with pip or pipx:
 ```bash
@@ -82,19 +62,9 @@ Convert all VCF files from a directory (using installed CLI):
 vcf-to-obsidian ./contacts ./obsidian-vault/contacts
 ```
 
-Convert all VCF files from a directory (using Python script):
-```bash
-python vcf_to_obsidian.py ./contacts ./obsidian-vault/contacts
-```
-
 With verbose output (using installed CLI):
 ```bash
 vcf-to-obsidian ./contacts ./obsidian-vault/contacts --verbose
-```
-
-With verbose output (using Python script):
-```bash
-python vcf_to_obsidian.py ./contacts ./obsidian-vault/contacts --verbose
 ```
 
 Using a custom template:
@@ -137,32 +107,6 @@ You can provide your own Jinja2 template using the `--template` option. The temp
 - `notes`: Notes text
 - `url`: Website URL
 - `birthday`: Birthday date
-
-### Example Custom Template
-
-```jinja2
----
-vcf-contact: true
-custom-template: true
-{%- if title %}
-name: "{{ title }}"
-{%- endif %}
----
-
-# 📇 {{ title or "Contact" }}
-
-{%- if organization %}
-🏢 **Company:** {{ organization }}
-{%- endif %}
-
-{%- if phone_numbers %}
-📞 **Phone:** {{ phone_numbers[0] }}
-{%- endif %}
-
-{%- if email_addresses %}
-✉️ **Email:** {{ email_addresses[0] }}
-{%- endif %}
-```
 
 ## VCF Support
 
@@ -207,39 +151,6 @@ The script uses a priority-based approach for generating Markdown filenames:
 4. **VCF Filename** (final fallback): Uses the original VCF filename if no other options are available
 
 This approach prioritizes human-readable filenames while providing UID-based fallback for stability when contact information is incomplete.
-
-## Output Format
-
-Generated Markdown files include:
-
-1. **YAML frontmatter** with metadata compatible with obsidian-vcf-contacts plugin
-2. **Structured content** with contact information formatted for readability
-
-### Example Output
-
-```markdown
----
-vcf-contact: true
-name: "John Doe"
-given-name: "John"
-family-name: "Doe"
-organization: "Acme Corporation"
-phone-numbers:
-  - "+1-555-123-4567"
-email-addresses:
-  - "john.doe@acme.com"
----
-
-# John Doe
-
-**Organization:** Acme Corporation
-
-**Phone Numbers:**
-- +1-555-123-4567
-
-**Email Addresses:**
-- john.doe@acme.com
-```
 
 ## Testing
 
