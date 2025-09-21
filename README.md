@@ -1,22 +1,50 @@
 # vcf-to-obsidian-vcf-contacts
 
-A Python script that batch-converts a folder containing VCF files into Markdown files that are compatible with the obsidian-vcf-contacts plugin for ObsidianMD.
+A collection of tools that batch-convert VCF files into Markdown files compatible with the obsidian-vcf-contacts plugin for ObsidianMD.
+
+This repository provides two implementations:
+- **Python script** (`vcf_to_obsidian.py`) - Full-featured implementation with vobject library
+- **Bash script** (`vcf-to-obsidian.sh`) - Pure bash implementation for environments without Python dependencies
 
 ## Features
 
 - Batch conversion of VCF files to Markdown format
-- Compatible with obsidian-vcf-contacts plugin metadata structure
+- Compatible with obsidian-vcf-contacts plugin metadata structure  
 - Preserves contact information including names, phone numbers, emails, addresses, and notes
 - Command-line interface for easy automation
 - Error handling and validation
+- Support for both vCard 3.0 and 4.0 formats
+- Intelligent filename generation with priority logic (FN > constructed name > UID > filename)
 
-## Requirements
+## Quick Start
+
+### Bash Implementation (No Dependencies)
+
+The bash script requires only standard Unix tools and works on any system with bash:
+
+```bash
+# Make executable
+chmod +x vcf-to-obsidian.sh
+
+# Convert a single file
+./vcf-to-obsidian.sh --file contact.vcf --obsidian ./output
+
+# Convert a folder
+./vcf-to-obsidian.sh --folder ./contacts --obsidian ./output
+
+# Multiple sources
+./vcf-to-obsidian.sh --folder ./contacts1 --file ./special.vcf --obsidian ./output
+```
+
+### Python Implementation
+
+### Python Implementation
+
+For the Python implementation, you need:
 
 - Python 3.12+ (tested with Python 3.12.3)
 - vobject 0.9.0+ (for enhanced vCard 3.0/4.0 parsing)
 - click 8.0.0+ (for command line interface)
-
-## Installation
 
 ### Option 1: Install with pip (Recommended)
 
@@ -46,6 +74,26 @@ pip install -e .[dev]
 This installs the package in editable mode along with pytest for running tests.
 
 ## Usage
+
+### Bash Script
+
+The bash script (`vcf-to-obsidian.sh`) provides the same functionality as the Python version but with zero dependencies:
+
+```bash
+# Convert a single VCF file
+./vcf-to-obsidian.sh --file contact.vcf --obsidian ./obsidian-vault/contacts
+
+# Convert all VCF files in a directory  
+./vcf-to-obsidian.sh --folder ./contacts --obsidian ./obsidian-vault/contacts
+
+# Process multiple sources
+./vcf-to-obsidian.sh --folder ./contacts1 --folder ./contacts2 --file ./special.vcf --obsidian ./vault
+
+# Enable verbose output
+./vcf-to-obsidian.sh --folder ./contacts --obsidian ./vault --verbose
+```
+
+### Python Script
 
 After installing with pip or pipx:
 ```bash
@@ -88,6 +136,32 @@ vcf-to-obsidian --folder ./contacts --obsidian ./obsidian-vault/contacts --verbo
 - `--help` or `-h`: Show help message
 
 **Note**: You must specify at least one source (either `--folder` or `--file`) and exactly one destination (`--obsidian`).
+
+## Implementation Comparison
+
+| Feature | Bash Script | Python Script |
+|---------|-------------|---------------|
+| **Dependencies** | None (standard Unix tools) | Python 3.12+, vobject, click |
+| **Performance** | Fast (line-by-line processing) | Fast (vobject parsing) |
+| **VCard Support** | 3.0 and 4.0 | 3.0 and 4.0 (via vobject) |
+| **Field Parsing** | Manual regex-based | Library-based |
+| **Error Handling** | Basic | Comprehensive |
+| **Portability** | Unix/Linux/macOS | Cross-platform |
+| **Maintenance** | Self-contained | Library dependencies |
+
+**When to use the bash script:**
+- No Python environment available
+- Minimal dependencies preferred  
+- Unix/Linux/macOS environments
+- Simple deployment scenarios
+
+**When to use the Python script:**
+- Python environment already available
+- Cross-platform compatibility needed
+- More robust error handling required
+- Integration with Python workflows
+
+Both implementations produce identical output format and support the same command line interface.
 
 ## Template Output
 
