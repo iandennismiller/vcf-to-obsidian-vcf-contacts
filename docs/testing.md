@@ -51,4 +51,94 @@ The test suite covers:
 
 ## Bash Tests
 
-The bash implementation has its own comprehensive test suite located in `tests/bash/`. See the [bash tests README](../tests/bash/README.md) for more details on running and organizing bash-specific tests.
+The bash implementation has its own comprehensive test suite located in `tests/bash/`.
+
+### Test Structure
+
+The bash tests are organized by functionality into separate test files:
+
+- **`test_file_processing.sh`** - Tests single file, folder, and mixed source processing
+- **`test_filename_priority.sh`** - Tests filename generation priority logic (FN > constructed name > UID > filename)
+- **`test_special_characters.sh`** - Tests special character handling in filenames and UIDs
+- **`test_content_validation.sh`** - Tests output content format and structure validation
+- **`test_vcard_support.sh`** - Tests VCard 3.0 and 4.0 format support
+- **`test_cli_options.sh`** - Tests command line interface options and error handling
+- **`test_shell_compatibility.sh`** - Tests bash version requirements and shell detection
+
+### Running Bash Tests
+
+#### Run All Tests
+
+To run the complete bash test suite:
+
+```bash
+./tests/bash/run_all_tests.sh
+```
+
+This will execute all test files in sequence and provide a summary report.
+
+#### Run Individual Test Files
+
+To run a specific test file:
+
+```bash
+./tests/bash/test_file_processing.sh
+./tests/bash/test_filename_priority.sh
+./tests/bash/test_special_characters.sh
+./tests/bash/test_content_validation.sh
+./tests/bash/test_vcard_support.sh
+./tests/bash/test_cli_options.sh
+./tests/bash/test_shell_compatibility.sh
+```
+
+#### Using Make Commands
+
+You can also use the provided Makefile commands:
+
+```bash
+make test-bash          # Run bash implementation tests
+make test-all           # Run all tests (bash and python if available)
+```
+
+### Test Output
+
+Each test file provides:
+- ✅ Individual test case results
+- 🎯 Summary of passed/failed tests
+- 🧹 Automatic cleanup of temporary files
+
+The main test runner (`run_all_tests.sh`) provides:
+- 📊 Color-coded output
+- 📈 Overall test statistics
+- 🧪 Comprehensive test coverage report
+
+### Test Data
+
+Tests use the VCF files in `tests/data/vcf/` which contain various test scenarios:
+- Different VCard versions (3.0 and 4.0)
+- Various field combinations
+- Special characters and edge cases
+- Priority testing scenarios
+
+### Requirements
+
+- Bash 4.0+ (for array support and advanced features)
+- Standard Unix tools (`sed`, `grep`, `find`, etc.)
+- Write access to `/tmp` directory for test outputs
+
+### Adding New Tests
+
+To add a new test file:
+
+1. Create a new test file following the naming pattern `test_<functionality>.sh`
+2. Make it executable: `chmod +x test_<functionality>.sh`
+3. Add it to the `TEST_FILES` array in `run_all_tests.sh`
+4. Follow the existing test structure and conventions
+
+### Test Conventions
+
+- Use descriptive test names and clear output messages
+- Clean up temporary files in each test
+- Use unique temporary directory names to avoid conflicts
+- Exit with code 0 on success, non-zero on failure
+- Provide clear failure messages with expected vs actual results
