@@ -5,6 +5,8 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+MAIN_SCRIPT="$SCRIPT_DIR/../../scripts/vcf-to-obsidian.sh"
+DATA_DIR="$SCRIPT_DIR/../data/vcf"
 
 echo "🧪 Running all bash implementation tests..."
 echo "========================================"
@@ -104,41 +106,27 @@ trap cleanup EXIT
 # Main execution
 echo "Starting bash implementation test suite..."
 echo "Script directory: $SCRIPT_DIR"
-<<<<<<< HEAD:bash_tests/run_all_tests.sh
-echo "Testing script: $SCRIPT_DIR/../scripts/vcf-to-obsidian.sh"
+echo "Testing script: $MAIN_SCRIPT"
 
 # Verify the main script exists
-if [[ ! -f "$SCRIPT_DIR/../scripts/vcf-to-obsidian.sh" ]]; then
-    echo -e "${RED}❌ Main script not found: $SCRIPT_DIR/../scripts/vcf-to-obsidian.sh${NC}"
+if [[ ! -f "$MAIN_SCRIPT" ]]; then
+    echo -e "${RED}❌ Main script not found: $MAIN_SCRIPT${NC}"
     exit 1
 fi
 
-if [[ ! -x "$SCRIPT_DIR/../scripts/vcf-to-obsidian.sh" ]]; then
+if [[ ! -x "$MAIN_SCRIPT" ]]; then
     echo "Making main script executable..."
-    chmod +x "$SCRIPT_DIR/../scripts/vcf-to-obsidian.sh"
-=======
-echo "Testing script: $SCRIPT_DIR/../../vcf-to-obsidian.sh"
-
-# Verify the main script exists
-if [[ ! -f "$SCRIPT_DIR/../../vcf-to-obsidian.sh" ]]; then
-    echo -e "${RED}❌ Main script not found: $SCRIPT_DIR/../../vcf-to-obsidian.sh${NC}"
-    exit 1
-fi
-
-if [[ ! -x "$SCRIPT_DIR/../../vcf-to-obsidian.sh" ]]; then
-    echo "Making main script executable..."
-    chmod +x "$SCRIPT_DIR/../../vcf-to-obsidian.sh"
->>>>>>> main:tests/bash/run_all_tests.sh
+    chmod +x "$MAIN_SCRIPT"
 fi
 
 # Verify test data exists
-if [[ ! -d "$SCRIPT_DIR/../data/vcf" ]]; then
-    echo -e "${RED}❌ Test data directory not found: $SCRIPT_DIR/../data/vcf${NC}"
+if [[ ! -d "$DATA_DIR" ]]; then
+    echo -e "${RED}❌ Test data directory not found: $DATA_DIR${NC}"
     exit 1
 fi
 
-echo "Test data directory: $SCRIPT_DIR/../data/vcf"
-vcf_count=$(find "$SCRIPT_DIR/../data/vcf" -name "*.vcf" | wc -l)
+echo "Test data directory: $DATA_DIR"
+vcf_count=$(find "$DATA_DIR" -name "*.vcf" | wc -l)
 echo "Found $vcf_count VCF test files"
 
 # Run all tests

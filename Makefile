@@ -19,8 +19,8 @@ help: ## Show this help message
 PYTHON := python3
 PIP := pip3
 PYTEST := pytest
-BASH_TEST_DIR := bash_tests
-TEST_DIR := tests
+BASH_TEST_DIR := tests/bash
+TEST_DIR := tests/py
 PYTHON_FILES := scripts/vcf_to_obsidian.py $(TEST_DIR)/*.py
 
 # Installation targets
