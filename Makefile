@@ -25,13 +25,13 @@ PYTHON_FILES := scripts/vcf_to_obsidian.py $(TEST_DIR)/*.py
 
 # Installation targets
 install: ## Install package dependencies
-	$(PIP) install --user vobject click
+	$(PIP) install vobject click
 
 install-dev: install ## Install development dependencies
-	$(PIP) install --user pytest pytest-cov
+	$(PIP) install pytest pytest-cov
 
 install-lint: ## Install linting tools
-	$(PIP) install --user flake8 black isort mypy
+	$(PIP) install flake8 black isort mypy
 
 setup-dev: install-dev install-lint ## Set up complete development environment
 	@echo "Development environment setup complete!"
