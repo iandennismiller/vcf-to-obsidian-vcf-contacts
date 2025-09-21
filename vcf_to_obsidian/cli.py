@@ -5,9 +5,7 @@ CLI module for command-line interface handling.
 import click
 import sys
 from pathlib import Path
-from .vcf_reader import VCFReader
-from .markdown_writer import MarkdownWriter
-from .filename_generator import FilenameGenerator
+from .vcf_converter import VCFConverter
 
 
 class CLI:
@@ -15,9 +13,7 @@ class CLI:
     
     def __init__(self):
         """Initialize the CLI handler."""
-        self.reader = VCFReader()
-        self.writer = MarkdownWriter()
-        self.filename_gen = FilenameGenerator()
+        self.converter = VCFConverter()
     
     def convert_vcf_to_markdown(self, vcf_path, output_dir):
         """
@@ -30,44 +26,7 @@ class CLI:
         Returns:
             bool: True if successful, False otherwise
         """
-        try:
-            # Read VCF file
-            vcard = self.reader.read_vcf_file(vcf_path)
-            
-            # Check if UID exists and validate it as a proper UUID
-            if hasattr(vcard, 'uid') and vcard.uid and vcard.uid.value:
-                if not self.reader.is_valid_uuid(vcard.uid.value):
-                    print(f"Warning: VCF file '{vcf_path}' contains invalid UUID '{vcard.uid.value}' - skipping file")
-                    return False
-            
-            # Generate markdown content
-            markdown_content = self.writer.generate_obsidian_markdown(vcard)
-            
-            # Generate filename
-            output_filename = self.filename_gen.generate_filename(vcard, vcf_path)
-            output_file = output_dir / f"{output_filename}.md"
-            
-            # Remove existing files with the same UID if the filename would be different
-            if hasattr(vcard, 'uid') and vcard.uid and vcard.uid.value:
-                existing_files = self.filename_gen.find_existing_files_with_uid(output_dir, vcard.uid.value)
-                for existing_file in existing_files:
-                    if existing_file != output_file:
-                        try:
-                            existing_file.unlink()
-                            print(f"Removed old file: {existing_file.name}")
-                        except Exception as e:
-                            print(f"Warning: Could not remove old file {existing_file.name}: {e}")
-            
-            # Write Markdown file
-            with open(output_file, 'w', encoding='utf-8') as f:
-                f.write(markdown_content)
-            
-            print(f"Converted: {vcf_path.name} -> {output_file.name}")
-            return True
-            
-        except Exception as e:
-            print(f"Error converting {vcf_path}: {e}")
-            return False
+        return self.converter.convert_vcf_to_markdown_with_validation(vcf_path, output_dir)
     
     def run_cli(self, folder, obsidian, file, verbose, ignore):
         """Convert VCF files to Markdown format for obsidian-vcf-contacts plugin
@@ -173,15 +132,9 @@ class CLI:
         
         click.echo(f"Converting to Markdown in '{dest_path}'")
         
-        # Convert each VCF file to the destination
-        successful_conversions = 0
-        
-        for vcf_file in all_vcf_files:
-            if verbose:
-                click.echo(f"Processing: {vcf_file} -> {dest_path}")
-            
-            if self.convert_vcf_to_markdown(vcf_file, dest_path):
-                successful_conversions += 1
+        # Convert each VCF file to the destination using task queue
+        task_queue = self.converter.create_conversion_task_queue(all_vcf_files, dest_path)
+        successful_conversions, total_conversions = self.converter.process_task_queue(task_queue, validate_uuids=True)
         
         click.echo(f"Successfully completed {successful_conversions}/{len(all_vcf_files)} conversions.")
 
