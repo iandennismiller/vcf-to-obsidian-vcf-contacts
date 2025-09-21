@@ -13,7 +13,7 @@ A Python script that batch-converts a folder containing VCF files into Markdown 
 ## Requirements
 
 - Python 3.12+ (tested with Python 3.12.3)
-- No external dependencies required
+- Jinja2 3.0.0+ (for templating)
 
 ## Installation
 
@@ -91,12 +91,72 @@ With verbose output (using Python script):
 python vcf_to_obsidian.py ./contacts ./obsidian-vault/contacts --verbose
 ```
 
+Using a custom template:
+```bash
+python vcf_to_obsidian.py ./contacts ./obsidian-vault/contacts --template ./my_template.md.j2
+```
+
 ### Command Line Options
 
 - `source_dir`: Directory containing VCF files to convert
 - `dest_dir`: Destination directory for generated Markdown files
+- `--template` or `-t`: Path to custom Jinja2 template file (optional)
 - `--verbose` or `-v`: Enable verbose output
 - `--help` or `-h`: Show help message
+
+## Templates
+
+The script uses Jinja2 templates to generate the markdown output, providing flexibility for customization while maintaining compatibility with obsidian-vcf-contacts.
+
+### Default Template
+
+By default, the script uses a built-in template that generates markdown compatible with the obsidian-vcf-contacts plugin format. This template includes:
+
+- YAML frontmatter with `vcf-contact: true` and all contact metadata
+- Structured markdown content with contact information
+
+### Custom Templates
+
+You can provide your own Jinja2 template using the `--template` option. The template has access to the following variables:
+
+- `title`: Contact's display name (full name or constructed from given/family names)
+- `uid`: Unique identifier from VCF
+- `full_name`: Full name from FN field
+- `given_name`: Given (first) name
+- `family_name`: Family (last) name
+- `organization`: Organization name
+- `phone_numbers`: List of phone numbers
+- `email_addresses`: List of email addresses
+- `addresses`: List of formatted addresses
+- `notes`: Notes text
+- `url`: Website URL
+- `birthday`: Birthday date
+
+### Example Custom Template
+
+```jinja2
+---
+vcf-contact: true
+custom-template: true
+{%- if title %}
+name: "{{ title }}"
+{%- endif %}
+---
+
+# 📇 {{ title or "Contact" }}
+
+{%- if organization %}
+🏢 **Company:** {{ organization }}
+{%- endif %}
+
+{%- if phone_numbers %}
+📞 **Phone:** {{ phone_numbers[0] }}
+{%- endif %}
+
+{%- if email_addresses %}
+✉️ **Email:** {{ email_addresses[0] }}
+{%- endif %}
+```
 
 ## VCF Support
 

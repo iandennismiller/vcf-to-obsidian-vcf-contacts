@@ -17,6 +17,7 @@ import os
 import sys
 from pathlib import Path
 import re
+from jinja2 import Environment, FileSystemLoader, Template
 
 
 def parse_vcf_file(vcf_path):
@@ -105,12 +106,14 @@ def parse_vcf_file(vcf_path):
     return contact_data
 
 
-def generate_obsidian_markdown(contact_data):
+def generate_obsidian_markdown(contact_data, template_path=None):
     """
     Generate Markdown content compatible with obsidian-vcf-contacts plugin.
     
     Args:
         contact_data (dict): Parsed contact data
+        template_path (str, optional): Path to custom Jinja2 template file.
+                                     If None, uses default template.
         
     Returns:
         str: Markdown content with frontmatter
@@ -120,80 +123,140 @@ def generate_obsidian_markdown(contact_data):
     if not title and (contact_data['given_name'] or contact_data['family_name']):
         title = f"{contact_data['given_name']} {contact_data['family_name']}".strip()
     
-    # Create frontmatter for obsidian-vcf-contacts
-    frontmatter = "---\n"
-    frontmatter += "vcf-contact: true\n"
+    # Prepare template variables
+    template_vars = {
+        'title': title,
+        'uid': contact_data['uid'],
+        'full_name': contact_data['full_name'],
+        'given_name': contact_data['given_name'],
+        'family_name': contact_data['family_name'],
+        'organization': contact_data['organization'],
+        'phone_numbers': contact_data['phone_numbers'],
+        'email_addresses': contact_data['email_addresses'],
+        'addresses': contact_data['addresses'],
+        'notes': contact_data['notes'],
+        'url': contact_data['url'],
+        'birthday': contact_data['birthday']
+    }
     
-    if title:
-        frontmatter += f"name: \"{title}\"\n"
-    if contact_data['given_name']:
-        frontmatter += f"given-name: \"{contact_data['given_name']}\"\n"
-    if contact_data['family_name']:
-        frontmatter += f"family-name: \"{contact_data['family_name']}\"\n"
-    if contact_data['organization']:
-        frontmatter += f"organization: \"{contact_data['organization']}\"\n"
-    if contact_data['phone_numbers']:
-        frontmatter += "phone-numbers:\n"
-        for phone in contact_data['phone_numbers']:
-            frontmatter += f"  - \"{phone}\"\n"
-    if contact_data['email_addresses']:
-        frontmatter += "email-addresses:\n"
-        for email in contact_data['email_addresses']:
-            frontmatter += f"  - \"{email}\"\n"
-    if contact_data['addresses']:
-        frontmatter += "addresses:\n"
-        for address in contact_data['addresses']:
-            frontmatter += f"  - \"{address}\"\n"
-    if contact_data['url']:
-        frontmatter += f"url: \"{contact_data['url']}\"\n"
-    if contact_data['birthday']:
-        frontmatter += f"birthday: \"{contact_data['birthday']}\"\n"
+    if template_path and Path(template_path).exists():
+        # Use custom template
+        template_dir = Path(template_path).parent
+        template_name = Path(template_path).name
+        env = Environment(loader=FileSystemLoader(template_dir))
+        template = env.get_template(template_name)
+    else:
+        # Use default template
+        script_dir = Path(__file__).parent
+        template_dir = script_dir / 'templates'
+        if template_dir.exists():
+            env = Environment(loader=FileSystemLoader(template_dir))
+            template = env.get_template('default.md.j2')
+        else:
+            # Fallback to inline template if templates directory doesn't exist
+            template_str = """---
+vcf-contact: true
+{%- if title %}
+name: "{{ title }}"
+{%- endif %}
+{%- if given_name %}
+given-name: "{{ given_name }}"
+{%- endif %}
+{%- if family_name %}
+family-name: "{{ family_name }}"
+{%- endif %}
+{%- if organization %}
+organization: "{{ organization }}"
+{%- endif %}
+{%- if phone_numbers %}
+phone-numbers:
+{%- for phone in phone_numbers %}
+  - "{{ phone }}"
+{%- endfor %}
+{%- endif %}
+{%- if email_addresses %}
+email-addresses:
+{%- for email in email_addresses %}
+  - "{{ email }}"
+{%- endfor %}
+{%- endif %}
+{%- if addresses %}
+addresses:
+{%- for address in addresses %}
+  - "{{ address }}"
+{%- endfor %}
+{%- endif %}
+{%- if url %}
+url: "{{ url }}"
+{%- endif %}
+{%- if birthday %}
+birthday: "{{ birthday }}"
+{%- endif %}
+---
+
+# {{ title or "Contact" }}
+
+{%- if organization %}
+
+**Organization:** {{ organization }}
+{%- endif %}
+
+{%- if phone_numbers %}
+
+**Phone Numbers:**
+{%- for phone in phone_numbers %}
+- {{ phone }}
+{%- endfor %}
+{%- endif %}
+
+{%- if email_addresses %}
+
+**Email Addresses:**
+{%- for email in email_addresses %}
+- {{ email }}
+{%- endfor %}
+{%- endif %}
+
+{%- if addresses %}
+
+**Addresses:**
+{%- for address in addresses %}
+- {{ address }}
+{%- endfor %}
+{%- endif %}
+
+{%- if url %}
+
+**Website:** {{ url }}
+{%- endif %}
+
+{%- if birthday %}
+
+**Birthday:** {{ birthday }}
+{%- endif %}
+
+{%- if notes %}
+
+**Notes:**
+{{ notes }}
+{%- endif %}"""
+            template = Template(template_str)
     
-    frontmatter += "---\n\n"
+    # Render the template with contact data
+    content = template.render(**template_vars)
     
-    # Generate markdown content
-    content = f"# {title}\n\n"
-    
-    if contact_data['organization']:
-        content += f"**Organization:** {contact_data['organization']}\n\n"
-    
-    if contact_data['phone_numbers']:
-        content += "**Phone Numbers:**\n"
-        for phone in contact_data['phone_numbers']:
-            content += f"- {phone}\n"
-        content += "\n"
-    
-    if contact_data['email_addresses']:
-        content += "**Email Addresses:**\n"
-        for email in contact_data['email_addresses']:
-            content += f"- {email}\n"
-        content += "\n"
-    
-    if contact_data['addresses']:
-        content += "**Addresses:**\n"
-        for address in contact_data['addresses']:
-            content += f"- {address}\n"
-        content += "\n"
-    
-    if contact_data['url']:
-        content += f"**Website:** {contact_data['url']}\n\n"
-    
-    if contact_data['birthday']:
-        content += f"**Birthday:** {contact_data['birthday']}\n\n"
-    
-    if contact_data['notes']:
-        content += f"**Notes:**\n{contact_data['notes']}\n\n"
-    
-    return frontmatter + content
+    # Clean up any extra whitespace/newlines at the end
+    return content.strip() + '\n'
 
 
-def convert_vcf_to_markdown(vcf_path, output_dir):
+def convert_vcf_to_markdown(vcf_path, output_dir, template_path=None):
     """
     Convert a single VCF file to Markdown format.
     
     Args:
         vcf_path (Path): Path to the VCF file
         output_dir (Path): Output directory for Markdown files
+        template_path (str, optional): Path to custom Jinja2 template file
         
     Returns:
         bool: True if successful, False otherwise
@@ -203,7 +266,7 @@ def convert_vcf_to_markdown(vcf_path, output_dir):
         contact_data = parse_vcf_file(vcf_path)
         
         # Generate Markdown content
-        markdown_content = generate_obsidian_markdown(contact_data)
+        markdown_content = generate_obsidian_markdown(contact_data, template_path)
         
         # Create output filename based on FN (preferred) or UID (fallback)
         contact_name = contact_data['full_name']
@@ -249,6 +312,10 @@ def main():
         help="Destination directory for Markdown files"
     )
     parser.add_argument(
+        "--template", "-t",
+        help="Path to custom Jinja2 template file"
+    )
+    parser.add_argument(
         "--verbose", "-v",
         action="store_true",
         help="Enable verbose output"
@@ -285,7 +352,7 @@ def main():
         if args.verbose:
             print(f"Processing: {vcf_file}")
         
-        if convert_vcf_to_markdown(vcf_file, dest_path):
+        if convert_vcf_to_markdown(vcf_file, dest_path, args.template):
             success_count += 1
     
     print(f"Successfully converted {success_count}/{len(vcf_files)} files.")
