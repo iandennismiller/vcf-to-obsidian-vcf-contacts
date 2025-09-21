@@ -102,6 +102,7 @@ python vcf_to_obsidian.py ./contacts ./obsidian-vault/contacts --verbose
 
 The script supports standard VCF (vCard) format and extracts the following fields:
 
+- **UID**: Unique Identifier (used for stable filename generation)
 - **FN**: Full Name
 - **N**: Structured Name (Family;Given;Additional;Prefix;Suffix)
 - **ORG**: Organization
@@ -111,6 +112,16 @@ The script supports standard VCF (vCard) format and extracts the following field
 - **URL**: Website URL
 - **BDAY**: Birthday
 - **NOTE**: Notes/Comments
+
+### Filename Generation
+
+The script uses a two-tier approach for generating Markdown filenames:
+
+1. **UID-based naming** (preferred): If a VCF contains a UID field, the generated Markdown file will be named using the UID (e.g., `12345-abcde-67890.md`). This ensures stable filenames even when contact names change.
+
+2. **Name-based naming** (fallback): If no UID is present, the script falls back to using the contact's full name for the filename (e.g., `John Doe.md`), maintaining backward compatibility.
+
+This approach allows for automatic synchronization when VCF files are updated - contacts with UIDs will maintain the same filename regardless of name changes, while contacts without UIDs continue to work as before.
 
 ## Output Format
 
