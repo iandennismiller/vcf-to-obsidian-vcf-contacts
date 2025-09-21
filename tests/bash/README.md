@@ -12,7 +12,7 @@ The tests are organized by functionality into separate test files:
 - **`test_content_validation.sh`** - Tests output content format and structure validation
 - **`test_vcard_support.sh`** - Tests VCard 3.0 and 4.0 format support
 - **`test_cli_options.sh`** - Tests command line interface options and error handling
-- **`test_shell_compatibility.sh`** - Tests bash/zsh compatibility and shell detection
+- **`test_shell_compatibility.sh`** - Tests bash version requirements and shell detection
 
 ## Running Tests
 

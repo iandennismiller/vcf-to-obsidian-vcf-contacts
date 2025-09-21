@@ -4,31 +4,38 @@
 # Pure bash implementation of VCF to Obsidian Markdown converter
 # Processes VCF files one line at a time to generate Obsidian-compatible Markdown files
 #
+# Requirements: bash 4.0+ (for associative arrays)
+# Note: macOS ships with bash 3.2 - install bash 4.0+ via Homebrew
+#
 # Author: Ian Dennis Miller
 # License: MIT
 
 set -euo pipefail
 
-# Check if running in bash - this script requires bash-specific features
-if [ -n "${ZSH_VERSION:-}" ]; then
-    echo "Error: This script requires bash but is running in zsh." >&2
-    echo "zsh version detected: $ZSH_VERSION" >&2
-    echo "" >&2
-    echo "Please run one of the following instead:" >&2
-    echo "  ./scripts/vcf-to-obsidian.sh [options]" >&2
-    echo "  bash scripts/vcf-to-obsidian.sh [options]" >&2
-    echo "" >&2
-    echo "This script uses bash-specific features like BASH_REMATCH and associative arrays." >&2
-    exit 1
-elif [ -z "${BASH_VERSION:-}" ]; then
+# Check bash version - this script requires bash 4.0+ for associative arrays
+if [ -z "${BASH_VERSION:-}" ]; then
     echo "Error: This script requires bash to run." >&2
     echo "Current shell: ${SHELL##*/}" >&2
     echo "" >&2
     echo "Please run one of the following instead:" >&2
-    echo "  ./scripts/vcf-to-obsidian.sh [options]" >&2
     echo "  bash scripts/vcf-to-obsidian.sh [options]" >&2
+    echo "  ./scripts/vcf-to-obsidian.sh [options]" >&2
+    exit 1
+fi
+
+# Extract major version from BASH_VERSION (e.g., "4.2.46(2)-release" -> "4")
+BASH_MAJOR=$(echo "$BASH_VERSION" | cut -d. -f1)
+if [ "$BASH_MAJOR" -lt 4 ]; then
+    echo "Error: This script requires bash 4.0+ but you have bash $BASH_VERSION" >&2
     echo "" >&2
-    echo "This script uses bash-specific features like BASH_REMATCH and associative arrays." >&2
+    echo "macOS ships with bash 3.2 due to licensing restrictions." >&2
+    echo "Associative arrays were added in bash 4.0 (2009)." >&2
+    echo "" >&2
+    echo "Solutions:" >&2
+    echo "  1. Install bash 4.0+ via Homebrew: brew install bash" >&2
+    echo "  2. Use the Python implementation: pip install vcf-to-obsidian-vcf-contacts" >&2
+    echo "" >&2
+    echo "Note: The /usr/local/bin/bash from Homebrew should be used instead of /bin/bash" >&2
     exit 1
 fi
 

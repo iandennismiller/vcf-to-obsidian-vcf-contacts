@@ -9,16 +9,16 @@ This repository provides two implementations with different trade-offs:
 | **VCard Support** | 3.0 and 4.0 | 3.0 and 4.0 (via vobject) |
 | **Field Parsing** | Manual regex-based | Library-based |
 | **Error Handling** | Basic | Comprehensive |
-| **Portability** | Unix/Linux/macOS (requires bash) | Cross-platform |
+| **Portability** | Unix/Linux/macOS (requires bash 4.0+) | Cross-platform |
 | **Maintenance** | Self-contained | Library dependencies |
 
 ## When to use the bash script:
 
 - No Python environment available
 - Minimal dependencies preferred  
-- Unix/Linux/macOS environments with bash
+- Unix/Linux/macOS environments with bash 4.0+
 - Simple deployment scenarios
-- Note: Requires bash shell (not compatible with zsh)
+- Note: macOS users need to install bash 4.0+ via Homebrew due to built-in bash 3.2
 
 ## When to use the Python script:
 

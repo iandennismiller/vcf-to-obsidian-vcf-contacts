@@ -34,7 +34,7 @@ vcf-to-obsidian --folder ./contacts --obsidian ./obsidian-vault/contacts
 
 ### Bash Implementation (Zero Dependencies)
 
-**Note:** The bash script requires bash to run and uses bash-specific features. On macOS where zsh is the default shell, make sure to run the script with its shebang (`./script.sh`) or explicitly with bash (`bash script.sh`).
+**Note:** The bash script requires bash 4.0+ for associative array support. macOS ships with bash 3.2 due to licensing restrictions, so macOS users should install bash 4.0+ via Homebrew (`brew install bash`) or use the Python implementation.
 
 #### Installation
 

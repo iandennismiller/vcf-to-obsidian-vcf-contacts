@@ -24,12 +24,12 @@ if which zsh > /dev/null 2>&1; then
         echo "✗ Test 2 failed: Script should fail with zsh"
         exit 1
     else
-        # Check if error message mentions zsh specifically
+        # Check if error message mentions bash requirement
         ERROR_OUTPUT=$(zsh "$MAIN_SCRIPT" --help 2>&1)
-        if echo "$ERROR_OUTPUT" | grep -q "zsh"; then
-            echo "✓ Test 2 passed: Script provides zsh-specific error message"
+        if echo "$ERROR_OUTPUT" | grep -q "requires bash"; then
+            echo "✓ Test 2 passed: Script provides bash requirement error message"
         else
-            echo "✗ Test 2 failed: Error message should mention zsh"
+            echo "✗ Test 2 failed: Error message should mention bash requirement"
             echo "Actual error: $ERROR_OUTPUT"
             exit 1
         fi
@@ -58,5 +58,35 @@ else
     echo "✗ Test 4 failed: Normal shebang execution should work"
     exit 1
 fi
+
+# Test 5: Verify bash version checking logic
+echo "Test 5: Testing bash version checking..."
+# Create a temporary script that simulates bash 3.2
+TEMP_SCRIPT="/tmp/test_bash_version.sh"
+cat > "$TEMP_SCRIPT" << 'EOF'
+#!/bin/bash
+
+# Mock BASH_VERSION for testing
+BASH_VERSION="3.2.57(1)-release"
+
+# Extract the version checking logic from the main script
+BASH_MAJOR=$(echo "$BASH_VERSION" | cut -d. -f1)
+if [ "$BASH_MAJOR" -lt 4 ]; then
+    echo "Error: This script requires bash 4.0+ but you have bash $BASH_VERSION"
+    exit 1
+else
+    echo "Bash version OK"
+fi
+EOF
+
+chmod +x "$TEMP_SCRIPT"
+if "$TEMP_SCRIPT" > /dev/null 2>&1; then
+    echo "✗ Test 5 failed: Should reject bash 3.2"
+    exit 1
+else
+    echo "✓ Test 5 passed: Correctly rejects bash 3.2"
+fi
+
+rm -f "$TEMP_SCRIPT"
 
 echo "All shell compatibility tests passed! ✅"
