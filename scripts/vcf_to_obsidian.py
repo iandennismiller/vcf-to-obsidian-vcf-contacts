@@ -23,7 +23,7 @@ from pathlib import Path
 # Add parent directory to sys.path to import the vcf_to_obsidian module
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from vcf_to_obsidian import main
+from vcf_to_obsidian.cli import main_cli
 
 if __name__ == "__main__":
-    main()
+    main_cli()
