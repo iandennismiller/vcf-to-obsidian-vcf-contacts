@@ -12,13 +12,13 @@ from conftest import create_test_vcf
 class TestCommandLine:
     """Test cases for command line interface functionality."""
 
-    def test_main_function_import(self):
-        """Test that the main function can be imported."""
+    def test_main_cli_function_import(self):
+        """Test that the main_cli function can be imported."""
         try:
-            from vcf_to_obsidian import main
-            assert callable(main)
+            from vcf_to_obsidian.cli import main_cli
+            assert callable(main_cli)
         except ImportError:
-            pytest.fail("Could not import main function from vcf_to_obsidian")
+            pytest.fail("Could not import main_cli function from vcf_to_obsidian.cli")
 
     def test_cli_help_output(self):
         """Test that the CLI shows help when requested."""
