@@ -8,7 +8,7 @@ vcf-to-obsidian-vcf-contacts documentation
 
 This is the API documentation for vcf-to-obsidian-vcf-contacts, a Python module that 
 batch-converts VCF files into Markdown files that are compatible with the 
-obsidian-vcf-contacts plugin for ObsidianMD.
+`obsidian-vcf-contacts <https://github.com/broekema41/obsidian-vcf-contacts>`__ plugin for ObsidianMD.
 
 Overview
 --------

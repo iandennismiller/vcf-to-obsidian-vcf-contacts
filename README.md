@@ -1,6 +1,6 @@
 # vcf-to-obsidian-vcf-contacts
 
-A collection of tools that batch-convert VCF files into Markdown files compatible with the obsidian-vcf-contacts plugin for ObsidianMD.
+A collection of tools that batch-convert VCF files into Markdown files compatible with the [obsidian-vcf-contacts](https://github.com/broekema41/obsidian-vcf-contacts) plugin for ObsidianMD.
 
 This repository provides two implementations:
 - **Python script** - Full-featured implementation with robust vCard parsing
@@ -9,7 +9,7 @@ This repository provides two implementations:
 ## Features
 
 - Batch conversion of VCF files to Markdown format
-- Compatible with obsidian-vcf-contacts plugin metadata structure  
+- Compatible with [obsidian-vcf-contacts](https://github.com/broekema41/obsidian-vcf-contacts) plugin metadata structure  
 - Preserves contact information including names, phone numbers, emails, addresses, and notes
 - Support for both vCard 3.0 and 4.0 formats
 - Intelligent filename generation with priority logic
