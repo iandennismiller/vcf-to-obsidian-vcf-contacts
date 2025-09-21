@@ -102,6 +102,7 @@ python vcf_to_obsidian.py ./contacts ./obsidian-vault/contacts --verbose
 
 The script supports standard VCF (vCard) format and extracts the following fields:
 
+- **UID**: Unique Identifier (used for stable filename generation)
 - **FN**: Full Name
 - **N**: Structured Name (Family;Given;Additional;Prefix;Suffix)
 - **ORG**: Organization
@@ -111,6 +112,17 @@ The script supports standard VCF (vCard) format and extracts the following field
 - **URL**: Website URL
 - **BDAY**: Birthday
 - **NOTE**: Notes/Comments
+
+### Filename Generation
+
+The script uses a priority-based approach for generating Markdown filenames:
+
+1. **Full Name (FN)** (highest priority): Uses the full name from the VCF FN field (e.g., `John Doe.md`)
+2. **Constructed Name** (fallback): If no FN field, combines given and family names (e.g., `John Smith.md`)  
+3. **UID** (fallback): If no name is available, uses the UID field (e.g., `12345-abcde-67890.md`)
+4. **VCF Filename** (final fallback): Uses the original VCF filename if no other options are available
+
+This approach prioritizes human-readable filenames while providing UID-based fallback for stability when contact information is incomplete.
 
 ## Output Format
 
@@ -144,6 +156,35 @@ email-addresses:
 **Email Addresses:**
 - john.doe@acme.com
 ```
+
+## Testing
+
+The project includes a comprehensive test suite to ensure reliability and correctness.
+
+### Running Tests
+
+Run the test suite using Python's built-in unittest module:
+
+```bash
+python test_vcf_to_obsidian.py
+```
+
+Or run with verbose output:
+
+```bash
+python test_vcf_to_obsidian.py -v
+```
+
+### Test Coverage
+
+The test suite covers:
+
+- VCF parsing with various field combinations
+- Filename generation priority logic (FN > constructed name > UID > filename)
+- Special character handling in filenames and UIDs
+- Markdown content generation and frontmatter
+- Edge cases (empty fields, missing data)
+- Error handling scenarios
 
 ## Error Handling
 
