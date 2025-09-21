@@ -155,38 +155,26 @@ END:VCARD"""
         except FileNotFoundError:
             pytest.skip("vcf_to_obsidian.py not found for CLI testing")
 
-    def test_cli_custom_template_option(self, temp_dirs):
-        """Test CLI custom template option."""
-        # Create a custom template
-        template_content = """---
-FN: {{ full_name }}
-UID: {{ uid }}
----
-# {{ full_name }}
-Custom CLI template test.
-"""
-        
-        template_path = temp_dirs['test_dir'] / "cli_template.md.j2"
-        with open(template_path, 'w', encoding='utf-8') as f:
-            f.write(template_content)
-        
+    def test_cli_no_longer_supports_template_option(self, temp_dirs):
+        """Test that CLI no longer accepts template option."""
         # Create a test VCF file
         vcf_content = """BEGIN:VCARD
 VERSION:3.0
-FN:Template Test Contact
-N:Contact;Template Test;;;
-UID:template-test-12345
+FN:No Template Test Contact
+N:Contact;No Template Test;;;
+UID:no-template-test-12345
 END:VCARD"""
         
-        vcf_path = create_test_vcf(temp_dirs['test_vcf_dir'], "template_test.vcf", vcf_content)
+        vcf_path = create_test_vcf(temp_dirs['test_vcf_dir'], "no_template_test.vcf", vcf_content)
         
         try:
+            # Try using the old --template option - should fail
             result = subprocess.run(
                 [
                     sys.executable, "vcf_to_obsidian.py",
                     str(temp_dirs['test_vcf_dir']),
                     str(temp_dirs['test_output_dir']),
-                    "--template", str(template_path)
+                    "--template", "/some/path"
                 ],
                 cwd=Path(__file__).parent.parent,
                 capture_output=True,
@@ -194,9 +182,13 @@ END:VCARD"""
                 timeout=60
             )
             
-            # Check if the command ran (not asserting success due to potential original code issues)
+            # Should fail because --template option no longer exists
+            assert result.returncode != 0, "Expected failure when using --template option"
+            assert "no such option" in result.stderr.lower() or "unrecognized argument" in result.stderr.lower()
             
         except subprocess.TimeoutExpired:
-            pytest.skip("CLI template test timed out")
+            pytest.skip("CLI no-template test timed out")
+        except FileNotFoundError:
+            pytest.skip("vcf_to_obsidian.py not found for CLI testing")
         except FileNotFoundError:
             pytest.skip("vcf_to_obsidian.py not found for CLI testing")

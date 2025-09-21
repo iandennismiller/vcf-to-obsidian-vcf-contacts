@@ -257,30 +257,8 @@ class TestVCFToObsidian(unittest.TestCase):
         self.assertFalse(uid_file_2.exists())
 
     def test_custom_template(self):
-        """Test that custom templates work correctly."""
-        # Create a simple custom template
-        custom_template_content = """---
-vcf-contact: true
-custom-template: true
-{%- if title %}
-name: "{{ title }}"
-{%- endif %}
----
-
-# Custom Template: {{ title or "Unknown" }}
-
-{%- if organization %}
-Company: {{ organization }}
-{%- endif %}
-
-{%- if phone_numbers %}
-Phone: {{ phone_numbers[0] }}
-{%- endif %}
-"""
-        
-        template_path = Path(self.test_dir) / "custom.md.j2"
-        with open(template_path, 'w', encoding='utf-8') as f:
-            f.write(custom_template_content)
+        """Test that markdown generation works correctly (custom templates no longer supported)."""
+        # No longer need to create custom template - using built-in only
         
         # Create test VCF
         vcf_content = """BEGIN:VCARD
@@ -292,7 +270,7 @@ TEL:+1-555-999-8888
 END:VCARD"""
         
         vcf_path = self.create_test_vcf("custom_test.vcf", vcf_content)
-        result = convert_vcf_to_markdown(vcf_path, self.test_output_dir, str(template_path))
+        result = convert_vcf_to_markdown(vcf_path, self.test_output_dir)
         
         self.assertTrue(result)
         
@@ -304,14 +282,16 @@ END:VCARD"""
         with open(md_file, 'r', encoding='utf-8') as f:
             content = f.read()
         
-        # Check custom template elements
-        self.assertIn('custom-template: true', content)
-        self.assertIn('# Custom Template: Custom Test', content)
-        self.assertIn('Company: Custom Organization', content)
-        self.assertIn('Phone: +1-555-999-8888', content)
+        # Check that basic fields are present in the standard template
+        self.assertIn('FN: Custom Test', content)
+        self.assertIn('N.FN: Test', content)
+        self.assertIn('N.GN: Custom', content)
+        self.assertIn('ORG: Custom Organization', content)
+        self.assertIn('"TEL[DEFAULT]": "+1-555-999-8888"', content)
         
-        # Should NOT contain the default template structure
-        self.assertNotIn('**Organization:**', content)
+        # Should NOT contain custom template markers since we removed custom template support
+        self.assertNotIn('custom-template: true', content)
+        self.assertNotIn('# Custom Template:', content)
 
     def test_template_with_all_fields(self):
         """Test template rendering with all possible fields."""
@@ -375,12 +355,12 @@ N:Test;Fallback;;;
 END:VCARD"""
         
         vcf_path = self.create_test_vcf("fallback_test.vcf", vcf_content)
-        # Use a non-existent template path
-        result = convert_vcf_to_markdown(vcf_path, self.test_output_dir, "/path/does/not/exist.j2")
+        # No longer accept template path parameter - always use built-in template
+        result = convert_vcf_to_markdown(vcf_path, self.test_output_dir)
         
         self.assertTrue(result)
         
-        # Should still create the file using the default template
+        # Should create the file using the only available built-in template
         md_file = self.test_output_dir / "Fallback Test.md"
         self.assertTrue(md_file.exists())
         
