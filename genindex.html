@@ -1,0 +1,496 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Index &mdash; vcf-to-obsidian-vcf-contacts 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=8d563738"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="#" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            vcf-to-obsidian-vcf-contacts
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#python-implementation">Python Implementation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#option-1-install-with-pip-recommended">Option 1: Install with pip (Recommended)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#option-2-install-with-pipx-for-cli-tools">Option 2: Install with pipx (For CLI tools)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#option-3-development-installation">Option 3: Development Installation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#bash-implementation-no-dependencies">Bash Implementation (No Dependencies)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#bash-script">Bash Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#python-script">Python Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#command-line-options">Command Line Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#template-output">Template Output</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="integration.html">Integration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="integration.html#vdirsyncer-integration">vdirsyncer Integration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="integration.html#configuration">Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="integration.html#configuration-parameters">Configuration Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="integration.html#customizing-paths">Customizing Paths</a></li>
+<li class="toctree-l3"><a class="reference internal" href="integration.html#workflow">Workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="integration.html#alternative-installation-methods">Alternative Installation Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="integration.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="integration.html#additional-options">Additional Options</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="implementation-comparison.html">Implementation Comparison</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="implementation-comparison.html#when-to-use-the-bash-script">When to use the bash script:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="implementation-comparison.html#when-to-use-the-python-script">When to use the Python script:</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="vcf-support.html">VCF Support</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vcf-support.html#vcard-4-0-support">vCard 4.0 Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vcf-support.html#parsing-engine">Parsing Engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vcf-support.html#filename-generation">Filename Generation</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development and Maintenance</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="development.html#quick-setup">Quick Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#available-make-targets">Available Make Targets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#error-handling">Error Handling</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="testing.html">Testing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="testing.html#running-tests">Running Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing.html#test-organization">Test Organization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing.html#test-coverage">Test Coverage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing.html#bash-tests">Bash Tests</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#test-structure">Test Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#running-bash-tests">Running Bash Tests</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="testing.html#run-all-tests">Run All Tests</a></li>
+<li class="toctree-l4"><a class="reference internal" href="testing.html#run-individual-test-files">Run Individual Test Files</a></li>
+<li class="toctree-l4"><a class="reference internal" href="testing.html#using-make-commands">Using Make Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#test-output">Test Output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#test-data">Test Data</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="testing.html#vcf-test-files">VCF Test Files</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#requirements">Requirements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#adding-new-tests">Adding New Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#test-conventions">Test Conventions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html">vcf_to_obsidian</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/vcf_to_obsidian/cli/index.html">vcf_to_obsidian.cli</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/cli/index.html#functions">Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/cli/index.html#module-contents">Module Contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/vcf_to_obsidian/filename_generator/index.html">vcf_to_obsidian.filename_generator</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/filename_generator/index.html#classes">Classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/filename_generator/index.html#module-contents">Module Contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/vcf_to_obsidian/markdown_writer/index.html">vcf_to_obsidian.markdown_writer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/markdown_writer/index.html#classes">Classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/markdown_writer/index.html#module-contents">Module Contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/vcf_to_obsidian/vcf_converter/index.html">vcf_to_obsidian.vcf_converter</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/vcf_converter/index.html#classes">Classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/vcf_converter/index.html#module-contents">Module Contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/vcf_to_obsidian/vcf_reader/index.html">vcf_to_obsidian.vcf_reader</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/vcf_reader/index.html#classes">Classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/vcf_reader/index.html#module-contents">Module Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFReader"><code class="docutils literal notranslate"><span class="pre">VCFReader</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFReader.is_valid_uuid"><code class="docutils literal notranslate"><span class="pre">VCFReader.is_valid_uuid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFReader.read_vcf_file"><code class="docutils literal notranslate"><span class="pre">VCFReader.read_vcf_file()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.MarkdownWriter"><code class="docutils literal notranslate"><span class="pre">MarkdownWriter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.MarkdownWriter.generate_obsidian_markdown"><code class="docutils literal notranslate"><span class="pre">MarkdownWriter.generate_obsidian_markdown()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.FilenameGenerator"><code class="docutils literal notranslate"><span class="pre">FilenameGenerator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.FilenameGenerator.generate_filename"><code class="docutils literal notranslate"><span class="pre">FilenameGenerator.generate_filename()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.FilenameGenerator._clean_filename"><code class="docutils literal notranslate"><span class="pre">FilenameGenerator._clean_filename()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.FilenameGenerator.find_existing_files_with_uid"><code class="docutils literal notranslate"><span class="pre">FilenameGenerator.find_existing_files_with_uid()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter"><code class="docutils literal notranslate"><span class="pre">VCFConverter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter.reader"><code class="docutils literal notranslate"><span class="pre">VCFConverter.reader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter.writer"><code class="docutils literal notranslate"><span class="pre">VCFConverter.writer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter.filename_gen"><code class="docutils literal notranslate"><span class="pre">VCFConverter.filename_gen</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter._extract_rev_timestamp_from_markdown"><code class="docutils literal notranslate"><span class="pre">VCFConverter._extract_rev_timestamp_from_markdown()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter._should_skip_conversion"><code class="docutils literal notranslate"><span class="pre">VCFConverter._should_skip_conversion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter.convert_vcf_to_markdown"><code class="docutils literal notranslate"><span class="pre">VCFConverter.convert_vcf_to_markdown()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter.convert_vcf_files_from_sources"><code class="docutils literal notranslate"><span class="pre">VCFConverter.convert_vcf_files_from_sources()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter.process_tasks"><code class="docutils literal notranslate"><span class="pre">VCFConverter.process_tasks()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">vcf-to-obsidian-vcf-contacts</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Index</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+
+<h1 id="index">Index</h1>
+
+<div class="genindex-jumpbox">
+ <a href="#_"><strong>_</strong></a>
+ | <a href="#C"><strong>C</strong></a>
+ | <a href="#F"><strong>F</strong></a>
+ | <a href="#G"><strong>G</strong></a>
+ | <a href="#I"><strong>I</strong></a>
+ | <a href="#M"><strong>M</strong></a>
+ | <a href="#P"><strong>P</strong></a>
+ | <a href="#R"><strong>R</strong></a>
+ | <a href="#V"><strong>V</strong></a>
+ | <a href="#W"><strong>W</strong></a>
+ 
+</div>
+<h2 id="_">_</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/vcf_to_obsidian/filename_generator/index.html#vcf_to_obsidian.filename_generator.FilenameGenerator._clean_filename">_clean_filename() (vcf_to_obsidian.filename_generator.FilenameGenerator method)</a>
+
+      <ul>
+        <li><a href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.FilenameGenerator._clean_filename">(vcf_to_obsidian.FilenameGenerator method)</a>
+</li>
+      </ul></li>
+      <li><a href="autoapi/vcf_to_obsidian/vcf_converter/index.html#vcf_to_obsidian.vcf_converter.VCFConverter._extract_rev_timestamp_from_markdown">_extract_rev_timestamp_from_markdown() (vcf_to_obsidian.vcf_converter.VCFConverter method)</a>
+
+      <ul>
+        <li><a href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter._extract_rev_timestamp_from_markdown">(vcf_to_obsidian.VCFConverter method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/vcf_to_obsidian/vcf_converter/index.html#vcf_to_obsidian.vcf_converter.VCFConverter._should_skip_conversion">_should_skip_conversion() (vcf_to_obsidian.vcf_converter.VCFConverter method)</a>
+
+      <ul>
+        <li><a href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter._should_skip_conversion">(vcf_to_obsidian.VCFConverter method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="C">C</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/vcf_to_obsidian/vcf_converter/index.html#vcf_to_obsidian.vcf_converter.VCFConverter.convert_vcf_files_from_sources">convert_vcf_files_from_sources() (vcf_to_obsidian.vcf_converter.VCFConverter method)</a>
+
+      <ul>
+        <li><a href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter.convert_vcf_files_from_sources">(vcf_to_obsidian.VCFConverter method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/vcf_to_obsidian/vcf_converter/index.html#vcf_to_obsidian.vcf_converter.VCFConverter.convert_vcf_to_markdown">convert_vcf_to_markdown() (vcf_to_obsidian.vcf_converter.VCFConverter method)</a>
+
+      <ul>
+        <li><a href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter.convert_vcf_to_markdown">(vcf_to_obsidian.VCFConverter method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="F">F</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/vcf_to_obsidian/vcf_converter/index.html#vcf_to_obsidian.vcf_converter.VCFConverter.filename_gen">filename_gen (vcf_to_obsidian.vcf_converter.VCFConverter attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter.filename_gen">(vcf_to_obsidian.VCFConverter attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.FilenameGenerator">FilenameGenerator (class in vcf_to_obsidian)</a>
+
+      <ul>
+        <li><a href="autoapi/vcf_to_obsidian/filename_generator/index.html#vcf_to_obsidian.filename_generator.FilenameGenerator">(class in vcf_to_obsidian.filename_generator)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/vcf_to_obsidian/filename_generator/index.html#vcf_to_obsidian.filename_generator.FilenameGenerator.find_existing_files_with_uid">find_existing_files_with_uid() (vcf_to_obsidian.filename_generator.FilenameGenerator method)</a>
+
+      <ul>
+        <li><a href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.FilenameGenerator.find_existing_files_with_uid">(vcf_to_obsidian.FilenameGenerator method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="G">G</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/vcf_to_obsidian/filename_generator/index.html#vcf_to_obsidian.filename_generator.FilenameGenerator.generate_filename">generate_filename() (vcf_to_obsidian.filename_generator.FilenameGenerator method)</a>
+
+      <ul>
+        <li><a href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.FilenameGenerator.generate_filename">(vcf_to_obsidian.FilenameGenerator method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/vcf_to_obsidian/markdown_writer/index.html#vcf_to_obsidian.markdown_writer.MarkdownWriter.generate_obsidian_markdown">generate_obsidian_markdown() (vcf_to_obsidian.markdown_writer.MarkdownWriter method)</a>
+
+      <ul>
+        <li><a href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.MarkdownWriter.generate_obsidian_markdown">(vcf_to_obsidian.MarkdownWriter method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="I">I</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/vcf_to_obsidian/vcf_reader/index.html#vcf_to_obsidian.vcf_reader.VCFReader.is_valid_uuid">is_valid_uuid() (vcf_to_obsidian.vcf_reader.VCFReader method)</a>
+
+      <ul>
+        <li><a href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFReader.is_valid_uuid">(vcf_to_obsidian.VCFReader method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="M">M</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/vcf_to_obsidian/cli/index.html#vcf_to_obsidian.cli.main_cli">main_cli() (in module vcf_to_obsidian.cli)</a>
+</li>
+      <li><a href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.MarkdownWriter">MarkdownWriter (class in vcf_to_obsidian)</a>
+
+      <ul>
+        <li><a href="autoapi/vcf_to_obsidian/markdown_writer/index.html#vcf_to_obsidian.markdown_writer.MarkdownWriter">(class in vcf_to_obsidian.markdown_writer)</a>
+</li>
+      </ul></li>
+      <li>
+    module
+
+      <ul>
+        <li><a href="autoapi/vcf_to_obsidian/index.html#module-vcf_to_obsidian">vcf_to_obsidian</a>
+</li>
+        <li><a href="autoapi/vcf_to_obsidian/cli/index.html#module-vcf_to_obsidian.cli">vcf_to_obsidian.cli</a>
+</li>
+        <li><a href="autoapi/vcf_to_obsidian/filename_generator/index.html#module-vcf_to_obsidian.filename_generator">vcf_to_obsidian.filename_generator</a>
+</li>
+        <li><a href="autoapi/vcf_to_obsidian/markdown_writer/index.html#module-vcf_to_obsidian.markdown_writer">vcf_to_obsidian.markdown_writer</a>
+</li>
+        <li><a href="autoapi/vcf_to_obsidian/vcf_converter/index.html#module-vcf_to_obsidian.vcf_converter">vcf_to_obsidian.vcf_converter</a>
+</li>
+        <li><a href="autoapi/vcf_to_obsidian/vcf_reader/index.html#module-vcf_to_obsidian.vcf_reader">vcf_to_obsidian.vcf_reader</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="P">P</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/vcf_to_obsidian/vcf_converter/index.html#vcf_to_obsidian.vcf_converter.VCFConverter.process_tasks">process_tasks() (vcf_to_obsidian.vcf_converter.VCFConverter method)</a>
+
+      <ul>
+        <li><a href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter.process_tasks">(vcf_to_obsidian.VCFConverter method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="R">R</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/vcf_to_obsidian/vcf_reader/index.html#vcf_to_obsidian.vcf_reader.VCFReader.read_vcf_file">read_vcf_file() (vcf_to_obsidian.vcf_reader.VCFReader method)</a>
+
+      <ul>
+        <li><a href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFReader.read_vcf_file">(vcf_to_obsidian.VCFReader method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/vcf_to_obsidian/vcf_converter/index.html#vcf_to_obsidian.vcf_converter.VCFConverter.reader">reader (vcf_to_obsidian.vcf_converter.VCFConverter attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter.reader">(vcf_to_obsidian.VCFConverter attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="V">V</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    vcf_to_obsidian
+
+      <ul>
+        <li><a href="autoapi/vcf_to_obsidian/index.html#module-vcf_to_obsidian">module</a>
+</li>
+      </ul></li>
+      <li>
+    vcf_to_obsidian.cli
+
+      <ul>
+        <li><a href="autoapi/vcf_to_obsidian/cli/index.html#module-vcf_to_obsidian.cli">module</a>
+</li>
+      </ul></li>
+      <li>
+    vcf_to_obsidian.filename_generator
+
+      <ul>
+        <li><a href="autoapi/vcf_to_obsidian/filename_generator/index.html#module-vcf_to_obsidian.filename_generator">module</a>
+</li>
+      </ul></li>
+      <li>
+    vcf_to_obsidian.markdown_writer
+
+      <ul>
+        <li><a href="autoapi/vcf_to_obsidian/markdown_writer/index.html#module-vcf_to_obsidian.markdown_writer">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    vcf_to_obsidian.vcf_converter
+
+      <ul>
+        <li><a href="autoapi/vcf_to_obsidian/vcf_converter/index.html#module-vcf_to_obsidian.vcf_converter">module</a>
+</li>
+      </ul></li>
+      <li>
+    vcf_to_obsidian.vcf_reader
+
+      <ul>
+        <li><a href="autoapi/vcf_to_obsidian/vcf_reader/index.html#module-vcf_to_obsidian.vcf_reader">module</a>
+</li>
+      </ul></li>
+      <li><a href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter">VCFConverter (class in vcf_to_obsidian)</a>
+
+      <ul>
+        <li><a href="autoapi/vcf_to_obsidian/vcf_converter/index.html#vcf_to_obsidian.vcf_converter.VCFConverter">(class in vcf_to_obsidian.vcf_converter)</a>
+</li>
+      </ul></li>
+      <li><a href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFReader">VCFReader (class in vcf_to_obsidian)</a>
+
+      <ul>
+        <li><a href="autoapi/vcf_to_obsidian/vcf_reader/index.html#vcf_to_obsidian.vcf_reader.VCFReader">(class in vcf_to_obsidian.vcf_reader)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="W">W</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/vcf_to_obsidian/vcf_converter/index.html#vcf_to_obsidian.vcf_converter.VCFConverter.writer">writer (vcf_to_obsidian.vcf_converter.VCFConverter attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter.writer">(vcf_to_obsidian.VCFConverter attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Ian Dennis Miller.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

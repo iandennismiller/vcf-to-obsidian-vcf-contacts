@@ -1,0 +1,114 @@
+vcf_to_obsidian.vcf_converter
+=============================
+
+.. py:module:: vcf_to_obsidian.vcf_converter
+
+.. autoapi-nested-parse::
+
+   VCF Converter module for handling VCF to Markdown conversion.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   vcf_to_obsidian.vcf_converter.VCFConverter
+
+
+Module Contents
+---------------
+
+.. py:class:: VCFConverter
+
+   Class responsible for converting VCF files to Markdown format.
+
+
+   .. py:attribute:: reader
+
+
+   .. py:attribute:: writer
+
+
+   .. py:attribute:: filename_gen
+
+
+   .. py:method:: _extract_rev_timestamp_from_markdown(markdown_path)
+
+      Extract REV timestamp from existing Markdown file.
+
+      :param markdown_path: Path to the Markdown file
+      :type markdown_path: Path
+
+      :returns: REV timestamp as datetime object, or None if not found
+      :rtype: datetime or None
+
+
+
+   .. py:method:: _should_skip_conversion(vcf_path, markdown_path)
+
+      Check if conversion should be skipped based on file modification times.
+
+      :param vcf_path: Path to the VCF file
+      :type vcf_path: Path
+      :param markdown_path: Path to the Markdown file
+      :type markdown_path: Path
+
+      :returns: True if conversion should be skipped, False otherwise
+      :rtype: bool
+
+
+
+   .. py:method:: convert_vcf_to_markdown(vcf_path, output_dir)
+
+      Convert a single VCF file to Markdown format.
+
+      :param vcf_path: Path to the VCF file
+      :type vcf_path: Path
+      :param output_dir: Output directory for Markdown files
+      :type output_dir: Path
+
+      :returns: True if successful, False otherwise
+      :rtype: bool
+
+
+
+   .. py:method:: convert_vcf_files_from_sources(folder_sources, file_sources, output_dir, ignore_files=None, verbose=False)
+
+      Convert VCF files from multiple sources (folders and individual files) to Markdown format.
+
+      This method collects VCF files from the specified sources, applies ignore filters,
+      and processes them directly using convert_vcf_to_markdown.
+
+      :param folder_sources: List of Path objects for directories containing VCF files
+      :type folder_sources: list
+      :param file_sources: List of Path objects for individual VCF files
+      :type file_sources: list
+      :param output_dir: Output directory for Markdown files
+      :type output_dir: Path
+      :param ignore_files: List of Path objects for files to ignore
+      :type ignore_files: list, optional
+      :param verbose: Whether to enable verbose output
+      :type verbose: bool
+
+      :returns: (successful_count, total_count, all_vcf_files)
+      :rtype: tuple
+
+
+
+   .. py:method:: process_tasks(folder, obsidian, file, verbose, ignore)
+
+      Process VCF conversion tasks from CLI arguments.
+
+      This method handles the complete CLI workflow including validation,
+      file collection, processing, and reporting.
+
+      :param folder: Tuple/list of folder paths containing VCF files
+      :param obsidian: Path to destination directory for Markdown files
+      :param file: Tuple/list of individual VCF file paths to process
+      :param verbose: Boolean flag for verbose output
+      :param ignore: Tuple/list of VCF file paths to ignore
+
+
+

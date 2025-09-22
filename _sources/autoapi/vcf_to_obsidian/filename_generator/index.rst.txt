@@ -1,0 +1,72 @@
+vcf_to_obsidian.filename_generator
+==================================
+
+.. py:module:: vcf_to_obsidian.filename_generator
+
+.. autoapi-nested-parse::
+
+   Filename Generator module for creating output filenames from VCF data.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   vcf_to_obsidian.filename_generator.FilenameGenerator
+
+
+Module Contents
+---------------
+
+.. py:class:: FilenameGenerator
+
+   Class responsible for generating output filenames from vCard objects.
+
+
+   .. py:method:: generate_filename(vcard, vcf_path)
+
+      Generate an output filename based on vCard data with priority logic.
+
+      Priority:
+      1. Full Name (FN) field
+      2. Constructed name from given + family names
+      3. UID field
+      4. Original VCF filename
+
+      :param vcard: vobject vCard object
+      :param vcf_path: Original VCF file path
+      :type vcf_path: Path
+
+      :returns: Safe filename (without extension)
+      :rtype: str
+
+
+
+   .. py:method:: _clean_filename(filename)
+
+      Clean a filename to make it filesystem-safe.
+
+      :param filename: Original filename
+      :type filename: str
+
+      :returns: Cleaned filename safe for filesystem use
+      :rtype: str
+
+
+
+   .. py:method:: find_existing_files_with_uid(output_dir, uid)
+
+      Find existing Markdown files in output directory that have the same UID.
+
+      :param output_dir: Output directory to search
+      :type output_dir: Path
+      :param uid: UID to search for
+      :type uid: str
+
+      :returns: List of Path objects for files with matching UID
+      :rtype: list
+
+
+

@@ -1,0 +1,39 @@
+vcf_to_obsidian.markdown_writer
+===============================
+
+.. py:module:: vcf_to_obsidian.markdown_writer
+
+.. autoapi-nested-parse::
+
+   Markdown Writer module for generating Markdown content from VCF data.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   vcf_to_obsidian.markdown_writer.MarkdownWriter
+
+
+Module Contents
+---------------
+
+.. py:class:: MarkdownWriter
+
+   Class responsible for generating Markdown content from vCard objects.
+
+
+   .. py:method:: generate_obsidian_markdown(vcard)
+
+      Generate Markdown content compatible with obsidian-vcf-contacts plugin.
+      Works directly with vobject instead of intermediate representation.
+
+      :param vcard: vobject vCard object
+
+      :returns: Markdown content with frontmatter
+      :rtype: str
+
+
+

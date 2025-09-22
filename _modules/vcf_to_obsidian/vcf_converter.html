@@ -1,0 +1,599 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>vcf_to_obsidian.vcf_converter &mdash; vcf-to-obsidian-vcf-contacts 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            vcf-to-obsidian-vcf-contacts
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../installation.html#python-implementation">Python Implementation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../installation.html#option-1-install-with-pip-recommended">Option 1: Install with pip (Recommended)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../installation.html#option-2-install-with-pipx-for-cli-tools">Option 2: Install with pipx (For CLI tools)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../installation.html#option-3-development-installation">Option 3: Development Installation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../installation.html#bash-implementation-no-dependencies">Bash Implementation (No Dependencies)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../usage.html#bash-script">Bash Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage.html#python-script">Python Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage.html#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage.html#command-line-options">Command Line Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage.html#template-output">Template Output</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../integration.html">Integration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../integration.html#vdirsyncer-integration">vdirsyncer Integration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../integration.html#configuration">Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../integration.html#configuration-parameters">Configuration Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../integration.html#customizing-paths">Customizing Paths</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../integration.html#workflow">Workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../integration.html#alternative-installation-methods">Alternative Installation Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../integration.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../integration.html#additional-options">Additional Options</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../implementation-comparison.html">Implementation Comparison</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../implementation-comparison.html#when-to-use-the-bash-script">When to use the bash script:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../implementation-comparison.html#when-to-use-the-python-script">When to use the Python script:</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../vcf-support.html">VCF Support</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../vcf-support.html#vcard-4-0-support">vCard 4.0 Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../vcf-support.html#parsing-engine">Parsing Engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../vcf-support.html#filename-generation">Filename Generation</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../development.html">Development and Maintenance</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../development.html#quick-setup">Quick Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../development.html#available-make-targets">Available Make Targets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../development.html#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../development.html#error-handling">Error Handling</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../testing.html">Testing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../testing.html#running-tests">Running Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../testing.html#test-organization">Test Organization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../testing.html#test-coverage">Test Coverage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../testing.html#bash-tests">Bash Tests</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../testing.html#test-structure">Test Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../testing.html#running-bash-tests">Running Bash Tests</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../testing.html#run-all-tests">Run All Tests</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../testing.html#run-individual-test-files">Run Individual Test Files</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../testing.html#using-make-commands">Using Make Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../testing.html#test-output">Test Output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../testing.html#test-data">Test Data</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../testing.html#vcf-test-files">VCF Test Files</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../testing.html#requirements">Requirements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../testing.html#adding-new-tests">Adding New Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../testing.html#test-conventions">Test Conventions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html">vcf_to_obsidian</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/cli/index.html">vcf_to_obsidian.cli</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/cli/index.html#functions">Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/cli/index.html#module-contents">Module Contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/filename_generator/index.html">vcf_to_obsidian.filename_generator</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/filename_generator/index.html#classes">Classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/filename_generator/index.html#module-contents">Module Contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/markdown_writer/index.html">vcf_to_obsidian.markdown_writer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/markdown_writer/index.html#classes">Classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/markdown_writer/index.html#module-contents">Module Contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/vcf_converter/index.html">vcf_to_obsidian.vcf_converter</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/vcf_converter/index.html#classes">Classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/vcf_converter/index.html#module-contents">Module Contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/vcf_reader/index.html">vcf_to_obsidian.vcf_reader</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/vcf_reader/index.html#classes">Classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/vcf_reader/index.html#module-contents">Module Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFReader"><code class="docutils literal notranslate"><span class="pre">VCFReader</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFReader.is_valid_uuid"><code class="docutils literal notranslate"><span class="pre">VCFReader.is_valid_uuid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFReader.read_vcf_file"><code class="docutils literal notranslate"><span class="pre">VCFReader.read_vcf_file()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.MarkdownWriter"><code class="docutils literal notranslate"><span class="pre">MarkdownWriter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.MarkdownWriter.generate_obsidian_markdown"><code class="docutils literal notranslate"><span class="pre">MarkdownWriter.generate_obsidian_markdown()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.FilenameGenerator"><code class="docutils literal notranslate"><span class="pre">FilenameGenerator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.FilenameGenerator.generate_filename"><code class="docutils literal notranslate"><span class="pre">FilenameGenerator.generate_filename()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.FilenameGenerator._clean_filename"><code class="docutils literal notranslate"><span class="pre">FilenameGenerator._clean_filename()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.FilenameGenerator.find_existing_files_with_uid"><code class="docutils literal notranslate"><span class="pre">FilenameGenerator.find_existing_files_with_uid()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter"><code class="docutils literal notranslate"><span class="pre">VCFConverter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter.reader"><code class="docutils literal notranslate"><span class="pre">VCFConverter.reader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter.writer"><code class="docutils literal notranslate"><span class="pre">VCFConverter.writer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter.filename_gen"><code class="docutils literal notranslate"><span class="pre">VCFConverter.filename_gen</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter._extract_rev_timestamp_from_markdown"><code class="docutils literal notranslate"><span class="pre">VCFConverter._extract_rev_timestamp_from_markdown()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter._should_skip_conversion"><code class="docutils literal notranslate"><span class="pre">VCFConverter._should_skip_conversion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter.convert_vcf_to_markdown"><code class="docutils literal notranslate"><span class="pre">VCFConverter.convert_vcf_to_markdown()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter.convert_vcf_files_from_sources"><code class="docutils literal notranslate"><span class="pre">VCFConverter.convert_vcf_files_from_sources()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter.process_tasks"><code class="docutils literal notranslate"><span class="pre">VCFConverter.process_tasks()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">vcf-to-obsidian-vcf-contacts</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">vcf_to_obsidian.vcf_converter</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for vcf_to_obsidian.vcf_converter</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">VCF Converter module for handling VCF to Markdown conversion.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.vcf_reader</span><span class="w"> </span><span class="kn">import</span> <span class="n">VCFReader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.markdown_writer</span><span class="w"> </span><span class="kn">import</span> <span class="n">MarkdownWriter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.filename_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">FilenameGenerator</span>
+
+
+<div class="viewcode-block" id="VCFConverter">
+<a class="viewcode-back" href="../../autoapi/vcf_to_obsidian/vcf_converter/index.html#vcf_to_obsidian.VCFConverter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">VCFConverter</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class responsible for converting VCF files to Markdown format.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the VCF converter.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="VCFConverter.reader">
+<a class="viewcode-back" href="../../autoapi/vcf_to_obsidian/vcf_converter/index.html#vcf_to_obsidian.VCFConverter.reader">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reader</span> <span class="o">=</span> <span class="n">VCFReader</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="VCFConverter.writer">
+<a class="viewcode-back" href="../../autoapi/vcf_to_obsidian/vcf_converter/index.html#vcf_to_obsidian.VCFConverter.writer">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writer</span> <span class="o">=</span> <span class="n">MarkdownWriter</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="VCFConverter.filename_gen">
+<a class="viewcode-back" href="../../autoapi/vcf_to_obsidian/vcf_converter/index.html#vcf_to_obsidian.VCFConverter.filename_gen">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename_gen</span> <span class="o">=</span> <span class="n">FilenameGenerator</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="VCFConverter._extract_rev_timestamp_from_markdown">
+<a class="viewcode-back" href="../../autoapi/vcf_to_obsidian/vcf_converter/index.html#vcf_to_obsidian.VCFConverter._extract_rev_timestamp_from_markdown">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_rev_timestamp_from_markdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">markdown_path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract REV timestamp from existing Markdown file.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            markdown_path (Path): Path to the Markdown file</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            datetime or None: REV timestamp as datetime object, or None if not found</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">markdown_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="k">return</span> <span class="kc">None</span>
+                
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">markdown_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">content</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            
+            <span class="c1"># Look for REV timestamp in format: REV: YYYYMMDDTHHMMSSZ</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;REV: (\d</span><span class="si">{8}</span><span class="s1">T\d</span><span class="si">{6}</span><span class="s1">Z)&#39;</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                <span class="n">timestamp_str</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="c1"># Parse the timestamp format YYYYMMDDTHHMMSSZ</span>
+                <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">timestamp_str</span><span class="p">,</span> <span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">T%H%M%SZ&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+            
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+    
+<div class="viewcode-block" id="VCFConverter._should_skip_conversion">
+<a class="viewcode-back" href="../../autoapi/vcf_to_obsidian/vcf_converter/index.html#vcf_to_obsidian.VCFConverter._should_skip_conversion">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_should_skip_conversion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vcf_path</span><span class="p">,</span> <span class="n">markdown_path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if conversion should be skipped based on file modification times.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            vcf_path (Path): Path to the VCF file</span>
+<span class="sd">            markdown_path (Path): Path to the Markdown file</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if conversion should be skipped, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">markdown_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        
+        <span class="c1"># Get VCF file modification time</span>
+        <span class="n">vcf_mtime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">vcf_path</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_mtime</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+        
+        <span class="c1"># Get REV timestamp from markdown</span>
+        <span class="n">rev_timestamp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_rev_timestamp_from_markdown</span><span class="p">(</span><span class="n">markdown_path</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">rev_timestamp</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># If we can&#39;t find REV timestamp, convert to be safe</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        
+        <span class="c1"># Debug output</span>
+        <span class="c1"># print(f&quot;VCF mtime: {vcf_mtime}&quot;)</span>
+        <span class="c1"># print(f&quot;REV timestamp: {rev_timestamp}&quot;)</span>
+        
+        <span class="c1"># Skip conversion if VCF file is not newer than the REV timestamp</span>
+        <span class="c1"># Use a small tolerance to account for filesystem timestamp precision</span>
+        <span class="k">return</span> <span class="n">vcf_mtime</span> <span class="o">&lt;=</span> <span class="n">rev_timestamp</span></div>
+
+
+<div class="viewcode-block" id="VCFConverter.convert_vcf_to_markdown">
+<a class="viewcode-back" href="../../autoapi/vcf_to_obsidian/vcf_converter/index.html#vcf_to_obsidian.VCFConverter.convert_vcf_to_markdown">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_vcf_to_markdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vcf_path</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert a single VCF file to Markdown format.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            vcf_path (Path): Path to the VCF file</span>
+<span class="sd">            output_dir (Path): Output directory for Markdown files</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if successful, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Read VCF file to get vcard for filename generation</span>
+            <span class="n">vcard</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">read_vcf_file</span><span class="p">(</span><span class="n">vcf_path</span><span class="p">)</span>
+
+            <span class="c1"># Generate filename</span>
+            <span class="n">output_filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename_gen</span><span class="o">.</span><span class="n">generate_filename</span><span class="p">(</span><span class="n">vcard</span><span class="p">,</span> <span class="n">vcf_path</span><span class="p">)</span>
+            <span class="n">output_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_filename</span><span class="si">}</span><span class="s2">.md&quot;</span>
+
+            <span class="c1"># Check if we should skip conversion based on modification times</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_should_skip_conversion</span><span class="p">(</span><span class="n">vcf_path</span><span class="p">,</span> <span class="n">output_file</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skipped: </span><span class="si">{</span><span class="n">vcf_path</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">output_file</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (VCF not newer than markdown)&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+            <span class="c1"># Generate markdown content</span>
+            <span class="n">markdown_content</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">generate_obsidian_markdown</span><span class="p">(</span><span class="n">vcard</span><span class="p">)</span>
+
+            <span class="c1"># Remove existing files with the same UID if the filename would be different</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">vcard</span><span class="p">,</span> <span class="s2">&quot;uid&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">vcard</span><span class="o">.</span><span class="n">uid</span> <span class="ow">and</span> <span class="n">vcard</span><span class="o">.</span><span class="n">uid</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+                <span class="n">existing_files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename_gen</span><span class="o">.</span><span class="n">find_existing_files_with_uid</span><span class="p">(</span>
+                    <span class="n">output_dir</span><span class="p">,</span> <span class="n">vcard</span><span class="o">.</span><span class="n">uid</span><span class="o">.</span><span class="n">value</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">existing_file</span> <span class="ow">in</span> <span class="n">existing_files</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">existing_file</span> <span class="o">!=</span> <span class="n">output_file</span><span class="p">:</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">existing_file</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Removed old file: </span><span class="si">{</span><span class="n">existing_file</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                            <span class="nb">print</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s2">&quot;Warning: Could not remove old file </span><span class="si">{</span><span class="n">existing_file</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+                            <span class="p">)</span>
+
+            <span class="c1"># Write Markdown file</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">markdown_content</span><span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Converted: </span><span class="si">{</span><span class="n">vcf_path</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">output_file</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error converting </span><span class="si">{</span><span class="n">vcf_path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="VCFConverter.convert_vcf_files_from_sources">
+<a class="viewcode-back" href="../../autoapi/vcf_to_obsidian/vcf_converter/index.html#vcf_to_obsidian.VCFConverter.convert_vcf_files_from_sources">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_vcf_files_from_sources</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">folder_sources</span><span class="p">,</span> <span class="n">file_sources</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">ignore_files</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert VCF files from multiple sources (folders and individual files) to Markdown format.</span>
+
+<span class="sd">        This method collects VCF files from the specified sources, applies ignore filters,</span>
+<span class="sd">        and processes them directly using convert_vcf_to_markdown.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            folder_sources (list): List of Path objects for directories containing VCF files</span>
+<span class="sd">            file_sources (list): List of Path objects for individual VCF files</span>
+<span class="sd">            output_dir (Path): Output directory for Markdown files</span>
+<span class="sd">            ignore_files (list, optional): List of Path objects for files to ignore</span>
+<span class="sd">            verbose (bool): Whether to enable verbose output</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: (successful_count, total_count, all_vcf_files)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
+
+        <span class="c1"># Collect all VCF files to process</span>
+        <span class="n">all_vcf_files</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">processed_paths</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>  <span class="c1"># Track processed file paths to avoid duplicates</span>
+
+        <span class="c1"># Process folder sources</span>
+        <span class="k">for</span> <span class="n">source_path</span> <span class="ow">in</span> <span class="n">folder_sources</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">source_path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                    <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Error: Source path &#39;</span><span class="si">{</span><span class="n">source_path</span><span class="si">}</span><span class="s2">&#39; is not a directory.&quot;</span><span class="p">,</span>
+                        <span class="n">err</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Find all VCF files in this directory</span>
+            <span class="n">vcf_files</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">source_path</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.vcf&quot;</span><span class="p">))</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span>
+                <span class="n">source_path</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.VCF&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">new_files_count</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">vcf_file</span> <span class="ow">in</span> <span class="n">vcf_files</span><span class="p">:</span>
+                <span class="n">absolute_path</span> <span class="o">=</span> <span class="n">vcf_file</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">absolute_path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">processed_paths</span><span class="p">:</span>
+                    <span class="n">all_vcf_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vcf_file</span><span class="p">)</span>
+                    <span class="n">processed_paths</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">absolute_path</span><span class="p">)</span>
+                    <span class="n">new_files_count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">new_files_count</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">vcf_files</span><span class="p">):</span>
+                    <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">vcf_files</span><span class="p">)</span><span class="si">}</span><span class="s2"> VCF file(s) in &#39;</span><span class="si">{</span><span class="n">source_path</span><span class="si">}</span><span class="s2">&#39; (</span><span class="si">{</span><span class="n">new_files_count</span><span class="si">}</span><span class="s2"> new, </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">vcf_files</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">new_files_count</span><span class="si">}</span><span class="s2"> duplicates)&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">vcf_files</span><span class="p">)</span><span class="si">}</span><span class="s2"> VCF file(s) in &#39;</span><span class="si">{</span><span class="n">source_path</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Process individual file sources</span>
+        <span class="k">for</span> <span class="n">file_path</span> <span class="ow">in</span> <span class="n">file_sources</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">file_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                    <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: File &#39;</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&#39; does not exist.&quot;</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">file_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                    <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: Path &#39;</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&#39; is not a file.&quot;</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Check if it&#39;s a VCF file by extension</span>
+            <span class="k">if</span> <span class="n">file_path</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.vcf&quot;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                    <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Warning: File &#39;</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&#39; does not have a .vcf extension.&quot;</span><span class="p">,</span>
+                        <span class="n">err</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+            <span class="n">absolute_path</span> <span class="o">=</span> <span class="n">file_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">absolute_path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">processed_paths</span><span class="p">:</span>
+                <span class="n">all_vcf_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+                <span class="n">processed_paths</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">absolute_path</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                    <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Added individual file: &#39;</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                    <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skipping duplicate file: &#39;</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Process ignore list - remove specified files from the conversion list</span>
+        <span class="k">if</span> <span class="n">ignore_files</span><span class="p">:</span>
+            <span class="n">ignore_paths</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">ignore_path</span> <span class="ow">in</span> <span class="n">ignore_files</span><span class="p">:</span>
+                <span class="n">absolute_ignore_path</span> <span class="o">=</span> <span class="n">ignore_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+                <span class="n">ignore_paths</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">absolute_ignore_path</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                    <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Will ignore file: &#39;</span><span class="si">{</span><span class="n">ignore_path</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Filter out ignored files</span>
+            <span class="n">initial_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_vcf_files</span><span class="p">)</span>
+            <span class="n">all_vcf_files</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">vcf_file</span>
+                <span class="k">for</span> <span class="n">vcf_file</span> <span class="ow">in</span> <span class="n">all_vcf_files</span>
+                <span class="k">if</span> <span class="n">vcf_file</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ignore_paths</span>
+            <span class="p">]</span>
+            <span class="n">ignored_count</span> <span class="o">=</span> <span class="n">initial_count</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_vcf_files</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">ignored_count</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Ignored </span><span class="si">{</span><span class="n">ignored_count</span><span class="si">}</span><span class="s2"> file(s)&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Create destination directory</span>
+        <span class="n">output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Destination directory: &#39;</span><span class="si">{</span><span class="n">output_dir</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Converting to Markdown in &#39;</span><span class="si">{</span><span class="n">output_dir</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Convert each VCF file to the destination directly</span>
+        <span class="n">successful_conversions</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">total_conversions</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_vcf_files</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">vcf_file</span> <span class="ow">in</span> <span class="n">all_vcf_files</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_vcf_to_markdown</span><span class="p">(</span><span class="n">vcf_file</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">):</span>
+                <span class="n">successful_conversions</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">successful_conversions</span><span class="p">,</span> <span class="n">total_conversions</span><span class="p">,</span> <span class="n">all_vcf_files</span></div>
+
+
+<div class="viewcode-block" id="VCFConverter.process_tasks">
+<a class="viewcode-back" href="../../autoapi/vcf_to_obsidian/vcf_converter/index.html#vcf_to_obsidian.VCFConverter.process_tasks">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">obsidian</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">ignore</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Process VCF conversion tasks from CLI arguments.</span>
+
+<span class="sd">        This method handles the complete CLI workflow including validation,</span>
+<span class="sd">        file collection, processing, and reporting.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            folder: Tuple/list of folder paths containing VCF files</span>
+<span class="sd">            obsidian: Path to destination directory for Markdown files</span>
+<span class="sd">            file: Tuple/list of individual VCF file paths to process</span>
+<span class="sd">            verbose: Boolean flag for verbose output</span>
+<span class="sd">            ignore: Tuple/list of VCF file paths to ignore</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+
+        <span class="c1"># Validate that at least one source is specified</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">folder</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span>
+                <span class="s2">&quot;Error: Must specify at least one --folder or --file option.&quot;</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Validate file and folder sources exist before processing</span>
+        <span class="k">for</span> <span class="n">folder_path</span> <span class="ow">in</span> <span class="n">folder</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">folder_path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+                <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Error: Source path &#39;</span><span class="si">{</span><span class="n">folder_path</span><span class="si">}</span><span class="s2">&#39; is not a directory.&quot;</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">file_path</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">file_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: File &#39;</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&#39; does not exist.&quot;</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">file_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+                <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: Path &#39;</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&#39; is not a file.&quot;</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Convert tuples to lists for easier handling</span>
+        <span class="n">folder_sources</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span> <span class="k">if</span> <span class="n">folder</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="n">file_sources</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">file</span><span class="p">)</span> <span class="k">if</span> <span class="n">file</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="n">ignore_files</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ignore</span><span class="p">)</span> <span class="k">if</span> <span class="n">ignore</span> <span class="k">else</span> <span class="p">[]</span>
+
+        <span class="c1"># Use existing method to handle the conversion</span>
+        <span class="n">successful_conversions</span><span class="p">,</span> <span class="n">total_conversions</span><span class="p">,</span> <span class="n">all_vcf_files</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">convert_vcf_files_from_sources</span><span class="p">(</span>
+                <span class="n">folder_sources</span><span class="o">=</span><span class="n">folder_sources</span><span class="p">,</span>
+                <span class="n">file_sources</span><span class="o">=</span><span class="n">file_sources</span><span class="p">,</span>
+                <span class="n">output_dir</span><span class="o">=</span><span class="n">obsidian</span><span class="p">,</span>
+                <span class="n">ignore_files</span><span class="o">=</span><span class="n">ignore_files</span><span class="p">,</span>
+                <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Handle edge cases for messaging</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">all_vcf_files</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">folder_sources</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">file_sources</span><span class="p">:</span>
+                <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="s2">&quot;No VCF files found to process.&quot;</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span>
+                    <span class="s2">&quot;No VCF files remaining to process after applying ignore list.&quot;</span><span class="p">,</span>
+                    <span class="n">err</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Report final results</span>
+        <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">all_vcf_files</span><span class="p">)</span><span class="si">}</span><span class="s2"> VCF file(s) to process&quot;</span><span class="p">)</span>
+        <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Successfully completed </span><span class="si">{</span><span class="n">successful_conversions</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">all_vcf_files</span><span class="p">)</span><span class="si">}</span><span class="s2"> conversions.&quot;</span>
+        <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Ian Dennis Miller.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

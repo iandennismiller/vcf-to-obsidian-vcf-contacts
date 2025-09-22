@@ -1,0 +1,411 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Testing &mdash; vcf-to-obsidian-vcf-contacts 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=8d563738"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="vcf_to_obsidian" href="autoapi/vcf_to_obsidian/index.html" />
+    <link rel="prev" title="Development and Maintenance" href="development.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            vcf-to-obsidian-vcf-contacts
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#python-implementation">Python Implementation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#option-1-install-with-pip-recommended">Option 1: Install with pip (Recommended)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#option-2-install-with-pipx-for-cli-tools">Option 2: Install with pipx (For CLI tools)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#option-3-development-installation">Option 3: Development Installation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#bash-implementation-no-dependencies">Bash Implementation (No Dependencies)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#bash-script">Bash Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#python-script">Python Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#command-line-options">Command Line Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#template-output">Template Output</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="integration.html">Integration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="integration.html#vdirsyncer-integration">vdirsyncer Integration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="integration.html#configuration">Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="integration.html#configuration-parameters">Configuration Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="integration.html#customizing-paths">Customizing Paths</a></li>
+<li class="toctree-l3"><a class="reference internal" href="integration.html#workflow">Workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="integration.html#alternative-installation-methods">Alternative Installation Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="integration.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="integration.html#additional-options">Additional Options</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="implementation-comparison.html">Implementation Comparison</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="implementation-comparison.html#when-to-use-the-bash-script">When to use the bash script:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="implementation-comparison.html#when-to-use-the-python-script">When to use the Python script:</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="vcf-support.html">VCF Support</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vcf-support.html#vcard-4-0-support">vCard 4.0 Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vcf-support.html#parsing-engine">Parsing Engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vcf-support.html#filename-generation">Filename Generation</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development and Maintenance</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="development.html#quick-setup">Quick Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#available-make-targets">Available Make Targets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#error-handling">Error Handling</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Testing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#running-tests">Running Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#test-organization">Test Organization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#test-coverage">Test Coverage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bash-tests">Bash Tests</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#test-structure">Test Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#running-bash-tests">Running Bash Tests</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#run-all-tests">Run All Tests</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#run-individual-test-files">Run Individual Test Files</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#using-make-commands">Using Make Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#test-output">Test Output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#test-data">Test Data</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#vcf-test-files">VCF Test Files</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#requirements">Requirements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adding-new-tests">Adding New Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#test-conventions">Test Conventions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html">vcf_to_obsidian</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/vcf_to_obsidian/cli/index.html">vcf_to_obsidian.cli</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/cli/index.html#functions">Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/cli/index.html#module-contents">Module Contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/vcf_to_obsidian/filename_generator/index.html">vcf_to_obsidian.filename_generator</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/filename_generator/index.html#classes">Classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/filename_generator/index.html#module-contents">Module Contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/vcf_to_obsidian/markdown_writer/index.html">vcf_to_obsidian.markdown_writer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/markdown_writer/index.html#classes">Classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/markdown_writer/index.html#module-contents">Module Contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/vcf_to_obsidian/vcf_converter/index.html">vcf_to_obsidian.vcf_converter</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/vcf_converter/index.html#classes">Classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/vcf_converter/index.html#module-contents">Module Contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/vcf_to_obsidian/vcf_reader/index.html">vcf_to_obsidian.vcf_reader</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/vcf_reader/index.html#classes">Classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/vcf_reader/index.html#module-contents">Module Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFReader"><code class="docutils literal notranslate"><span class="pre">VCFReader</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFReader.is_valid_uuid"><code class="docutils literal notranslate"><span class="pre">VCFReader.is_valid_uuid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFReader.read_vcf_file"><code class="docutils literal notranslate"><span class="pre">VCFReader.read_vcf_file()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.MarkdownWriter"><code class="docutils literal notranslate"><span class="pre">MarkdownWriter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.MarkdownWriter.generate_obsidian_markdown"><code class="docutils literal notranslate"><span class="pre">MarkdownWriter.generate_obsidian_markdown()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.FilenameGenerator"><code class="docutils literal notranslate"><span class="pre">FilenameGenerator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.FilenameGenerator.generate_filename"><code class="docutils literal notranslate"><span class="pre">FilenameGenerator.generate_filename()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.FilenameGenerator._clean_filename"><code class="docutils literal notranslate"><span class="pre">FilenameGenerator._clean_filename()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.FilenameGenerator.find_existing_files_with_uid"><code class="docutils literal notranslate"><span class="pre">FilenameGenerator.find_existing_files_with_uid()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter"><code class="docutils literal notranslate"><span class="pre">VCFConverter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter.reader"><code class="docutils literal notranslate"><span class="pre">VCFConverter.reader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter.writer"><code class="docutils literal notranslate"><span class="pre">VCFConverter.writer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter.filename_gen"><code class="docutils literal notranslate"><span class="pre">VCFConverter.filename_gen</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter._extract_rev_timestamp_from_markdown"><code class="docutils literal notranslate"><span class="pre">VCFConverter._extract_rev_timestamp_from_markdown()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter._should_skip_conversion"><code class="docutils literal notranslate"><span class="pre">VCFConverter._should_skip_conversion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter.convert_vcf_to_markdown"><code class="docutils literal notranslate"><span class="pre">VCFConverter.convert_vcf_to_markdown()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter.convert_vcf_files_from_sources"><code class="docutils literal notranslate"><span class="pre">VCFConverter.convert_vcf_files_from_sources()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter.process_tasks"><code class="docutils literal notranslate"><span class="pre">VCFConverter.process_tasks()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">vcf-to-obsidian-vcf-contacts</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Testing</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/testing.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="testing">
+<h1>Testing<a class="headerlink" href="#testing" title="Link to this heading"></a></h1>
+<p>The project includes a comprehensive test suite to ensure reliability and correctness, organized using pytest.</p>
+<section id="running-tests">
+<h2>Running Tests<a class="headerlink" href="#running-tests" title="Link to this heading"></a></h2>
+<p>Run the test suite using pytest:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span>
+</pre></div>
+</div>
+<p>Or run with verbose output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span> <span class="o">-</span><span class="n">v</span>
+</pre></div>
+</div>
+<p>Run tests for a specific functionality:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span> <span class="n">tests</span><span class="o">/</span><span class="n">test_vcf_reading</span><span class="o">.</span><span class="n">py</span>      <span class="c1"># VCF parsing tests</span>
+<span class="n">pytest</span> <span class="n">tests</span><span class="o">/</span><span class="n">test_markdown_writing</span><span class="o">.</span><span class="n">py</span> <span class="c1"># Markdown generation tests</span>
+<span class="n">pytest</span> <span class="n">tests</span><span class="o">/</span><span class="n">test_command_line</span><span class="o">.</span><span class="n">py</span>     <span class="c1"># CLI functionality tests</span>
+<span class="n">pytest</span> <span class="n">tests</span><span class="o">/</span><span class="n">test_filename_generation</span><span class="o">.</span><span class="n">py</span> <span class="c1"># Filename logic tests</span>
+<span class="n">pytest</span> <span class="n">tests</span><span class="o">/</span><span class="n">test_integration</span><span class="o">.</span><span class="n">py</span>      <span class="c1"># End-to-end integration tests</span>
+</pre></div>
+</div>
+</section>
+<section id="test-organization">
+<h2>Test Organization<a class="headerlink" href="#test-organization" title="Link to this heading"></a></h2>
+<p>Tests are organized into separate files by functionality:</p>
+<ul class="simple">
+<li><p><strong>``tests/test_vcf_reading.py``</strong> - VCF file parsing and data extraction</p></li>
+<li><p><strong>``tests/test_markdown_writing.py``</strong> - Markdown content generation</p></li>
+<li><p><strong>``tests/test_command_line.py``</strong> - Command line interface functionality</p></li>
+<li><p><strong>``tests/test_filename_generation.py``</strong> - Filename generation logic and special character handling</p></li>
+<li><p><strong>``tests/test_integration.py``</strong> - End-to-end integration tests</p></li>
+</ul>
+</section>
+<section id="test-coverage">
+<h2>Test Coverage<a class="headerlink" href="#test-coverage" title="Link to this heading"></a></h2>
+<p>The test suite covers:</p>
+<ul class="simple">
+<li><p>VCF parsing with various field combinations</p></li>
+<li><p>Filename generation priority logic (FN &gt; constructed name &gt; UID &gt; filename)</p></li>
+<li><p>Special character handling in filenames and UIDs</p></li>
+<li><p>Markdown content generation and frontmatter</p></li>
+<li><p>Template system functionality</p></li>
+<li><p>Command line interface behavior</p></li>
+<li><p>Edge cases (empty fields, missing data)</p></li>
+<li><p>Error handling scenarios</p></li>
+</ul>
+</section>
+<section id="bash-tests">
+<h2>Bash Tests<a class="headerlink" href="#bash-tests" title="Link to this heading"></a></h2>
+<p>The bash implementation has its own comprehensive test suite located in <code class="docutils literal notranslate"><span class="pre">tests/bash/</span></code>.</p>
+<section id="test-structure">
+<h3>Test Structure<a class="headerlink" href="#test-structure" title="Link to this heading"></a></h3>
+<p>The bash tests are organized by functionality into separate test files:</p>
+<ul class="simple">
+<li><p><strong>``test_file_processing.sh``</strong> - Tests single file, folder, and mixed source processing</p></li>
+<li><p><strong>``test_filename_priority.sh``</strong> - Tests filename generation priority logic (FN &gt; constructed name &gt; UID &gt; filename)</p></li>
+<li><p><strong>``test_special_characters.sh``</strong> - Tests special character handling in filenames and UIDs</p></li>
+<li><p><strong>``test_content_validation.sh``</strong> - Tests output content format and structure validation</p></li>
+<li><p><strong>``test_vcard_support.sh``</strong> - Tests VCard 3.0 and 4.0 format support</p></li>
+<li><p><strong>``test_cli_options.sh``</strong> - Tests command line interface options and error handling</p></li>
+<li><p><strong>``test_shell_compatibility.sh``</strong> - Tests bash version requirements and shell detection</p></li>
+</ul>
+</section>
+<section id="running-bash-tests">
+<h3>Running Bash Tests<a class="headerlink" href="#running-bash-tests" title="Link to this heading"></a></h3>
+<section id="run-all-tests">
+<h4>Run All Tests<a class="headerlink" href="#run-all-tests" title="Link to this heading"></a></h4>
+<p>To run the complete bash test suite:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">tests</span><span class="o">/</span><span class="n">bash</span><span class="o">/</span><span class="n">run_all_tests</span><span class="o">.</span><span class="n">sh</span>
+</pre></div>
+</div>
+<p>This will execute all test files in sequence and provide a summary report.</p>
+</section>
+<section id="run-individual-test-files">
+<h4>Run Individual Test Files<a class="headerlink" href="#run-individual-test-files" title="Link to this heading"></a></h4>
+<p>To run a specific test file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">tests</span><span class="o">/</span><span class="n">bash</span><span class="o">/</span><span class="n">test_file_processing</span><span class="o">.</span><span class="n">sh</span>
+<span class="o">./</span><span class="n">tests</span><span class="o">/</span><span class="n">bash</span><span class="o">/</span><span class="n">test_filename_priority</span><span class="o">.</span><span class="n">sh</span>
+<span class="o">./</span><span class="n">tests</span><span class="o">/</span><span class="n">bash</span><span class="o">/</span><span class="n">test_special_characters</span><span class="o">.</span><span class="n">sh</span>
+<span class="o">./</span><span class="n">tests</span><span class="o">/</span><span class="n">bash</span><span class="o">/</span><span class="n">test_content_validation</span><span class="o">.</span><span class="n">sh</span>
+<span class="o">./</span><span class="n">tests</span><span class="o">/</span><span class="n">bash</span><span class="o">/</span><span class="n">test_vcard_support</span><span class="o">.</span><span class="n">sh</span>
+<span class="o">./</span><span class="n">tests</span><span class="o">/</span><span class="n">bash</span><span class="o">/</span><span class="n">test_cli_options</span><span class="o">.</span><span class="n">sh</span>
+<span class="o">./</span><span class="n">tests</span><span class="o">/</span><span class="n">bash</span><span class="o">/</span><span class="n">test_shell_compatibility</span><span class="o">.</span><span class="n">sh</span>
+</pre></div>
+</div>
+</section>
+<section id="using-make-commands">
+<h4>Using Make Commands<a class="headerlink" href="#using-make-commands" title="Link to this heading"></a></h4>
+<p>You can also use the provided Makefile commands:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="n">test</span><span class="o">-</span><span class="n">bash</span>          <span class="c1"># Run bash implementation tests</span>
+<span class="n">make</span> <span class="n">test</span><span class="o">-</span><span class="nb">all</span>           <span class="c1"># Run all tests (bash and python if available)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="test-output">
+<h3>Test Output<a class="headerlink" href="#test-output" title="Link to this heading"></a></h3>
+<p>Each test file provides:
+- ✅ Individual test case results
+- 🎯 Summary of passed/failed tests
+- 🧹 Automatic cleanup of temporary files</p>
+<p>The main test runner (<code class="docutils literal notranslate"><span class="pre">run_all_tests.sh</span></code>) provides:
+- 📊 Color-coded output
+- 📈 Overall test statistics
+- 🧪 Comprehensive test coverage report</p>
+</section>
+<section id="test-data">
+<h3>Test Data<a class="headerlink" href="#test-data" title="Link to this heading"></a></h3>
+<p>Tests use the VCF files in <code class="docutils literal notranslate"><span class="pre">tests/data/</span></code> which contain various test scenarios:
+- Different VCard versions (3.0 and 4.0)
+- Various field combinations
+- Special characters and edge cases
+- Priority testing scenarios</p>
+<section id="vcf-test-files">
+<h4>VCF Test Files<a class="headerlink" href="#vcf-test-files" title="Link to this heading"></a></h4>
+<p>Each test file represents a specific test scenario and is designed to test specific filename generation logic and VCF parsing scenarios:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">constructed_name_fallback.vcf</span></code> - Contact with N (structured name) but no FN or UID</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">content_generation_test.vcf</span></code> - Complete contact with all fields for markdown generation testing</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">empty_uid.vcf</span></code> - Contact with empty UID field</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fn_preferred.vcf</span></code> - Contact with both FN and UID to test FN preference</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">full_name_and_uid.vcf</span></code> - Contact with both full name and UID</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">full_name_only.vcf</span></code> - Contact with FN but no UID</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">minimal_contact.vcf</span></code> - Minimal contact with only organization</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">priority_test_constructed_over_uid.vcf</span></code> - Test constructed name priority over UID</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">priority_test_fn_over_uid.vcf</span></code> - Test FN priority over UID</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">special_characters_filename.vcf</span></code> - Contact with special characters in FN</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">special_characters_uid.vcf</span></code> - Contact with special characters in UID</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">uid_fallback.vcf</span></code> - Contact with UID and structured name</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">uid_only.vcf</span></code> - Contact with UID but no FN</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">uid_only_no_names.vcf</span></code> - Contact with only UID, no name information</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">uid_special_chars_fallback.vcf</span></code> - UID with special characters when used as fallback</p></li>
+</ul>
+</section>
+</section>
+<section id="requirements">
+<h3>Requirements<a class="headerlink" href="#requirements" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Bash 4.0+ (for array support and advanced features)</p></li>
+<li><p>Standard Unix tools (<code class="docutils literal notranslate"><span class="pre">sed</span></code>, <code class="docutils literal notranslate"><span class="pre">grep</span></code>, <code class="docutils literal notranslate"><span class="pre">find</span></code>, etc.)</p></li>
+<li><p>Write access to <code class="docutils literal notranslate"><span class="pre">/tmp</span></code> directory for test outputs</p></li>
+</ul>
+</section>
+<section id="adding-new-tests">
+<h3>Adding New Tests<a class="headerlink" href="#adding-new-tests" title="Link to this heading"></a></h3>
+<p>To add a new test file:</p>
+<ol class="arabic simple">
+<li><p>Create a new test file following the naming pattern <code class="docutils literal notranslate"><span class="pre">test_&lt;functionality&gt;.sh</span></code></p></li>
+<li><p>Make it executable: <code class="docutils literal notranslate"><span class="pre">chmod</span> <span class="pre">+x</span> <span class="pre">test_&lt;functionality&gt;.sh</span></code></p></li>
+<li><p>Add it to the <code class="docutils literal notranslate"><span class="pre">TEST_FILES</span></code> array in <code class="docutils literal notranslate"><span class="pre">run_all_tests.sh</span></code></p></li>
+<li><p>Follow the existing test structure and conventions</p></li>
+</ol>
+</section>
+<section id="test-conventions">
+<h3>Test Conventions<a class="headerlink" href="#test-conventions" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Use descriptive test names and clear output messages</p></li>
+<li><p>Clean up temporary files in each test</p></li>
+<li><p>Use unique temporary directory names to avoid conflicts</p></li>
+<li><p>Exit with code 0 on success, non-zero on failure</p></li>
+<li><p>Provide clear failure messages with expected vs actual results</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="development.html" class="btn btn-neutral float-left" title="Development and Maintenance" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="autoapi/vcf_to_obsidian/index.html" class="btn btn-neutral float-right" title="vcf_to_obsidian" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Ian Dennis Miller.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

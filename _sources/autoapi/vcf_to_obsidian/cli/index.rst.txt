@@ -1,0 +1,34 @@
+vcf_to_obsidian.cli
+===================
+
+.. py:module:: vcf_to_obsidian.cli
+
+.. autoapi-nested-parse::
+
+   CLI module for command-line interface handling.
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   vcf_to_obsidian.cli.main_cli
+
+
+Module Contents
+---------------
+
+.. py:function:: main_cli(folder, obsidian, file, verbose, ignore)
+
+   Convert VCF files to Markdown format for obsidian-vcf-contacts plugin
+
+   Use --folder to specify source directories containing VCF files
+   Use --obsidian to specify the destination directory for Markdown files
+   Use --file to specify individual VCF files to process
+   Use --ignore to specify individual VCF files to skip
+
+   --folder, --file, and --ignore options can be specified multiple times.
+
+

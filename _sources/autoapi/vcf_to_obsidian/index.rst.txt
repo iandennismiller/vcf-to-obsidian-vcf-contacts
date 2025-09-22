@@ -1,0 +1,234 @@
+vcf_to_obsidian
+===============
+
+.. py:module:: vcf_to_obsidian
+
+.. autoapi-nested-parse::
+
+   vcf-to-obsidian-vcf-contacts
+
+   A Python module that batch-converts VCF files into Markdown files
+   that are compatible with obsidian-vcf-contacts plugin for ObsidianMD.
+
+   Author: Ian Dennis Miller
+   License: MIT
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/vcf_to_obsidian/cli/index
+   /autoapi/vcf_to_obsidian/filename_generator/index
+   /autoapi/vcf_to_obsidian/markdown_writer/index
+   /autoapi/vcf_to_obsidian/vcf_converter/index
+   /autoapi/vcf_to_obsidian/vcf_reader/index
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   vcf_to_obsidian.VCFReader
+   vcf_to_obsidian.MarkdownWriter
+   vcf_to_obsidian.FilenameGenerator
+   vcf_to_obsidian.VCFConverter
+
+
+Package Contents
+----------------
+
+.. py:class:: VCFReader
+
+   Class responsible for reading and parsing VCF files.
+
+
+   .. py:method:: is_valid_uuid(uid_value)
+
+      Check if a UID value is a valid UUID.
+
+      :param uid_value: UID value to validate
+      :type uid_value: str
+
+      :returns: True if valid UUID, False otherwise
+      :rtype: bool
+
+
+
+   .. py:method:: read_vcf_file(vcf_path)
+
+      Read and parse a VCF file using vobject.
+
+      :param vcf_path: Path to the VCF file
+      :type vcf_path: Path
+
+      :returns: Parsed vCard object
+      :rtype: vobject.vCard
+
+      :raises Exception: If file cannot be read or parsed
+
+
+
+.. py:class:: MarkdownWriter
+
+   Class responsible for generating Markdown content from vCard objects.
+
+
+   .. py:method:: generate_obsidian_markdown(vcard)
+
+      Generate Markdown content compatible with obsidian-vcf-contacts plugin.
+      Works directly with vobject instead of intermediate representation.
+
+      :param vcard: vobject vCard object
+
+      :returns: Markdown content with frontmatter
+      :rtype: str
+
+
+
+.. py:class:: FilenameGenerator
+
+   Class responsible for generating output filenames from vCard objects.
+
+
+   .. py:method:: generate_filename(vcard, vcf_path)
+
+      Generate an output filename based on vCard data with priority logic.
+
+      Priority:
+      1. Full Name (FN) field
+      2. Constructed name from given + family names
+      3. UID field
+      4. Original VCF filename
+
+      :param vcard: vobject vCard object
+      :param vcf_path: Original VCF file path
+      :type vcf_path: Path
+
+      :returns: Safe filename (without extension)
+      :rtype: str
+
+
+
+   .. py:method:: _clean_filename(filename)
+
+      Clean a filename to make it filesystem-safe.
+
+      :param filename: Original filename
+      :type filename: str
+
+      :returns: Cleaned filename safe for filesystem use
+      :rtype: str
+
+
+
+   .. py:method:: find_existing_files_with_uid(output_dir, uid)
+
+      Find existing Markdown files in output directory that have the same UID.
+
+      :param output_dir: Output directory to search
+      :type output_dir: Path
+      :param uid: UID to search for
+      :type uid: str
+
+      :returns: List of Path objects for files with matching UID
+      :rtype: list
+
+
+
+.. py:class:: VCFConverter
+
+   Class responsible for converting VCF files to Markdown format.
+
+
+   .. py:attribute:: reader
+
+
+   .. py:attribute:: writer
+
+
+   .. py:attribute:: filename_gen
+
+
+   .. py:method:: _extract_rev_timestamp_from_markdown(markdown_path)
+
+      Extract REV timestamp from existing Markdown file.
+
+      :param markdown_path: Path to the Markdown file
+      :type markdown_path: Path
+
+      :returns: REV timestamp as datetime object, or None if not found
+      :rtype: datetime or None
+
+
+
+   .. py:method:: _should_skip_conversion(vcf_path, markdown_path)
+
+      Check if conversion should be skipped based on file modification times.
+
+      :param vcf_path: Path to the VCF file
+      :type vcf_path: Path
+      :param markdown_path: Path to the Markdown file
+      :type markdown_path: Path
+
+      :returns: True if conversion should be skipped, False otherwise
+      :rtype: bool
+
+
+
+   .. py:method:: convert_vcf_to_markdown(vcf_path, output_dir)
+
+      Convert a single VCF file to Markdown format.
+
+      :param vcf_path: Path to the VCF file
+      :type vcf_path: Path
+      :param output_dir: Output directory for Markdown files
+      :type output_dir: Path
+
+      :returns: True if successful, False otherwise
+      :rtype: bool
+
+
+
+   .. py:method:: convert_vcf_files_from_sources(folder_sources, file_sources, output_dir, ignore_files=None, verbose=False)
+
+      Convert VCF files from multiple sources (folders and individual files) to Markdown format.
+
+      This method collects VCF files from the specified sources, applies ignore filters,
+      and processes them directly using convert_vcf_to_markdown.
+
+      :param folder_sources: List of Path objects for directories containing VCF files
+      :type folder_sources: list
+      :param file_sources: List of Path objects for individual VCF files
+      :type file_sources: list
+      :param output_dir: Output directory for Markdown files
+      :type output_dir: Path
+      :param ignore_files: List of Path objects for files to ignore
+      :type ignore_files: list, optional
+      :param verbose: Whether to enable verbose output
+      :type verbose: bool
+
+      :returns: (successful_count, total_count, all_vcf_files)
+      :rtype: tuple
+
+
+
+   .. py:method:: process_tasks(folder, obsidian, file, verbose, ignore)
+
+      Process VCF conversion tasks from CLI arguments.
+
+      This method handles the complete CLI workflow including validation,
+      file collection, processing, and reporting.
+
+      :param folder: Tuple/list of folder paths containing VCF files
+      :param obsidian: Path to destination directory for Markdown files
+      :param file: Tuple/list of individual VCF file paths to process
+      :param verbose: Boolean flag for verbose output
+      :param ignore: Tuple/list of VCF file paths to ignore
+
+
+

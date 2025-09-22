@@ -1,0 +1,53 @@
+vcf_to_obsidian.vcf_reader
+==========================
+
+.. py:module:: vcf_to_obsidian.vcf_reader
+
+.. autoapi-nested-parse::
+
+   VCF Reader module for parsing VCF files.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   vcf_to_obsidian.vcf_reader.VCFReader
+
+
+Module Contents
+---------------
+
+.. py:class:: VCFReader
+
+   Class responsible for reading and parsing VCF files.
+
+
+   .. py:method:: is_valid_uuid(uid_value)
+
+      Check if a UID value is a valid UUID.
+
+      :param uid_value: UID value to validate
+      :type uid_value: str
+
+      :returns: True if valid UUID, False otherwise
+      :rtype: bool
+
+
+
+   .. py:method:: read_vcf_file(vcf_path)
+
+      Read and parse a VCF file using vobject.
+
+      :param vcf_path: Path to the VCF file
+      :type vcf_path: Path
+
+      :returns: Parsed vCard object
+      :rtype: vobject.vCard
+
+      :raises Exception: If file cannot be read or parsed
+
+
+

@@ -1,0 +1,286 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>vcf_to_obsidian.cli &mdash; vcf-to-obsidian-vcf-contacts 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            vcf-to-obsidian-vcf-contacts
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../installation.html#python-implementation">Python Implementation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../installation.html#option-1-install-with-pip-recommended">Option 1: Install with pip (Recommended)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../installation.html#option-2-install-with-pipx-for-cli-tools">Option 2: Install with pipx (For CLI tools)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../installation.html#option-3-development-installation">Option 3: Development Installation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../installation.html#bash-implementation-no-dependencies">Bash Implementation (No Dependencies)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../usage.html#bash-script">Bash Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage.html#python-script">Python Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage.html#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage.html#command-line-options">Command Line Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage.html#template-output">Template Output</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../integration.html">Integration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../integration.html#vdirsyncer-integration">vdirsyncer Integration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../integration.html#configuration">Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../integration.html#configuration-parameters">Configuration Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../integration.html#customizing-paths">Customizing Paths</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../integration.html#workflow">Workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../integration.html#alternative-installation-methods">Alternative Installation Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../integration.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../integration.html#additional-options">Additional Options</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../implementation-comparison.html">Implementation Comparison</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../implementation-comparison.html#when-to-use-the-bash-script">When to use the bash script:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../implementation-comparison.html#when-to-use-the-python-script">When to use the Python script:</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../vcf-support.html">VCF Support</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../vcf-support.html#vcard-4-0-support">vCard 4.0 Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../vcf-support.html#parsing-engine">Parsing Engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../vcf-support.html#filename-generation">Filename Generation</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../development.html">Development and Maintenance</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../development.html#quick-setup">Quick Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../development.html#available-make-targets">Available Make Targets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../development.html#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../development.html#error-handling">Error Handling</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../testing.html">Testing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../testing.html#running-tests">Running Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../testing.html#test-organization">Test Organization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../testing.html#test-coverage">Test Coverage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../testing.html#bash-tests">Bash Tests</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../testing.html#test-structure">Test Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../testing.html#running-bash-tests">Running Bash Tests</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../testing.html#run-all-tests">Run All Tests</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../testing.html#run-individual-test-files">Run Individual Test Files</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../testing.html#using-make-commands">Using Make Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../testing.html#test-output">Test Output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../testing.html#test-data">Test Data</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../testing.html#vcf-test-files">VCF Test Files</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../testing.html#requirements">Requirements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../testing.html#adding-new-tests">Adding New Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../testing.html#test-conventions">Test Conventions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html">vcf_to_obsidian</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/cli/index.html">vcf_to_obsidian.cli</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/cli/index.html#functions">Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/cli/index.html#module-contents">Module Contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/filename_generator/index.html">vcf_to_obsidian.filename_generator</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/filename_generator/index.html#classes">Classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/filename_generator/index.html#module-contents">Module Contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/markdown_writer/index.html">vcf_to_obsidian.markdown_writer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/markdown_writer/index.html#classes">Classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/markdown_writer/index.html#module-contents">Module Contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/vcf_converter/index.html">vcf_to_obsidian.vcf_converter</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/vcf_converter/index.html#classes">Classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/vcf_converter/index.html#module-contents">Module Contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/vcf_reader/index.html">vcf_to_obsidian.vcf_reader</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/vcf_reader/index.html#classes">Classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/vcf_reader/index.html#module-contents">Module Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#package-contents">Package Contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFReader"><code class="docutils literal notranslate"><span class="pre">VCFReader</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFReader.is_valid_uuid"><code class="docutils literal notranslate"><span class="pre">VCFReader.is_valid_uuid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFReader.read_vcf_file"><code class="docutils literal notranslate"><span class="pre">VCFReader.read_vcf_file()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.MarkdownWriter"><code class="docutils literal notranslate"><span class="pre">MarkdownWriter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.MarkdownWriter.generate_obsidian_markdown"><code class="docutils literal notranslate"><span class="pre">MarkdownWriter.generate_obsidian_markdown()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.FilenameGenerator"><code class="docutils literal notranslate"><span class="pre">FilenameGenerator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.FilenameGenerator.generate_filename"><code class="docutils literal notranslate"><span class="pre">FilenameGenerator.generate_filename()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.FilenameGenerator._clean_filename"><code class="docutils literal notranslate"><span class="pre">FilenameGenerator._clean_filename()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.FilenameGenerator.find_existing_files_with_uid"><code class="docutils literal notranslate"><span class="pre">FilenameGenerator.find_existing_files_with_uid()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter"><code class="docutils literal notranslate"><span class="pre">VCFConverter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter.reader"><code class="docutils literal notranslate"><span class="pre">VCFConverter.reader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter.writer"><code class="docutils literal notranslate"><span class="pre">VCFConverter.writer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter.filename_gen"><code class="docutils literal notranslate"><span class="pre">VCFConverter.filename_gen</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter._extract_rev_timestamp_from_markdown"><code class="docutils literal notranslate"><span class="pre">VCFConverter._extract_rev_timestamp_from_markdown()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter._should_skip_conversion"><code class="docutils literal notranslate"><span class="pre">VCFConverter._should_skip_conversion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter.convert_vcf_to_markdown"><code class="docutils literal notranslate"><span class="pre">VCFConverter.convert_vcf_to_markdown()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter.convert_vcf_files_from_sources"><code class="docutils literal notranslate"><span class="pre">VCFConverter.convert_vcf_files_from_sources()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/vcf_to_obsidian/index.html#vcf_to_obsidian.VCFConverter.process_tasks"><code class="docutils literal notranslate"><span class="pre">VCFConverter.process_tasks()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">vcf-to-obsidian-vcf-contacts</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">vcf_to_obsidian.cli</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for vcf_to_obsidian.cli</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">CLI module for command-line interface handling.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.vcf_converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">VCFConverter</span>
+
+
+<span class="c1"># Create the click command</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s1">&#39;--folder&#39;</span><span class="p">,</span>
+              <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">exists</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">file_okay</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dir_okay</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">path_type</span><span class="o">=</span><span class="n">Path</span><span class="p">),</span>
+              <span class="n">multiple</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Source directory containing VCF files (can be specified multiple times)&quot;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s1">&#39;--obsidian&#39;</span><span class="p">,</span>
+              <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">path_type</span><span class="o">=</span><span class="n">Path</span><span class="p">),</span>
+              <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Destination directory for Markdown files&quot;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s1">&#39;--file&#39;</span><span class="p">,</span>
+              <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">exists</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">file_okay</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dir_okay</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">path_type</span><span class="o">=</span><span class="n">Path</span><span class="p">),</span>
+              <span class="n">multiple</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Specific VCF file to process (can be specified multiple times)&quot;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s1">&#39;--verbose&#39;</span><span class="p">,</span> <span class="s1">&#39;-v&#39;</span><span class="p">,</span>
+              <span class="n">is_flag</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Enable verbose output&quot;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s1">&#39;--ignore&#39;</span><span class="p">,</span>
+              <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">exists</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">file_okay</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dir_okay</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">path_type</span><span class="o">=</span><span class="n">Path</span><span class="p">),</span>
+              <span class="n">multiple</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Specific VCF file to ignore (can be specified multiple times)&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="main_cli">
+<a class="viewcode-back" href="../../autoapi/vcf_to_obsidian/cli/index.html#vcf_to_obsidian.cli.main_cli">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">main_cli</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">obsidian</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">ignore</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert VCF files to Markdown format for obsidian-vcf-contacts plugin</span>
+
+<span class="sd">    Use --folder to specify source directories containing VCF files</span>
+<span class="sd">    Use --obsidian to specify the destination directory for Markdown files</span>
+<span class="sd">    Use --file to specify individual VCF files to process</span>
+<span class="sd">    Use --ignore to specify individual VCF files to skip</span>
+
+<span class="sd">    --folder, --file, and --ignore options can be specified multiple times.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">converter</span> <span class="o">=</span> <span class="n">VCFConverter</span><span class="p">()</span>
+    <span class="n">converter</span><span class="o">.</span><span class="n">process_tasks</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">obsidian</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">ignore</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Ian Dennis Miller.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
