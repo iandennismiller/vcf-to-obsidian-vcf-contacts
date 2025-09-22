@@ -2,8 +2,9 @@
 
 A collection of tools that batch-convert VCF files into Markdown files compatible with the [obsidian-vcf-contacts](https://github.com/broekema41/obsidian-vcf-contacts) plugin for ObsidianMD.
 
-This repository provides two implementations:
+This repository provides three implementations:
 - **Python script** - Full-featured implementation with robust vCard parsing
+- **Node.js module** - Modern JavaScript implementation with comprehensive testing
 - **Bash script** - Zero-dependency implementation for Unix environments
 
 ## Features
@@ -30,6 +31,27 @@ pip install git+https://github.com/iandennismiller/vcf-to-obsidian-vcf-contacts.
 Convert all VCF files from a directory:
 ```bash
 vcf-to-obsidian --folder ./contacts --obsidian ./obsidian-vault/contacts
+```
+
+### Node.js Implementation
+
+#### Installation
+
+```bash
+cd nodejs-vcf-to-obsidian
+npm install
+```
+
+#### Usage
+
+Convert all VCF files from a directory:
+```bash
+node cli.js --folder ./contacts --obsidian ./obsidian-vault/contacts
+```
+
+Convert a specific VCF file:
+```bash
+node cli.js --file ./contact.vcf --obsidian ./obsidian-vault/contacts
 ```
 
 ### Bash Implementation (Zero Dependencies)
