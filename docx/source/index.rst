@@ -29,6 +29,7 @@ vcf-contacts plugin. The library includes:
 
    installation
    usage
+   integration
    implementation-comparison
    vcf-support
 
