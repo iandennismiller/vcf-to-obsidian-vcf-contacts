@@ -125,11 +125,11 @@ END:VCARD"""
             assert rev_timestamp1.endswith('Z'), f"REV timestamp should end with Z: {rev_timestamp1}"
             assert 'T' in rev_timestamp1, f"REV timestamp should contain T: {rev_timestamp1}"
             
-            # Wait a moment and do second conversion to test timestamp update
+            # Wait a moment and do second conversion to test that it skips when VCF is not newer
             import time
             time.sleep(1)
             
-            # Second conversion (simulating update)
+            # Second conversion (should skip since VCF is not newer)
             result2 = converter.convert_vcf_to_markdown(vcf_path, temp_dirs['test_output_dir'])
             assert result2 is True
             
@@ -141,8 +141,27 @@ END:VCARD"""
             
             rev_timestamp2 = match2.group(1)
             
-            # Timestamps should be different (REV should update)
-            assert rev_timestamp1 != rev_timestamp2, f"REV timestamp should update on each conversion. First: {rev_timestamp1}, Second: {rev_timestamp2}"
+            # Timestamps should be the same (conversion should be skipped)
+            assert rev_timestamp1 == rev_timestamp2, f"REV timestamp should NOT update when VCF is not newer. First: {rev_timestamp1}, Second: {rev_timestamp2}"
+            
+            # Now make VCF file newer and test that it does update
+            vcf_path.touch()
+            time.sleep(1)
+            
+            # Third conversion (should update since VCF is now newer)
+            result3 = converter.convert_vcf_to_markdown(vcf_path, temp_dirs['test_output_dir'])
+            assert result3 is True
+            
+            with open(md_file, 'r', encoding='utf-8') as f:
+                content3 = f.read()
+            
+            match3 = re.search(rev_pattern, content3)
+            assert match3, f"REV attribute not found in third conversion: {content3}"
+            
+            rev_timestamp3 = match3.group(1)
+            
+            # Timestamps should be different (REV should update when VCF is newer)
+            assert rev_timestamp2 != rev_timestamp3, f"REV timestamp should update when VCF is newer. Second: {rev_timestamp2}, Third: {rev_timestamp3}"
             
         except Exception as e:
             # If there's an error, it might be due to vobject not being available

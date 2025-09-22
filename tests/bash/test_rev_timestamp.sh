@@ -45,28 +45,43 @@ fi
 
 echo "✓ Test 1 passed: REV timestamp format validation"
 
-# Test 2: REV timestamp updates on each conversion
-echo "Test 2: Validating REV timestamp updates..."
+# Test 2: REV timestamp updates only when VCF is newer
+echo "Test 2: Validating REV timestamp updates when VCF is newer..."
 
 # Get first timestamp
 first_timestamp="$rev_timestamp"
 
-# Wait a moment and convert again
-sleep 1
+# Second conversion immediately - should skip since VCF is not newer
 "$VCF_TO_OBSIDIAN" --file "$TEST_DATA_DIR/content_generation_test.vcf" --obsidian "$OUTPUT_DIR"
 
 # Get second timestamp
 second_rev_line=$(grep "REV: " "$output_file")
 second_timestamp=$(echo "$second_rev_line" | sed 's/REV: //')
 
-if [[ "$first_timestamp" == "$second_timestamp" ]]; then
-    echo "FAIL: REV timestamp should update on each conversion"
+if [[ "$first_timestamp" != "$second_timestamp" ]]; then
+    echo "FAIL: REV timestamp should NOT update when VCF is not newer"
     echo "First: $first_timestamp"
     echo "Second: $second_timestamp"
     exit 1
 fi
 
-echo "✓ Test 2 passed: REV timestamp updates correctly"
+# Now make VCF file newer and test again
+sleep 1
+touch "$TEST_DATA_DIR/content_generation_test.vcf"
+"$VCF_TO_OBSIDIAN" --file "$TEST_DATA_DIR/content_generation_test.vcf" --obsidian "$OUTPUT_DIR"
+
+# Get third timestamp
+third_rev_line=$(grep "REV: " "$output_file")
+third_timestamp=$(echo "$third_rev_line" | sed 's/REV: //')
+
+if [[ "$second_timestamp" == "$third_timestamp" ]]; then
+    echo "FAIL: REV timestamp should update when VCF is newer"
+    echo "Second: $second_timestamp"
+    echo "Third: $third_timestamp"
+    exit 1
+fi
+
+echo "✓ Test 2 passed: REV timestamp updates correctly only when VCF is newer"
 
 # Test 3: REV timestamp in different VCF files
 echo "Test 3: Validating REV in different VCF files..."

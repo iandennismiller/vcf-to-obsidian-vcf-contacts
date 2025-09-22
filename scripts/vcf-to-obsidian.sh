@@ -491,6 +491,90 @@ determine_filename() {
     clean_filename "$contact_name"
 }
 
+# Extract REV timestamp from existing Markdown file
+extract_rev_timestamp() {
+    local markdown_file="$1"
+    
+    if [[ ! -f "$markdown_file" ]]; then
+        return 1
+    fi
+    
+    # Look for REV timestamp in format: REV: YYYYMMDDTHHMMSSZ
+    local rev_line
+    rev_line=$(grep "^REV: " "$markdown_file" 2>/dev/null || true)
+    
+    if [[ -n "$rev_line" ]]; then
+        echo "$rev_line" | sed 's/REV: //'
+        return 0
+    fi
+    
+    return 1
+}
+
+# Convert timestamp format YYYYMMDDTHHMMSSZ to Unix timestamp
+timestamp_to_unix() {
+    local timestamp="$1"
+    
+    # Extract components: YYYYMMDDTHHMMSSZ
+    local year="${timestamp:0:4}"
+    local month="${timestamp:4:2}"
+    local day="${timestamp:6:2}"
+    local hour="${timestamp:9:2}"
+    local minute="${timestamp:11:2}"
+    local second="${timestamp:13:2}"
+    
+    # Convert to Unix timestamp (UTC)
+    date -u -d "${year}-${month}-${day} ${hour}:${minute}:${second}" +%s 2>/dev/null || echo "0"
+}
+
+# Check if conversion should be skipped based on modification times
+should_skip_conversion() {
+    local vcf_file="$1"
+    local markdown_file="$2"
+    
+    # Debug output
+    # echo "DEBUG: Checking skip for VCF: $vcf_file, MD: $markdown_file" >&2
+    
+    if [[ ! -f "$markdown_file" ]]; then
+        # echo "DEBUG: Markdown file doesn't exist, not skipping" >&2
+        return 1  # Don't skip if markdown doesn't exist
+    fi
+    
+    # Get VCF file modification time
+    local vcf_mtime
+    vcf_mtime=$(stat -c "%Y" "$vcf_file" 2>/dev/null || echo "0")
+    
+    # Get REV timestamp from markdown
+    local rev_timestamp
+    rev_timestamp=$(extract_rev_timestamp "$markdown_file")
+    
+    if [[ -z "$rev_timestamp" ]]; then
+        # echo "DEBUG: No REV timestamp found, not skipping" >&2
+        return 1  # Don't skip if we can't find REV timestamp
+    fi
+    
+    # Convert REV timestamp to Unix timestamp
+    local rev_unix
+    rev_unix=$(timestamp_to_unix "$rev_timestamp")
+    
+    if [[ "$rev_unix" -eq 0 ]]; then
+        # echo "DEBUG: REV timestamp conversion failed, not skipping" >&2
+        return 1  # Don't skip if timestamp conversion failed
+    fi
+    
+    # Debug output
+    # echo "DEBUG: VCF mtime: $vcf_mtime, REV unix: $rev_unix" >&2
+    
+    # Skip conversion if VCF file is not newer than the REV timestamp
+    if [[ "$vcf_mtime" -le "$rev_unix" ]]; then
+        # echo "DEBUG: VCF is older, skipping" >&2
+        return 0  # Skip conversion
+    fi
+    
+    # echo "DEBUG: VCF is newer, not skipping" >&2
+    return 1  # Don't skip conversion
+}
+
 # Convert a single VCF file to Markdown
 convert_vcf_file() {
     local vcf_file="$1"
@@ -512,6 +596,12 @@ convert_vcf_file() {
     output_filename=$(echo "$parsed_data" | determine_filename "$vcf_file")
     
     local output_file="$output_dir/${output_filename}.md"
+    
+    # Check if we should skip conversion based on modification times
+    if should_skip_conversion "$vcf_file" "$output_file"; then
+        echo "Skipped: $(basename "$vcf_file") -> ${output_filename}.md (VCF not newer than markdown)"
+        return 0
+    fi
     
     # Generate markdown content
     local markdown_content
