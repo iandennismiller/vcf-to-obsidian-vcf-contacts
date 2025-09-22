@@ -2,6 +2,8 @@
 VCF Converter module for handling VCF to Markdown conversion.
 """
 
+import re
+from datetime import datetime, timezone
 from pathlib import Path
 from .vcf_reader import VCFReader
 from .markdown_writer import MarkdownWriter
@@ -17,6 +19,66 @@ class VCFConverter:
         self.writer = MarkdownWriter()
         self.filename_gen = FilenameGenerator()
 
+    def _extract_rev_timestamp_from_markdown(self, markdown_path):
+        """
+        Extract REV timestamp from existing Markdown file.
+        
+        Args:
+            markdown_path (Path): Path to the Markdown file
+            
+        Returns:
+            datetime or None: REV timestamp as datetime object, or None if not found
+        """
+        try:
+            if not markdown_path.exists():
+                return None
+                
+            with open(markdown_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Look for REV timestamp in format: REV: YYYYMMDDTHHMMSSZ
+            match = re.search(r'REV: (\d{8}T\d{6}Z)', content)
+            if match:
+                timestamp_str = match.group(1)
+                # Parse the timestamp format YYYYMMDDTHHMMSSZ
+                return datetime.strptime(timestamp_str, "%Y%m%dT%H%M%SZ").replace(tzinfo=timezone.utc)
+            
+            return None
+        except Exception:
+            return None
+    
+    def _should_skip_conversion(self, vcf_path, markdown_path):
+        """
+        Check if conversion should be skipped based on file modification times.
+        
+        Args:
+            vcf_path (Path): Path to the VCF file
+            markdown_path (Path): Path to the Markdown file
+            
+        Returns:
+            bool: True if conversion should be skipped, False otherwise
+        """
+        if not markdown_path.exists():
+            return False
+        
+        # Get VCF file modification time
+        vcf_mtime = datetime.fromtimestamp(vcf_path.stat().st_mtime, tz=timezone.utc)
+        
+        # Get REV timestamp from markdown
+        rev_timestamp = self._extract_rev_timestamp_from_markdown(markdown_path)
+        
+        if rev_timestamp is None:
+            # If we can't find REV timestamp, convert to be safe
+            return False
+        
+        # Debug output
+        # print(f"VCF mtime: {vcf_mtime}")
+        # print(f"REV timestamp: {rev_timestamp}")
+        
+        # Skip conversion if VCF file is not newer than the REV timestamp
+        # Use a small tolerance to account for filesystem timestamp precision
+        return vcf_mtime <= rev_timestamp
+
     def convert_vcf_to_markdown(self, vcf_path, output_dir):
         """
         Convert a single VCF file to Markdown format.
@@ -29,15 +91,20 @@ class VCFConverter:
             bool: True if successful, False otherwise
         """
         try:
-            # Read VCF file
+            # Read VCF file to get vcard for filename generation
             vcard = self.reader.read_vcf_file(vcf_path)
-
-            # Generate markdown content
-            markdown_content = self.writer.generate_obsidian_markdown(vcard)
 
             # Generate filename
             output_filename = self.filename_gen.generate_filename(vcard, vcf_path)
             output_file = Path(output_dir) / f"{output_filename}.md"
+
+            # Check if we should skip conversion based on modification times
+            if self._should_skip_conversion(vcf_path, output_file):
+                print(f"Skipped: {vcf_path.name} -> {output_file.name} (VCF not newer than markdown)")
+                return True
+
+            # Generate markdown content
+            markdown_content = self.writer.generate_obsidian_markdown(vcard)
 
             # Remove existing files with the same UID if the filename would be different
             if hasattr(vcard, "uid") and vcard.uid and vcard.uid.value:
