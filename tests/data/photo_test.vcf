@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:3.0
+UID:photo-test-123
+FN:Photo Test User
+N:User;Photo;;;
+ORG:Photo Test Organization
+EMAIL:phototest@example.com
+PHOTO:data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD
+BDAY:1990-06-15
+END:VCARD

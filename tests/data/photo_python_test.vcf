@@ -1,0 +1,15 @@
+BEGIN:VCARD
+VERSION:3.0
+FN:All Fields Test
+N:Fields;All;;;
+UID:all-fields-test-123
+ORG:All Fields Organization
+TEL;TYPE=WORK:+1-555-987-6543
+EMAIL;TYPE=WORK:allfields@test.com
+ADR;TYPE=HOME:;;123 Test St;Test City;Test State;12345;Test Country
+NOTE:This is a test note with all fields.
+URL:https://allfields.test.com
+BDAY:1985-05-15
+PHOTO:data:image/jpeg;base64,dGVzdA==
+CATEGORIES:Business,Testing
+END:VCARD
