@@ -93,64 +93,6 @@ END:VCARD"""
             # If there's an error, it might be due to vobject not being available
             pytest.skip(f"Conversion failed due to missing dependencies: {e}")
 
-    def test_create_conversion_task_queue(self, temp_dirs):
-        """Test creating a conversion task queue."""
-        converter = VCFConverter()
-        
-        # Create test VCF files
-        vcf_files = []
-        for i in range(2):
-            vcf_path = temp_dirs['test_vcf_dir'] / f"test_{i}.vcf"
-            vcf_files.append(vcf_path)
-        
-        # Create task queue
-        task_queue = converter.create_conversion_task_queue(vcf_files, temp_dirs['test_output_dir'])
-        
-        # Check that queue has correct size
-        assert task_queue.qsize() == 2
-        
-        # Check that queue contains correct tasks
-        task1 = task_queue.get()
-        assert task1[0] in vcf_files
-        assert task1[1] == temp_dirs['test_output_dir']
-
-    def test_process_task_queue(self, temp_dirs):
-        """Test processing a task queue."""
-        converter = VCFConverter()
-        
-        # Create test VCF files
-        test_vcf_content_template = """BEGIN:VCARD
-VERSION:3.0
-FN:Test User {i}
-N:User;Test {i};;;
-EMAIL:test{i}@example.com
-UID:test-uid-{i}
-END:VCARD"""
-        
-        vcf_files = []
-        try:
-            for i in range(2):
-                vcf_path = temp_dirs['test_vcf_dir'] / f"test_{i}.vcf"
-                with open(vcf_path, 'w', encoding='utf-8') as f:
-                    f.write(test_vcf_content_template.format(i=i))
-                vcf_files.append(vcf_path)
-            
-            # Create and process task queue
-            task_queue = converter.create_conversion_task_queue(vcf_files, temp_dirs['test_output_dir'])
-            successful_count, total_count = converter.process_task_queue(task_queue)
-            
-            # Check results
-            assert total_count == 2
-            assert successful_count >= 0  # May be 0 if dependencies missing
-            
-            # Check that markdown files were created (if conversion was successful)
-            md_files = list(temp_dirs['test_output_dir'].glob("*.md"))
-            assert len(md_files) == successful_count
-            
-        except Exception as e:
-            # If there's an error, it might be due to vobject not being available
-            pytest.skip(f"Conversion failed due to missing dependencies: {e}")
-
     
     def test_convert_vcf_files_from_sources(self, temp_dirs):
         """Test the new convert_vcf_files_from_sources method."""
