@@ -67,6 +67,7 @@ For detailed information, see the comprehensive documentation:
 ### Quick Links:
 - [Installation Guide](https://iandennismiller.github.io/vcf-to-obsidian-vcf-contacts/installation.html) - All installation options (pip, pipx, development setup)
 - [Usage Guide](https://iandennismiller.github.io/vcf-to-obsidian-vcf-contacts/usage.html) - Comprehensive usage examples and command-line options
+- [Integration Guide](https://iandennismiller.github.io/vcf-to-obsidian-vcf-contacts/integration.html) - Integration with vdirsyncer and other tools
 - [Implementation Comparison](https://iandennismiller.github.io/vcf-to-obsidian-vcf-contacts/implementation-comparison.html) - Comparing bash vs Python implementations
 - [VCF Support](https://iandennismiller.github.io/vcf-to-obsidian-vcf-contacts/vcf-support.html) - Supported vCard fields and filename generation
 - [Testing](https://iandennismiller.github.io/vcf-to-obsidian-vcf-contacts/testing.html) - Running and organizing tests
