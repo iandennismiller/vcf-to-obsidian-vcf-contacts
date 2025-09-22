@@ -17,7 +17,7 @@ Option 1: Install with pip (Recommended)
 
 ::
 
-   pip install vcf-to-obsidian-vcf-contacts
+   pip install git+https://github.com/iandennismiller/vcf-to-obsidian-vcf-contacts.git
 
 
 Option 2: Install with pipx (For CLI tools)
@@ -25,7 +25,7 @@ Option 2: Install with pipx (For CLI tools)
 
 ::
 
-   pipx install vcf-to-obsidian-vcf-contacts
+   pipx install git+https://github.com/iandennismiller/vcf-to-obsidian-vcf-contacts.git
 
 
 Option 3: Development Installation

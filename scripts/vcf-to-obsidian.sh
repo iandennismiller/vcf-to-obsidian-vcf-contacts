@@ -49,7 +49,7 @@ if [ -n "${BASH_VERSION:-}" ]; then
             echo "" >&2
             echo "Solutions:" >&2
             echo "  1. Install bash 4.0+ via Homebrew: brew install bash" >&2
-            echo "  2. Use the Python implementation: pip install vcf-to-obsidian-vcf-contacts" >&2
+            echo "  2. Use the Python implementation: pip install git+https://github.com/iandennismiller/vcf-to-obsidian-vcf-contacts.git" >&2
             echo "" >&2
             echo "Note: The /opt/homebrew/bin/bash from Homebrew should be used instead of /bin/bash" >&2
             exit 1

@@ -22,7 +22,7 @@ This repository provides two implementations:
 #### Installation
 
 ```bash
-pip install vcf-to-obsidian-vcf-contacts
+pip install git+https://github.com/iandennismiller/vcf-to-obsidian-vcf-contacts.git
 ```
 
 #### Usage
