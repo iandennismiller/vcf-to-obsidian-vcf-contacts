@@ -40,8 +40,12 @@ class MarkdownWriter:
         
         # Extract photo
         if hasattr(vcard, 'photo') and vcard.photo.value:
-            lines.append(f"PHOTO: {vcard.photo.value}")
-        
+            # ignore if vcard.photo.value data type is bytes
+            if not isinstance(vcard.photo.value, bytes):
+                # ignore if PHOTO is not a URL
+                if not vcard.photo.value.startswith("http"):
+                    lines.append(f"PHOTO: {vcard.photo.value}")
+
         # Extract email addresses with type information
         if hasattr(vcard, 'email_list'):
             for email in vcard.email_list:
