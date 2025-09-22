@@ -19,7 +19,9 @@ Add the following configuration to your vdirsyncer config file (typically ``~/.c
    type = "filesystem"
    path = "~/.contacts/"
    fileext = ".vcf"
-   post_hook = ["command", "/Users/idm/.virtualenvs/vcf-to-obsidian-vcf-contacts/bin/python3", "/Users/idm/Work/vcf-to-obsidian-vcf-contacts/scripts/vcf_to_obsidian.py", "--folder", "/Users/idm/.contacts/Default", "--obsidian", "/Users/idm/Library/Notes/Contacts"]
+   post_hook = ["command", "HOMEDIR/.virtualenvs/vcf-to-obsidian-vcf-contacts/bin/python3", "HOMEDIR/Work/vcf-to-obsidian-vcf-contacts/scripts/vcf_to_obsidian.py", "--folder", "HOMEDIR/.contacts/Default", "--obsidian", "HOMEDIR/Library/Notes/Contacts"]
+
+**Note**: Replace ``HOMEDIR`` with your actual home directory path (e.g., ``/home/idm`` on Linux or ``/Users/idm`` on macOS).
 
 Configuration Parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -37,22 +39,26 @@ Customizing Paths
 
 You'll need to adjust the following paths in the configuration:
 
-1. **Python interpreter path**: ``/Users/idm/.virtualenvs/vcf-to-obsidian-vcf-contacts/bin/python3``
+1. **Python interpreter path**: ``HOMEDIR/.virtualenvs/vcf-to-obsidian-vcf-contacts/bin/python3``
    
+   - Replace ``HOMEDIR`` with your actual home directory (e.g., ``/home/idm`` on Linux or ``/Users/idm`` on macOS)
    - Replace with your actual virtual environment Python path
    - Use ``which python3`` in your activated virtual environment to find the correct path
 
-2. **Script path**: ``/Users/idm/Work/vcf-to-obsidian-vcf-contacts/scripts/vcf_to_obsidian.py``
+2. **Script path**: ``HOMEDIR/Work/vcf-to-obsidian-vcf-contacts/scripts/vcf_to_obsidian.py``
    
+   - Replace ``HOMEDIR`` with your actual home directory path
    - Replace with the actual path to where you cloned this repository
 
-3. **Source folder**: ``/Users/idm/.contacts/Default``
+3. **Source folder**: ``HOMEDIR/.contacts/Default``
    
+   - Replace ``HOMEDIR`` with your actual home directory path
    - This should match the subdirectory where vdirsyncer stores your contacts
    - Typically this will be a subdirectory of the ``path`` specified in your storage config
 
-4. **Obsidian vault path**: ``/Users/idm/Library/Notes/Contacts``
+4. **Obsidian vault path**: ``HOMEDIR/Library/Notes/Contacts``
    
+   - Replace ``HOMEDIR`` with your actual home directory path
    - Replace with the actual path to your Obsidian contacts folder
 
 Workflow
@@ -75,13 +81,15 @@ If you installed vcf-to-obsidian-vcf-contacts via pip or pipx, you can simplify 
 
 .. code-block:: ini
 
-   post_hook = ["vcf-to-obsidian", "--folder", "/Users/idm/.contacts/Default", "--obsidian", "/Users/idm/Library/Notes/Contacts"]
+   post_hook = ["vcf-to-obsidian", "--folder", "HOMEDIR/.contacts/Default", "--obsidian", "HOMEDIR/Library/Notes/Contacts"]
 
 **Using pipx installation:**
 
 .. code-block:: ini
 
-   post_hook = ["vcf-to-obsidian", "--folder", "/Users/idm/.contacts/Default", "--obsidian", "/Users/idm/Library/Notes/Contacts"]
+   post_hook = ["vcf-to-obsidian", "--folder", "HOMEDIR/.contacts/Default", "--obsidian", "HOMEDIR/Library/Notes/Contacts"]
+
+**Note**: Replace ``HOMEDIR`` with your actual home directory path (e.g., ``/home/idm`` on Linux or ``/Users/idm`` on macOS).
 
 Troubleshooting
 ^^^^^^^^^^^^^^^
@@ -93,11 +101,13 @@ If the post_hook fails to execute:
 
    .. code-block:: bash
 
-      /Users/idm/.virtualenvs/vcf-to-obsidian-vcf-contacts/bin/python3 \
-        /Users/idm/Work/vcf-to-obsidian-vcf-contacts/scripts/vcf_to_obsidian.py \
-        --folder /Users/idm/.contacts/Default \
-        --obsidian /Users/idm/Library/Notes/Contacts \
+      HOMEDIR/.virtualenvs/vcf-to-obsidian-vcf-contacts/bin/python3 \
+        HOMEDIR/Work/vcf-to-obsidian-vcf-contacts/scripts/vcf_to_obsidian.py \
+        --folder HOMEDIR/.contacts/Default \
+        --obsidian HOMEDIR/Library/Notes/Contacts \
         --verbose
+
+   **Note**: Replace ``HOMEDIR`` with your actual home directory path (e.g., ``/home/idm`` on Linux or ``/Users/idm`` on macOS).
 
 3. **Check permissions**: Ensure the Python interpreter and script have execute permissions
 4. **View logs**: Use vdirsyncer's verbose mode to see post_hook execution details:
