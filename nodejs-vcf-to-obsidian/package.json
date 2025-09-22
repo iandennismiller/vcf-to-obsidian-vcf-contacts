@@ -10,6 +10,10 @@
     "test": "jest",
     "start": "node cli.js"
   },
+  "jest": {
+    "testMatch": ["**/tests/nodejs/**/*.test.js"],
+    "rootDir": ".."
+  },
   "keywords": [
     "vcf",
     "obsidian",
