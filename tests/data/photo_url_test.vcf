@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:3.0
+UID:photo-url-test-456
+FN:Photo URL Test User
+N:URLUser;Photo;;;
+ORG:Photo URL Test Organization
+EMAIL:photourltest@example.com
+PHOTO:https://example.com/photo.jpg
+BDAY:1985-12-20
+END:VCARD

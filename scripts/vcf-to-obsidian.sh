@@ -240,6 +240,9 @@ parse_vcf_file() {
                 "CATEGORIES")
                     fields[CATEGORIES]="$value"
                     ;;
+                "PHOTO")
+                    fields[PHOTO]="$value"
+                    ;;
                 "TEL")
                     # Extract type from parameters if present
                     local type=$(parse_type_param "$params")
@@ -337,6 +340,21 @@ generate_markdown() {
     # Extract Full Name
     if [[ -n "${fields[FN]:-}" ]]; then
         echo "FN: ${fields[FN]}"
+    fi
+    
+    # Extract photo
+    if [[ -n "${fields[PHOTO]:-}" ]]; then
+        local photo_value="${fields[PHOTO]}"
+        # Check if it's already a data URI with base64 encoding
+        if [[ "$photo_value" =~ ^data:image.*base64 ]]; then
+            echo "PHOTO: $photo_value"
+        # Check if it's a URL
+        elif [[ "$photo_value" =~ ^https?:// ]]; then
+            echo "PHOTO: $photo_value"
+        # If it's raw base64 data, wrap it in a data URI
+        else
+            echo "PHOTO: data:image/jpeg;base64,$photo_value"
+        fi
     fi
     
     # Extract email addresses with type information
