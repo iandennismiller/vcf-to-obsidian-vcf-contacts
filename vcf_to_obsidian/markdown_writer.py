@@ -2,6 +2,7 @@
 Markdown Writer module for generating Markdown content from VCF data.
 """
 
+import base64
 from datetime import datetime, timezone
 
 
@@ -40,10 +41,15 @@ class MarkdownWriter:
         
         # Extract photo
         if hasattr(vcard, 'photo') and vcard.photo.value:
-            # ignore if vcard.photo.value data type is bytes
-            if not isinstance(vcard.photo.value, bytes):
-                # ignore if PHOTO is not a URL
-                if not vcard.photo.value.startswith("http"):
+            # if vcard.photo.value data type is bytes
+            if isinstance(vcard.photo.value, bytes):
+                # convert bytes to base64
+                photo_data = base64.b64encode(vcard.photo.value).decode('utf-8')
+                lines.append(f"PHOTO: data:image/jpeg;base64,{photo_data}")
+
+            elif isinstance(vcard.photo.value, str):
+                # write if PHOTO is a URL
+                if vcard.photo.value.startswith("http"):
                     lines.append(f"PHOTO: {vcard.photo.value}")
 
         # Extract email addresses with type information
