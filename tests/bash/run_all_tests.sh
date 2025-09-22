@@ -16,8 +16,8 @@ BASE_OUTPUT_DIR="/tmp/vcf_to_obsidian_test"
 # Usage: OUTPUT_DIR=$(create_unique_test_dir "test_name")
 create_unique_test_dir() {
     local test_name="$1"
-    local timestamp=$(date +%s)
-    local unique_dir="$BASE_OUTPUT_DIR/${test_name}_${timestamp}_$$"
+    local random_string=$(head -c 16 /dev/urandom | base64 | tr -d '/+=\n' | head -c 20)
+    local unique_dir="$BASE_OUTPUT_DIR/${test_name}_${random_string}_$$"
     
     mkdir -p "$unique_dir"
     echo "$unique_dir"
