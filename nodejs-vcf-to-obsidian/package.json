@@ -1,0 +1,32 @@
+{
+  "name": "vcf-to-obsidian",
+  "version": "1.0.0",
+  "description": "A Node.js module that batch-converts VCF files into Markdown files compatible with obsidian-vcf-contacts plugin for ObsidianMD",
+  "main": "lib/index.js",
+  "bin": {
+    "vcf-to-obsidian": "cli.js"
+  },
+  "scripts": {
+    "test": "jest",
+    "start": "node cli.js"
+  },
+  "keywords": [
+    "vcf",
+    "obsidian",
+    "contacts",
+    "markdown",
+    "vcard"
+  ],
+  "author": "Ian Dennis Miller",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^11.1.0",
+    "vcard-parser": "^1.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
